@@ -3,6 +3,9 @@
 
 namespace Crawler {
 
+MIME::MIME(const std::string& type, const std::string& subtype) : type(type), subtype(subtype) {}
+std::string MIME::get() { return type + "/" + subtype; }
+
 CURLObject::CURLObject() : mHandle(curl_easy_init()) {
     
 }
@@ -33,6 +36,15 @@ CURLObject::operator void*() const {
 
 CURLcode CURLObject::perform() {
     return curl_easy_perform(mHandle);
+}
+
+void CURLObject::reset() noexcept {
+    curl_easy_reset(mHandle);
+}
+
+void CURLObject::setURL(const std::string& str) {
+    mUrl = str;
+    setopt(CURLOPT_URL, mUrl.c_str());
 }
 
 void swap(CURLObject& first, CURLObject& second) noexcept {
