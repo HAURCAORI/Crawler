@@ -7,7 +7,7 @@
         {
             "label": "c++ build",
             "type": "shell",
-            "command": "make",
+            "command": "make -f ./processTest/Makefile",
             "problemMatcher": ["$gcc"],
             "group": {
                 "kind": "build",
@@ -27,7 +27,7 @@
         {
             "label": "excute",
             "type": "shell",
-            "command": "${workspaceFolder}/bin/main",
+            "command": "${workspaceFolder}/processTest/bin/main",
             "problemMatcher": [],
             "group": "build"
         }
