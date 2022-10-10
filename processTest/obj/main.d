@@ -159,4 +159,11 @@ processTest/obj/main.o: processTest/src/main.cpp \
  /usr/include/x86_64-linux-gnu/sys/time.h webCrawler/include/curl/easy.h \
  webCrawler/include/curl/multi.h webCrawler/include/curl/curl.h \
  webCrawler/include/curl/urlapi.h webCrawler/include/curl/options.h \
- webCrawler/include/curl/header.h processTest/include/curlexceptions.h
+ webCrawler/include/curl/header.h processTest/include/curltype.h \
+ /usr/include/c++/7/map /usr/include/c++/7/bits/stl_tree.h \
+ /usr/include/c++/7/ext/aligned_buffer.h \
+ /usr/include/c++/7/bits/stl_map.h /usr/include/c++/7/tuple \
+ /usr/include/c++/7/utility /usr/include/c++/7/bits/stl_relops.h \
+ /usr/include/c++/7/array /usr/include/c++/7/bits/uses_allocator.h \
+ /usr/include/c++/7/bits/invoke.h /usr/include/c++/7/bits/stl_multimap.h \
+ processTest/include/curlexceptions.h

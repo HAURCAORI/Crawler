@@ -4,6 +4,7 @@
 int main() {
     std::cout << "a" << std::endl;
     curl_global_init(CURL_GLOBAL_DEFAULT);
+    /*
     Crawler::CURLObject obj("https://www.naver.com/");
     if(obj) {
         auto res = obj.perform();
@@ -12,8 +13,9 @@ int main() {
     } else {
         std::cout << "null" << std::endl;
     }
-
-
+    */
+    std::cout <<  Crawler::HTMLHeaderString.at(Crawler::HTMLHeader::pragma) << std::endl;
+    
     curl_global_cleanup();
     /*
     CURL *curl;
