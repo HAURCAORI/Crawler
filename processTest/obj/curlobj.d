@@ -71,27 +71,21 @@ processTest/obj/curlobj.o: processTest/src/curlobj.cpp \
  /usr/include/x86_64-linux-gnu/sys/time.h webCrawler/include/curl/easy.h \
  webCrawler/include/curl/multi.h webCrawler/include/curl/curl.h \
  webCrawler/include/curl/urlapi.h webCrawler/include/curl/options.h \
- webCrawler/include/curl/header.h processTest/include/curlexceptions.h \
- /usr/include/c++/7/exception \
+ webCrawler/include/curl/header.h processTest/include/curltype.h \
+ /usr/include/c++/7/string \
  /usr/include/x86_64-linux-gnu/c++/7/bits/c++config.h \
  /usr/include/x86_64-linux-gnu/c++/7/bits/os_defines.h \
  /usr/include/x86_64-linux-gnu/c++/7/bits/cpu_defines.h \
- /usr/include/c++/7/bits/exception.h \
- /usr/include/c++/7/bits/exception_ptr.h \
- /usr/include/c++/7/bits/exception_defines.h \
- /usr/include/c++/7/bits/cxxabi_init_exception.h \
- /usr/include/c++/7/typeinfo /usr/include/c++/7/bits/hash_bytes.h \
- /usr/include/c++/7/new /usr/include/c++/7/bits/nested_exception.h \
- /usr/include/c++/7/bits/move.h /usr/include/c++/7/bits/concept_check.h \
- /usr/include/c++/7/type_traits /usr/include/c++/7/string \
  /usr/include/c++/7/bits/stringfwd.h /usr/include/c++/7/bits/memoryfwd.h \
  /usr/include/c++/7/bits/char_traits.h \
  /usr/include/c++/7/bits/stl_algobase.h \
  /usr/include/c++/7/bits/functexcept.h \
+ /usr/include/c++/7/bits/exception_defines.h \
  /usr/include/c++/7/bits/cpp_type_traits.h \
  /usr/include/c++/7/ext/type_traits.h \
  /usr/include/c++/7/ext/numeric_traits.h \
- /usr/include/c++/7/bits/stl_pair.h \
+ /usr/include/c++/7/bits/stl_pair.h /usr/include/c++/7/bits/move.h \
+ /usr/include/c++/7/bits/concept_check.h /usr/include/c++/7/type_traits \
  /usr/include/c++/7/bits/stl_iterator_base_types.h \
  /usr/include/c++/7/bits/stl_iterator_base_funcs.h \
  /usr/include/c++/7/debug/assertions.h \
@@ -109,7 +103,12 @@ processTest/obj/curlobj.o: processTest/src/curlobj.cpp \
  /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
  /usr/include/c++/7/bits/allocator.h \
  /usr/include/x86_64-linux-gnu/c++/7/bits/c++allocator.h \
- /usr/include/c++/7/ext/new_allocator.h \
+ /usr/include/c++/7/ext/new_allocator.h /usr/include/c++/7/new \
+ /usr/include/c++/7/exception /usr/include/c++/7/bits/exception.h \
+ /usr/include/c++/7/bits/exception_ptr.h \
+ /usr/include/c++/7/bits/cxxabi_init_exception.h \
+ /usr/include/c++/7/typeinfo /usr/include/c++/7/bits/hash_bytes.h \
+ /usr/include/c++/7/bits/nested_exception.h \
  /usr/include/c++/7/bits/localefwd.h \
  /usr/include/x86_64-linux-gnu/c++/7/bits/c++locale.h \
  /usr/include/c++/7/clocale /usr/include/locale.h \
@@ -144,5 +143,12 @@ processTest/obj/curlobj.o: processTest/src/curlobj.cpp \
  /usr/include/x86_64-linux-gnu/asm/errno.h \
  /usr/include/asm-generic/errno.h /usr/include/asm-generic/errno-base.h \
  /usr/include/c++/7/bits/functional_hash.h \
- /usr/include/c++/7/bits/basic_string.tcc /usr/include/c++/7/utility \
- /usr/include/c++/7/bits/stl_relops.h
+ /usr/include/c++/7/bits/basic_string.tcc /usr/include/c++/7/map \
+ /usr/include/c++/7/bits/stl_tree.h \
+ /usr/include/c++/7/ext/aligned_buffer.h \
+ /usr/include/c++/7/bits/stl_map.h /usr/include/c++/7/tuple \
+ /usr/include/c++/7/utility /usr/include/c++/7/bits/stl_relops.h \
+ /usr/include/c++/7/array /usr/include/c++/7/stdexcept \
+ /usr/include/c++/7/bits/uses_allocator.h \
+ /usr/include/c++/7/bits/invoke.h /usr/include/c++/7/bits/stl_multimap.h \
+ processTest/include/curlexceptions.h

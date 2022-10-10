@@ -3,9 +3,6 @@
 
 namespace Crawler {
 
-MIME::MIME(const std::string& type, const std::string& subtype) : type(type), subtype(subtype) {}
-std::string MIME::get() { return type + "/" + subtype; }
-
 CURLObject::CURLObject() : mHandle(curl_easy_init()) {
     
 }
@@ -21,6 +18,9 @@ CURLObject::CURLObject(CURLObject&& src) noexcept : CURLObject() {
 CURLObject::~CURLObject() noexcept {
     if(mHandle) {
         curl_easy_cleanup(mHandle);
+    }
+    if(mHeader) {
+        curl_slist_free_all(mHeader);
     }
 }
 
@@ -45,6 +45,10 @@ void CURLObject::reset() noexcept {
 void CURLObject::setURL(const std::string& str) {
     mUrl = str;
     setopt(CURLOPT_URL, mUrl.c_str());
+}
+
+void CURLObject::appendHeader(const std::string& str) {
+    mHeader = curl_slist_append(mHeader, str.c_str());
 }
 
 void swap(CURLObject& first, CURLObject& second) noexcept {
