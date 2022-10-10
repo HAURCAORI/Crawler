@@ -134,8 +134,9 @@ processTest/obj/main.o: processTest/src/main.cpp \
  /usr/include/c++/7/bits/locale_facets.tcc \
  /usr/include/c++/7/bits/basic_ios.tcc \
  /usr/include/c++/7/bits/ostream.tcc /usr/include/c++/7/istream \
- /usr/include/c++/7/bits/istream.tcc webCrawler/include/curl/curl.h \
- webCrawler/include/curl/curlver.h webCrawler/include/curl/system.h \
+ /usr/include/c++/7/bits/istream.tcc processTest/include/curlobj.h \
+ webCrawler/include/curl/curl.h webCrawler/include/curl/curlver.h \
+ webCrawler/include/curl/system.h \
  /usr/include/x86_64-linux-gnu/sys/socket.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct_iovec.h \
  /usr/include/x86_64-linux-gnu/bits/socket.h \
@@ -158,4 +159,4 @@ processTest/obj/main.o: processTest/src/main.cpp \
  /usr/include/x86_64-linux-gnu/sys/time.h webCrawler/include/curl/easy.h \
  webCrawler/include/curl/multi.h webCrawler/include/curl/curl.h \
  webCrawler/include/curl/urlapi.h webCrawler/include/curl/options.h \
- webCrawler/include/curl/header.h
+ webCrawler/include/curl/header.h processTest/include/curlexceptions.h

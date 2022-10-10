@@ -1,8 +1,21 @@
 #include <iostream>
-#include <curl/curl.h>
+#include <curlobj.h>
 
 int main() {
     std::cout << "a" << std::endl;
+    curl_global_init(CURL_GLOBAL_DEFAULT);
+    Crawler::CURLObject obj("https://www.naver.com/");
+    if(obj) {
+        auto res = obj.perform();
+        if(res == CURLE_OK)
+            std::cout << "OK" << std::endl;
+    } else {
+        std::cout << "null" << std::endl;
+    }
+
+
+    curl_global_cleanup();
+    /*
     CURL *curl;
     CURLcode res;
 
@@ -13,17 +26,15 @@ int main() {
         curl_easy_setopt(curl, CURLOPT_URL, "https://www.naver.com/");
 
 
-        /* Perform the request, res will get the return code */
         res = curl_easy_perform(curl);
-        /* Check for errors */
         if(res != CURLE_OK)
             fprintf(stderr, "curl_easy_perform() failed: %s\n",
                     curl_easy_strerror(res));
-
-        /* always cleanup */
         curl_easy_cleanup(curl);
     }
 
     curl_global_cleanup();
+    */
+
     return 0;
 }
