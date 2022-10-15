@@ -17,4 +17,9 @@ private:
     std::string mMessage;
 };
 
+class CurlErrorURL : CurlError {
+public:
+    CurlErrorURL(const std::string& message) : CurlError(message) {}
+};
+
 }

@@ -11,7 +11,7 @@ class CURLObject {
 public:
     // 연산자 정의
     CURLObject();
-    CURLObject(std::string url);
+    CURLObject(const std::string& url);
     CURLObject(const CURLObject& src) = delete;
     CURLObject(CURLObject&& src) noexcept;
     virtual ~CURLObject() noexcept;
@@ -21,17 +21,18 @@ public:
 
     // CURL 동작 설정
     template<typename E>
-    void setopt(CURLoption option, E&& param) {
+    void setOption(CURLoption option, E&& param) {
         curl_easy_setopt(mHandle, option, param);
     }
-    CURLcode perform();
-    void reset() noexcept;
+    CURLcode perform() const;
+    void resetOption() noexcept; // option reset
 
     // get, set
     void setURL(const std::string& str);
-    void appendHeader(const std::string& str);
-    void appendHeader(int a, const std::string& arg);
-    
+    void setContentType(const MIME& type);
+    void appendHeader(const std::string& str); // html header add
+    void appendHeader(const MIME& type);
+    void appendHeader(HTMLHeader header, const std::string& arg);
 
     inline CURL* getHandle() { return mHandle; }
     const CURL* getHandle() const { return mHandle; }
@@ -40,6 +41,7 @@ public:
     //기타
     friend void swap(CURLObject& first, CURLObject& second) noexcept;
 private:
+    bool isURLSet = false;
     std::string mUrl;
     CURL* mHandle = nullptr;
     curl_slist* mHeader = nullptr;

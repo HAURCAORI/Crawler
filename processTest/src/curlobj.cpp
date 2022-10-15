@@ -7,8 +7,8 @@ CURLObject::CURLObject() : mHandle(curl_easy_init()) {
     
 }
 
-CURLObject::CURLObject(std::string url) : mUrl(url), mHandle(curl_easy_init()){
-    setopt(CURLOPT_URL, mUrl.c_str());
+CURLObject::CURLObject(const std::string& url) : mUrl(url), mHandle(curl_easy_init()){
+    setOption(CURLOPT_URL, mUrl.c_str());
 }
 
 CURLObject::CURLObject(CURLObject&& src) noexcept : CURLObject() {
@@ -34,21 +34,42 @@ CURLObject::operator void*() const {
     return mHandle;
 }
 
-CURLcode CURLObject::perform() {
+CURLcode CURLObject::perform() const {
+    if(!isURLSet) {
+        throw CurlErrorURL("Empty URL.");
+    }
     return curl_easy_perform(mHandle);
 }
 
-void CURLObject::reset() noexcept {
+void CURLObject::resetOption() noexcept {
     curl_easy_reset(mHandle);
 }
 
 void CURLObject::setURL(const std::string& str) {
+    isURLSet = true;
     mUrl = str;
-    setopt(CURLOPT_URL, mUrl.c_str());
+    setOption(CURLOPT_URL, mUrl.c_str());
+}
+
+void CURLObject::setContentType(const MIME& type) {
+    appendHeader(HTMLHeaderString.at(HTMLHeader::contentType) + ":" + type.get());
 }
 
 void CURLObject::appendHeader(const std::string& str) {
+    printf("%s\r\n", str.c_str());
     mHeader = curl_slist_append(mHeader, str.c_str());
+}
+
+void CURLObject::appendHeader(const MIME& type) {
+    setContentType(type);
+}
+
+void CURLObject::appendHeader(HTMLHeader header, const std::string& arg) {
+    switch(header) {
+        default :
+            appendHeader(HTMLHeaderString.at(header) + ":" + arg);
+        break;
+    }
 }
 
 void swap(CURLObject& first, CURLObject& second) noexcept {

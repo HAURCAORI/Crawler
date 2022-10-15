@@ -10,7 +10,7 @@ struct MIME {
     std::string type;
     std::string subtype;
     MIME(const std::string& type, const std::string& subtype) : type(type), subtype(subtype) {}
-    inline std::string get() { return type + "/" + subtype; }
+    inline std::string get() const { return type + "/" + subtype; }
 };
 
 // MIME presets
