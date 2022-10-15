@@ -5,9 +5,10 @@ int main() {
     std::cout << "a" << std::endl;
     curl_global_init(CURL_GLOBAL_DEFAULT);
     
-    Crawler::CURLObject obj;
+    Crawler::CURLObject obj("https://www.naver.com/");
     if(obj) {
         auto res = obj.perform();
+
         if(res == CURLE_OK)
             std::cout << "OK" << std::endl;
     } else {
