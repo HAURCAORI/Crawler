@@ -6,11 +6,12 @@ namespace Crawler {
 // CURLObject Declaration
 
 CURLObject::CURLObject() : mHandle(curl_easy_init()) {
-    
+    defaultOption();
 }
 
-CURLObject::CURLObject(const std::string& url) : mUrl(url), mHandle(curl_easy_init()){
-    setOption(CURLOPT_URL, mUrl.c_str());
+CURLObject::CURLObject(const std::string& url) : mHandle(curl_easy_init()){
+    setURL(url);
+    defaultOption();
 }
 
 CURLObject::CURLObject(CURLObject&& src) noexcept : CURLObject() {
@@ -48,7 +49,9 @@ void CURLObject::resetOption() noexcept {
 }
 
 void CURLObject::defaultOption() {
-    setOption(CURLOPT_URL, mUrl.c_str()); // URL 설정
+    if(isURLSet) {
+        setOption(CURLOPT_URL, mUrl.c_str()); // URL 설정
+    }
     setOption(CURLOPT_WRITEFUNCTION, CURLObject::write_callback);
     
 }
@@ -125,7 +128,7 @@ void CURLMultiObject::perform() const {
     int msgs_left = 0;
     while(isRunning && !isInterrupt) {
         int numfds;
-        curl_multi_wait(mHandle, NULL, 0, 1000, &numfds);
+        curl_multi_wait(mHandle, NULL, 0, time_out, &numfds);
         curl_multi_perform(mHandle, &isRunning);
 
         CURLMsg *m = NULL;

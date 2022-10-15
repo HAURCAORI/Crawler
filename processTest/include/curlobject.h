@@ -67,6 +67,11 @@ public:
     void perform() const;
 
     // get, set
+    void setTimeOut(size_t time);
+
+    inline size_t getTimeOut() { return time_out; }
+    inline CURLM* getHandle() { return mHandle; }
+    const CURLM* getHandle() const { return mHandle; }
 
     //기타
     friend void swap(CURLMultiObject& first, CURLMultiObject& second) noexcept;
