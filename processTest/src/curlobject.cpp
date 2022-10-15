@@ -3,6 +3,8 @@
 
 namespace Crawler {
 
+// CURLObject Declaration
+
 CURLObject::CURLObject() : mHandle(curl_easy_init()) {
     
 }
@@ -76,6 +78,28 @@ void swap(CURLObject& first, CURLObject& second) noexcept {
     using std::swap;
     swap(first.mUrl, second.mUrl);
     swap(first.mHandle, second.mHandle);
+}
+
+// CURLMultiObject declaration
+
+CURLMultiObject::CURLMultiObject() {}
+
+CURLMultiObject::CURLMultiObject(CURLMultiObject&& src) noexcept : CURLMultiObject() {
+    swap(*this, src);
+}
+
+CURLMultiObject::~CURLMultiObject() noexcept {
+
+}
+
+CURLMultiObject& CURLMultiObject::operator=(CURLMultiObject&& rhs) noexcept {
+    CURLMultiObject temp(std::move(rhs));
+    swap(*this, temp);
+    return *this;
+}
+
+void swap(CURLMultiObject& first, CURLMultiObject& second) noexcept {
+    using std::swap;
 }
 
 }

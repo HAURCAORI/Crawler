@@ -47,6 +47,25 @@ private:
     curl_slist* mHeader = nullptr;
 };
  
+class CURLMultiObject {
+public:
+    // 연산자 정의
+    CURLMultiObject();
 
+    CURLMultiObject(const CURLMultiObject& src) = delete;
+    CURLMultiObject(CURLMultiObject&& src) noexcept;
+    virtual ~CURLMultiObject() noexcept;
+    CURLMultiObject& operator=(const CURLMultiObject& rhs) = delete;
+    CURLMultiObject& operator=(CURLMultiObject&& rhs) noexcept;
+
+    // CURL_MULTI 동작 설정
+
+    // get, set
+
+    //기타
+    friend void swap(CURLMultiObject& first, CURLMultiObject& second) noexcept;
+private:
+
+};
 
 }

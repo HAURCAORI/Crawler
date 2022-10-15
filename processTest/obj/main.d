@@ -134,7 +134,7 @@ processTest/obj/main.o: processTest/src/main.cpp \
  /usr/include/c++/7/bits/locale_facets.tcc \
  /usr/include/c++/7/bits/basic_ios.tcc \
  /usr/include/c++/7/bits/ostream.tcc /usr/include/c++/7/istream \
- /usr/include/c++/7/bits/istream.tcc processTest/include/curlobj.h \
+ /usr/include/c++/7/bits/istream.tcc processTest/include/curlobject.h \
  webCrawler/include/curl/curl.h webCrawler/include/curl/curlver.h \
  webCrawler/include/curl/system.h \
  /usr/include/x86_64-linux-gnu/sys/socket.h \
