@@ -47,6 +47,12 @@ void CURLObject::resetOption() noexcept {
     curl_easy_reset(mHandle);
 }
 
+void CURLObject::defaultOption() {
+    setOption(CURLOPT_URL, mUrl.c_str()); // URL 설정
+    setOption(CURLOPT_WRITEFUNCTION, CURLObject::write_callback);
+    
+}
+
 void CURLObject::setURL(const std::string& str) {
     isURLSet = true;
     mUrl = str;
@@ -74,6 +80,12 @@ void CURLObject::appendHeader(HTMLHeader header, const std::string& arg) {
     }
 }
 
+size_t CURLObject::write_callback(char *ptr, size_t size, size_t nmemb, void *userdata) {
+    size_t realsize = size * nmemb;
+ 
+    return realsize;
+}
+
 void swap(CURLObject& first, CURLObject& second) noexcept {
     using std::swap;
     swap(first.mUrl, second.mUrl);
@@ -82,20 +94,49 @@ void swap(CURLObject& first, CURLObject& second) noexcept {
 
 // CURLMultiObject declaration
 
-CURLMultiObject::CURLMultiObject() {}
+CURLMultiObject::CURLMultiObject() : mHandle(curl_multi_init()) {}
 
 CURLMultiObject::CURLMultiObject(CURLMultiObject&& src) noexcept : CURLMultiObject() {
     swap(*this, src);
 }
 
 CURLMultiObject::~CURLMultiObject() noexcept {
-
+    if(mHandle) {
+        curl_multi_cleanup(mHandle);
+    }
 }
 
 CURLMultiObject& CURLMultiObject::operator=(CURLMultiObject&& rhs) noexcept {
     CURLMultiObject temp(std::move(rhs));
     swap(*this, temp);
     return *this;
+}
+
+void CURLMultiObject::addHandle(CURLObject&& obj) noexcept {
+    CURLMcode ret = curl_multi_add_handle(mHandle, obj.getHandle());
+    if(ret == CURLM_OK) {
+        mContainer.push_back(std::move(obj));
+    }
+    // 실패 시 동작 구현
+}
+
+void CURLMultiObject::perform() const {
+    int isRunning = true;
+    int msgs_left = 0;
+    while(isRunning && !isInterrupt) {
+        int numfds;
+        curl_multi_wait(mHandle, NULL, 0, 1000, &numfds);
+        curl_multi_perform(mHandle, &isRunning);
+
+        CURLMsg *m = NULL;
+        while((m = curl_multi_info_read(mHandle, &msgs_left))) {
+            if(m->msg == CURLMSG_DONE) {
+                CURL *handle = m->easy_handle;
+
+                curl_multi_remove_handle(mHandle, handle);
+            }
+        }
+    }
 }
 
 void swap(CURLMultiObject& first, CURLMultiObject& second) noexcept {

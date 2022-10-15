@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 #include <curl/curl.h>
 #include <curltype.h>
 #include <curlexceptions.h>
@@ -26,6 +27,7 @@ public:
     }
     CURLcode perform() const;
     void resetOption() noexcept; // option reset
+    void defaultOption();
 
     // get, set
     void setURL(const std::string& str);
@@ -37,6 +39,9 @@ public:
     inline CURL* getHandle() { return mHandle; }
     const CURL* getHandle() const { return mHandle; }
     const std::string& getURL() const { return mUrl; }
+
+    // event
+    static size_t write_callback(char *ptr, size_t size, size_t nmemb, void *userdata);
 
     //기타
     friend void swap(CURLObject& first, CURLObject& second) noexcept;
@@ -51,7 +56,6 @@ class CURLMultiObject {
 public:
     // 연산자 정의
     CURLMultiObject();
-
     CURLMultiObject(const CURLMultiObject& src) = delete;
     CURLMultiObject(CURLMultiObject&& src) noexcept;
     virtual ~CURLMultiObject() noexcept;
@@ -59,13 +63,18 @@ public:
     CURLMultiObject& operator=(CURLMultiObject&& rhs) noexcept;
 
     // CURL_MULTI 동작 설정
+    void addHandle(CURLObject&& obj) noexcept;
+    void perform() const;
 
     // get, set
 
     //기타
     friend void swap(CURLMultiObject& first, CURLMultiObject& second) noexcept;
 private:
-
+    bool isInterrupt = false;
+    size_t time_out = 1000;
+    CURLM* mHandle = nullptr;
+    std::vector<CURLObject> mContainer;
 };
 
 }
