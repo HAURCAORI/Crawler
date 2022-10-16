@@ -11,10 +11,19 @@ public:
     IOAdapter& operator=(const IOAdapter& rhs) = delete;
     IOAdapter& operator=(IOAdapter&& rhs) noexcept;
 
+    virtual void out();
+    const void* get() const { return mdata; };
+
     friend void swap(IOAdapter& first, IOAdapter& second) noexcept;
 private:
-    void* mdata = nullptr;
+    void* mdata = nullptr; 
+};
 
+class IOAdapterConsole : public IOAdapter {
+public:
+    IOAdapterConsole() = default;
+private:
+    
 };
 
 }

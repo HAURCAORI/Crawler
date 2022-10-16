@@ -1,17 +1,23 @@
 #include <iostream>
 #include <curlobject.h>
 #include <curlthreadpool.h>
-
+#include <curlioadapter.h>
 int main() {
     std::cout << "a" << std::endl;
     curl_global_init(CURL_GLOBAL_DEFAULT);
     
     using namespace Crawler;
+
+    IOAdapterConsole adapter;
+    auto temp = adapter;
+
+    /*
     CURLThreadPool threads(5);
     for(int i = 0; i < 1; i++) {
         Crawler::CURLObject obj("https://www.naver.com/");
         threads.EnqueueCURL(std::move(obj));
     }
+    */
     /*
     Crawler::CURLObject obj("https://www.naver.com/");
     if(obj) {
