@@ -185,11 +185,7 @@ processTest/obj/main.o: processTest/src/main.cpp \
  /usr/include/c++/7/bits/enable_special_members.h \
  /usr/include/c++/7/bits/stl_map.h /usr/include/c++/7/bits/stl_multimap.h \
  processTest/include/curlexceptions.h processTest/include/curlioadapter.h \
- /usr/include/c++/7/any /usr/include/c++/7/cstring /usr/include/string.h \
- /usr/include/strings.h \
- /usr/include/x86_64-linux-gnu/bits/strings_fortified.h \
- /usr/include/x86_64-linux-gnu/bits/string_fortified.h \
- /usr/include/c++/7/stdlib.h processTest/include/curlthreadpool.h \
+ /usr/include/c++/7/any processTest/include/curlthreadpool.h \
  /usr/include/c++/7/future /usr/include/c++/7/mutex \
  /usr/include/c++/7/chrono /usr/include/c++/7/ratio \
  /usr/include/c++/7/ctime /usr/include/c++/7/bits/parse_numbers.h \

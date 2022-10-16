@@ -11,6 +11,14 @@ processTest/obj/curlobject.o: processTest/src/curlobject.cpp \
  /usr/include/c++/7/bits/stl_relops.h /usr/include/c++/7/bits/stl_pair.h \
  /usr/include/c++/7/bits/move.h /usr/include/c++/7/bits/concept_check.h \
  /usr/include/c++/7/type_traits /usr/include/c++/7/initializer_list \
+ /usr/include/c++/7/cstring /usr/include/string.h \
+ /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
+ /usr/lib/gcc/x86_64-linux-gnu/7/include/stddef.h \
+ /usr/include/x86_64-linux-gnu/bits/types/locale_t.h \
+ /usr/include/x86_64-linux-gnu/bits/types/__locale_t.h \
+ /usr/include/strings.h \
+ /usr/include/x86_64-linux-gnu/bits/strings_fortified.h \
+ /usr/include/x86_64-linux-gnu/bits/string_fortified.h \
  processTest/include/curlobject.h /usr/include/c++/7/vector \
  /usr/include/c++/7/bits/stl_algobase.h \
  /usr/include/c++/7/bits/functexcept.h \
@@ -30,7 +38,6 @@ processTest/obj/curlobject.o: processTest/src/curlobject.cpp \
  /usr/include/c++/7/exception /usr/include/c++/7/bits/exception.h \
  /usr/include/c++/7/bits/exception_ptr.h \
  /usr/include/c++/7/bits/cxxabi_init_exception.h \
- /usr/lib/gcc/x86_64-linux-gnu/7/include/stddef.h \
  /usr/include/c++/7/typeinfo /usr/include/c++/7/bits/hash_bytes.h \
  /usr/include/c++/7/bits/nested_exception.h \
  /usr/include/c++/7/bits/memoryfwd.h \
@@ -47,7 +54,6 @@ processTest/obj/curlobject.o: processTest/src/curlobject.cpp \
  /usr/include/c++/7/bits/stl_raw_storage_iter.h /usr/include/c++/7/iosfwd \
  /usr/include/c++/7/bits/stringfwd.h /usr/include/c++/7/bits/postypes.h \
  /usr/include/c++/7/cwchar /usr/include/wchar.h \
- /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
  /usr/include/x86_64-linux-gnu/bits/floatn.h \
  /usr/include/x86_64-linux-gnu/bits/floatn-common.h \
  /usr/lib/gcc/x86_64-linux-gnu/7/include/stdarg.h \
@@ -57,8 +63,6 @@ processTest/obj/curlobject.o: processTest/src/curlobject.cpp \
  /usr/include/x86_64-linux-gnu/bits/types/__mbstate_t.h \
  /usr/include/x86_64-linux-gnu/bits/types/__FILE.h \
  /usr/include/x86_64-linux-gnu/bits/types/FILE.h \
- /usr/include/x86_64-linux-gnu/bits/types/locale_t.h \
- /usr/include/x86_64-linux-gnu/bits/types/__locale_t.h \
  /usr/include/x86_64-linux-gnu/bits/wchar2.h \
  /usr/include/c++/7/ext/atomicity.h \
  /usr/include/x86_64-linux-gnu/c++/7/bits/gthr.h \
@@ -186,8 +190,4 @@ processTest/obj/curlobject.o: processTest/src/curlobject.cpp \
  /usr/include/c++/7/bits/locale_facets.tcc \
  /usr/include/c++/7/bits/basic_ios.tcc \
  /usr/include/c++/7/bits/ostream.tcc /usr/include/c++/7/istream \
- /usr/include/c++/7/bits/istream.tcc /usr/include/c++/7/cstring \
- /usr/include/string.h /usr/include/strings.h \
- /usr/include/x86_64-linux-gnu/bits/strings_fortified.h \
- /usr/include/x86_64-linux-gnu/bits/string_fortified.h \
- /usr/include/c++/7/stdlib.h
+ /usr/include/c++/7/bits/istream.tcc

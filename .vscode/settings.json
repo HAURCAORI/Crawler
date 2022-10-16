@@ -52,6 +52,7 @@
         "condition_variable": "cpp",
         "future": "cpp",
         "thread": "cpp",
-        "any": "cpp"
+        "any": "cpp",
+        "cstring": "cpp"
     }
 }

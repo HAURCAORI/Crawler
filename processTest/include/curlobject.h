@@ -6,8 +6,8 @@
 #include <curlexceptions.h>
 #include <curlioadapter.h>
 
-#include <cstring>
-#include <stdlib.h>
+
+
 
 namespace Crawler {
 
@@ -20,7 +20,7 @@ public:
     const char* const getData() const { return mData; }
     std::string getString() const { return std::string(mData); }
 private:
-    char* mData = nullptr;
+    char* mData = NULL;
     size_t mSize = 0;
 };
 
@@ -55,6 +55,8 @@ public:
     inline CURL* getHandle() { return mHandle; }
     const CURL* getHandle() const { return mHandle; }
     const std::string& getURL() const { return mUrl; }
+
+    memory* getData() { return &mData; }
 
     // event
     static size_t write_callback(char *ptr, size_t size, size_t nmemb, void *userdata);

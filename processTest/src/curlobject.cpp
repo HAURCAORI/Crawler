@@ -1,5 +1,5 @@
 #include <utility>
-
+#include <cstring>
 #include "curlobject.h"
 
 
@@ -16,8 +16,9 @@ memory::~memory() {
 
 size_t memory::append(char* data, size_t size) {
     char *ptr = (char *)realloc(mData, mSize + size + 1);
-    if (ptr == NULL)
+    if (ptr == NULL) {
         return 0;
+    }
     mData = ptr;
     memcpy(&(mData[mSize]), data, size);
     mSize += size;
@@ -80,7 +81,7 @@ void CURLObject::defaultOption() {
 
     setOption(CURLOPT_WRITEDATA, &mData);
     setOption(CURLOPT_WRITEFUNCTION, CURLObject::write_callback);
-    setOption(CURLOPT_PRIVATE, &mData);
+    setOption(CURLOPT_PRIVATE, this);
 
 }
 
