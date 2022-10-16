@@ -1,3 +1,4 @@
+#pragma once
 #include <future>
 #include <mutex>
 #include <queue>
@@ -7,12 +8,12 @@
 
 namespace Crawler {
 
-//class CurlObject;
+class CURLObject;
 
-class CurlThreadPool {
+class CURLThreadPool {
 public:
-  CurlThreadPool(size_t num_threads);
-  ~CurlThreadPool();
+  CURLThreadPool(size_t num_threads);
+  ~CURLThreadPool();
 /*
   template <class... Args>
   void EnqueueJob(Args&&... args) {
@@ -24,15 +25,8 @@ public:
     cv_job_q_.notify_one();
   }
 */
-/*
-  void Enqueue(CurlObject&& obj) {
-    {
-      std::lock_guard<std::mutex> lock(m_job_q_);
-      objs_.emplace(std::move(obj));
-    }
-    cv_job_q_.notify_one();
-  }
-*/
+
+  void EnqueueCURL(CURLObject&& obj);
 
  private:
   size_t num_threads_;
@@ -40,7 +34,7 @@ public:
   std::vector<std::thread> worker_threads_;
   //std::queue<std::function<void()>> jobs_;
 
-  std::queue<std::string> objs_;
+  std::queue<CURLObject> objs_;
 
   std::condition_variable cv_job_q_;
   std::mutex m_job_q_;

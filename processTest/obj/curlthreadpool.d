@@ -151,4 +151,32 @@ processTest/obj/curlthreadpool.o: processTest/src/curlthreadpool.cpp \
  /usr/include/c++/7/bits/deque.tcc /usr/include/c++/7/vector \
  /usr/include/c++/7/bits/stl_vector.h \
  /usr/include/c++/7/bits/stl_bvector.h /usr/include/c++/7/bits/vector.tcc \
- /usr/include/c++/7/bits/stl_heap.h /usr/include/c++/7/bits/stl_queue.h
+ /usr/include/c++/7/bits/stl_heap.h /usr/include/c++/7/bits/stl_queue.h \
+ processTest/include/curlobject.h webCrawler/include/curl/curl.h \
+ webCrawler/include/curl/curlver.h webCrawler/include/curl/system.h \
+ /usr/include/x86_64-linux-gnu/sys/socket.h \
+ /usr/include/x86_64-linux-gnu/bits/types/struct_iovec.h \
+ /usr/include/x86_64-linux-gnu/bits/socket.h \
+ /usr/include/x86_64-linux-gnu/bits/socket_type.h \
+ /usr/include/x86_64-linux-gnu/bits/sockaddr.h \
+ /usr/include/x86_64-linux-gnu/asm/socket.h \
+ /usr/include/asm-generic/socket.h \
+ /usr/include/x86_64-linux-gnu/asm/sockios.h \
+ /usr/include/asm-generic/sockios.h \
+ /usr/include/x86_64-linux-gnu/bits/types/struct_osockaddr.h \
+ /usr/include/x86_64-linux-gnu/bits/socket2.h \
+ /usr/lib/gcc/x86_64-linux-gnu/7/include-fixed/limits.h \
+ /usr/lib/gcc/x86_64-linux-gnu/7/include-fixed/syslimits.h \
+ /usr/include/limits.h /usr/include/x86_64-linux-gnu/bits/posix1_lim.h \
+ /usr/include/x86_64-linux-gnu/bits/local_lim.h \
+ /usr/include/linux/limits.h \
+ /usr/include/x86_64-linux-gnu/bits/posix2_lim.h \
+ /usr/include/x86_64-linux-gnu/bits/xopen_lim.h \
+ /usr/include/x86_64-linux-gnu/bits/uio_lim.h \
+ /usr/include/x86_64-linux-gnu/sys/time.h webCrawler/include/curl/easy.h \
+ webCrawler/include/curl/multi.h webCrawler/include/curl/curl.h \
+ webCrawler/include/curl/urlapi.h webCrawler/include/curl/options.h \
+ webCrawler/include/curl/header.h processTest/include/curltype.h \
+ /usr/include/c++/7/map /usr/include/c++/7/bits/stl_tree.h \
+ /usr/include/c++/7/bits/stl_map.h /usr/include/c++/7/bits/stl_multimap.h \
+ processTest/include/curlexceptions.h
