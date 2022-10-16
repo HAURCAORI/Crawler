@@ -2,15 +2,17 @@
 #include <curlobject.h>
 #include <curlthreadpool.h>
 #include <curlioadapter.h>
+
 int main() {
     std::cout << "a" << std::endl;
     curl_global_init(CURL_GLOBAL_DEFAULT);
     
     using namespace Crawler;
 
-    IOAdapterConsole adapter;
-    auto temp = adapter;
 
+    IOAdapter adapter;
+    adapter.set(1234);
+    adapter.out();
     /*
     CURLThreadPool threads(5);
     for(int i = 0; i < 1; i++) {

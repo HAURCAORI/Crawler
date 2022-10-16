@@ -51,6 +51,7 @@
         "mutex": "cpp",
         "condition_variable": "cpp",
         "future": "cpp",
-        "thread": "cpp"
+        "thread": "cpp",
+        "any": "cpp"
     }
 }

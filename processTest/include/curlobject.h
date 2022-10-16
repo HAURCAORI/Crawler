@@ -3,10 +3,9 @@
 #include <curl/curl.h>
 #include <curltype.h>
 #include <curlexceptions.h>
-
+#include <curlioadapter.h>
 
 namespace Crawler {
-
 
 class CURLObject {
 public:
@@ -50,6 +49,7 @@ private:
     std::string mUrl;
     CURL* mHandle = nullptr;
     curl_slist* mHeader = nullptr;
+    IOAdapter mAdapter;
 };
  
 class CURLMultiObject {

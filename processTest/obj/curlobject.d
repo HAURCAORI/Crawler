@@ -137,6 +137,8 @@ processTest/obj/curlobject.o: processTest/src/curlobject.cpp \
  /usr/include/x86_64-linux-gnu/bits/cpu-set.h \
  /usr/include/x86_64-linux-gnu/bits/setjmp.h \
  /usr/include/x86_64-linux-gnu/c++/7/bits/atomic_word.h \
+ /usr/include/c++/7/string_view /usr/include/c++/7/limits \
+ /usr/include/c++/7/bits/string_view.tcc \
  /usr/include/c++/7/ext/string_conversions.h /usr/include/c++/7/cstdlib \
  /usr/include/stdlib.h /usr/include/x86_64-linux-gnu/bits/waitflags.h \
  /usr/include/x86_64-linux-gnu/bits/waitstatus.h /usr/include/alloca.h \
@@ -151,8 +153,28 @@ processTest/obj/curlobject.o: processTest/src/curlobject.cpp \
  /usr/include/c++/7/bits/basic_string.tcc /usr/include/c++/7/map \
  /usr/include/c++/7/bits/stl_tree.h \
  /usr/include/c++/7/ext/aligned_buffer.h \
+ /usr/include/c++/7/bits/node_handle.h /usr/include/c++/7/optional \
+ /usr/include/c++/7/stdexcept \
+ /usr/include/c++/7/bits/enable_special_members.h \
  /usr/include/c++/7/bits/stl_map.h /usr/include/c++/7/tuple \
- /usr/include/c++/7/array /usr/include/c++/7/stdexcept \
- /usr/include/c++/7/bits/uses_allocator.h \
+ /usr/include/c++/7/array /usr/include/c++/7/bits/uses_allocator.h \
  /usr/include/c++/7/bits/invoke.h /usr/include/c++/7/bits/stl_multimap.h \
- processTest/include/curlexceptions.h
+ processTest/include/curlexceptions.h processTest/include/curlioadapter.h \
+ /usr/include/c++/7/any /usr/include/c++/7/iostream \
+ /usr/include/c++/7/ostream /usr/include/c++/7/ios \
+ /usr/include/c++/7/bits/ios_base.h \
+ /usr/include/c++/7/bits/locale_classes.h \
+ /usr/include/c++/7/bits/locale_classes.tcc \
+ /usr/include/c++/7/system_error \
+ /usr/include/x86_64-linux-gnu/c++/7/bits/error_constants.h \
+ /usr/include/c++/7/streambuf /usr/include/c++/7/bits/streambuf.tcc \
+ /usr/include/c++/7/bits/basic_ios.h \
+ /usr/include/c++/7/bits/locale_facets.h /usr/include/c++/7/cwctype \
+ /usr/include/wctype.h /usr/include/x86_64-linux-gnu/bits/wctype-wchar.h \
+ /usr/include/x86_64-linux-gnu/c++/7/bits/ctype_base.h \
+ /usr/include/c++/7/bits/streambuf_iterator.h \
+ /usr/include/x86_64-linux-gnu/c++/7/bits/ctype_inline.h \
+ /usr/include/c++/7/bits/locale_facets.tcc \
+ /usr/include/c++/7/bits/basic_ios.tcc \
+ /usr/include/c++/7/bits/ostream.tcc /usr/include/c++/7/istream \
+ /usr/include/c++/7/bits/istream.tcc

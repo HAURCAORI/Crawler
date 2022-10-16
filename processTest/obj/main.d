@@ -93,7 +93,9 @@ processTest/obj/main.o: processTest/src/main.cpp \
  /usr/include/c++/7/initializer_list \
  /usr/include/c++/7/bits/basic_string.h \
  /usr/include/c++/7/ext/alloc_traits.h \
- /usr/include/c++/7/bits/alloc_traits.h \
+ /usr/include/c++/7/bits/alloc_traits.h /usr/include/c++/7/string_view \
+ /usr/include/c++/7/limits /usr/include/c++/7/bits/functional_hash.h \
+ /usr/include/c++/7/bits/string_view.tcc \
  /usr/include/c++/7/ext/string_conversions.h /usr/include/c++/7/cstdlib \
  /usr/include/stdlib.h /usr/include/x86_64-linux-gnu/bits/waitflags.h \
  /usr/include/x86_64-linux-gnu/bits/waitstatus.h \
@@ -118,7 +120,6 @@ processTest/obj/main.o: processTest/src/main.cpp \
  /usr/include/errno.h /usr/include/x86_64-linux-gnu/bits/errno.h \
  /usr/include/linux/errno.h /usr/include/x86_64-linux-gnu/asm/errno.h \
  /usr/include/asm-generic/errno.h /usr/include/asm-generic/errno-base.h \
- /usr/include/c++/7/bits/functional_hash.h \
  /usr/include/c++/7/bits/basic_string.tcc \
  /usr/include/c++/7/bits/locale_classes.tcc \
  /usr/include/c++/7/system_error \
@@ -136,7 +137,8 @@ processTest/obj/main.o: processTest/src/main.cpp \
  /usr/include/c++/7/bits/ostream.tcc /usr/include/c++/7/istream \
  /usr/include/c++/7/bits/istream.tcc processTest/include/curlobject.h \
  /usr/include/c++/7/vector /usr/include/c++/7/bits/stl_construct.h \
- /usr/include/c++/7/bits/stl_uninitialized.h \
+ /usr/include/c++/7/bits/stl_uninitialized.h /usr/include/c++/7/utility \
+ /usr/include/c++/7/bits/stl_relops.h \
  /usr/include/c++/7/bits/stl_vector.h \
  /usr/include/c++/7/bits/stl_bvector.h /usr/include/c++/7/bits/vector.tcc \
  webCrawler/include/curl/curl.h webCrawler/include/curl/curlver.h \
@@ -166,14 +168,15 @@ processTest/obj/main.o: processTest/src/main.cpp \
  webCrawler/include/curl/header.h processTest/include/curltype.h \
  /usr/include/c++/7/map /usr/include/c++/7/bits/stl_tree.h \
  /usr/include/c++/7/ext/aligned_buffer.h \
+ /usr/include/c++/7/bits/node_handle.h /usr/include/c++/7/optional \
+ /usr/include/c++/7/bits/enable_special_members.h \
  /usr/include/c++/7/bits/stl_map.h /usr/include/c++/7/tuple \
- /usr/include/c++/7/utility /usr/include/c++/7/bits/stl_relops.h \
  /usr/include/c++/7/array /usr/include/c++/7/bits/uses_allocator.h \
  /usr/include/c++/7/bits/invoke.h /usr/include/c++/7/bits/stl_multimap.h \
- processTest/include/curlexceptions.h \
- processTest/include/curlthreadpool.h /usr/include/c++/7/future \
- /usr/include/c++/7/mutex /usr/include/c++/7/chrono \
- /usr/include/c++/7/ratio /usr/include/c++/7/limits \
+ processTest/include/curlexceptions.h processTest/include/curlioadapter.h \
+ /usr/include/c++/7/any processTest/include/curlthreadpool.h \
+ /usr/include/c++/7/future /usr/include/c++/7/mutex \
+ /usr/include/c++/7/chrono /usr/include/c++/7/ratio \
  /usr/include/c++/7/ctime /usr/include/c++/7/bits/parse_numbers.h \
  /usr/include/c++/7/bits/std_mutex.h /usr/include/c++/7/thread \
  /usr/include/c++/7/memory /usr/include/c++/7/bits/stl_tempbuf.h \

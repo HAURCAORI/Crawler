@@ -53,8 +53,9 @@ void CURLObject::defaultOption() {
     if(isURLSet) {
         setOption(CURLOPT_URL, mUrl.c_str()); // URL 설정
     }
+    setOption(CURLOPT_WRITEDATA, &mAdapter);
     setOption(CURLOPT_WRITEFUNCTION, CURLObject::write_callback);
-    
+
 }
 
 void CURLObject::setURL(const std::string& str) {

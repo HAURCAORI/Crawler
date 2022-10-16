@@ -1,4 +1,5 @@
 #include <utility>
+#include <iostream>
 #include "curlioadapter.h"
 
 namespace Crawler {
@@ -19,9 +20,16 @@ IOAdapter& IOAdapter::operator=(IOAdapter&& rhs) noexcept {
     return *this;
 }
 
+void IOAdapter::out() {
+
+}
 
 void swap(IOAdapter& first, IOAdapter& second) noexcept {
     using std::swap;
+}
+
+void IOAdapterConsole::out() {
+    std::cout << mdata << std::endl;
 }
 
 

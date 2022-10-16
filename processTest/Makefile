@@ -13,7 +13,7 @@ LIBS += -L$(LIB_PATH)/zlib -Wl,-R$(LIB_PATH)/zlib -lz
 LIBS += -L$(LIB_PATH)/ldap -Wl,-R$(LIB_PATH)/ldap -llber -lldap
 
 # Compiler
-CC = g++
+CC = g++ -std=c++17
 
 # C++ 컴파일러 옵션
 CXXFLAGS = -Wall -O2
