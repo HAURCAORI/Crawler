@@ -10,9 +10,9 @@ int main() {
     using namespace Crawler;
 
 
-    IOAdapter adapter;
-    adapter.set(1234);
-    adapter.out();
+    //IOAdapter adapter;
+    //adapter.set(1234);
+    //adapter.out();
     /*
     CURLThreadPool threads(5);
     for(int i = 0; i < 1; i++) {
@@ -20,25 +20,23 @@ int main() {
         threads.EnqueueCURL(std::move(obj));
     }
     */
-    /*
+    
     Crawler::CURLObject obj("https://www.naver.com/");
     if(obj) {
-        CURLMultiObject mobj;
         //std::cout << mobj.getTimeOut() << std::endl;
         //CURLMultiObject::setTimeOut(100);
         //std::cout << mobj.getTimeOut() << std::endl;
-        mobj.addHandle(std::move(obj));
-        mobj.perform();
-        //auto res = obj.perform();
+        auto res = obj.perform();
 
-        //if(res == CURLE_OK)
-            //std::cout << "OK" << std::endl;
+        memory* memory;
+        curl_easy_getinfo(obj, CURLINFO_PRIVATE, &memory);
+        std::cout << memory->getString() << std::endl;
+
+        if(res == CURLE_OK)
+            std::cout << "OK" << std::endl;
     } else {
         std::cout << "null" << std::endl;
     }
-    */
-    
-    
     
     curl_global_cleanup();
     /*

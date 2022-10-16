@@ -141,8 +141,22 @@ processTest/obj/main.o: processTest/src/main.cpp \
  /usr/include/c++/7/bits/stl_relops.h \
  /usr/include/c++/7/bits/stl_vector.h \
  /usr/include/c++/7/bits/stl_bvector.h /usr/include/c++/7/bits/vector.tcc \
- webCrawler/include/curl/curl.h webCrawler/include/curl/curlver.h \
- webCrawler/include/curl/system.h \
+ /usr/include/c++/7/memory /usr/include/c++/7/bits/stl_tempbuf.h \
+ /usr/include/c++/7/bits/stl_raw_storage_iter.h \
+ /usr/include/c++/7/ext/concurrence.h \
+ /usr/include/c++/7/bits/uses_allocator.h \
+ /usr/include/c++/7/bits/unique_ptr.h /usr/include/c++/7/tuple \
+ /usr/include/c++/7/array /usr/include/c++/7/bits/invoke.h \
+ /usr/include/c++/7/bits/shared_ptr.h \
+ /usr/include/c++/7/bits/shared_ptr_base.h \
+ /usr/include/c++/7/bits/allocated_ptr.h \
+ /usr/include/c++/7/bits/refwrap.h \
+ /usr/include/c++/7/ext/aligned_buffer.h \
+ /usr/include/c++/7/bits/shared_ptr_atomic.h \
+ /usr/include/c++/7/bits/atomic_base.h \
+ /usr/include/c++/7/bits/atomic_lockfree_defines.h \
+ /usr/include/c++/7/backward/auto_ptr.h webCrawler/include/curl/curl.h \
+ webCrawler/include/curl/curlver.h webCrawler/include/curl/system.h \
  /usr/include/x86_64-linux-gnu/sys/socket.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct_iovec.h \
  /usr/include/x86_64-linux-gnu/bits/socket.h \
@@ -167,30 +181,19 @@ processTest/obj/main.o: processTest/src/main.cpp \
  webCrawler/include/curl/urlapi.h webCrawler/include/curl/options.h \
  webCrawler/include/curl/header.h processTest/include/curltype.h \
  /usr/include/c++/7/map /usr/include/c++/7/bits/stl_tree.h \
- /usr/include/c++/7/ext/aligned_buffer.h \
  /usr/include/c++/7/bits/node_handle.h /usr/include/c++/7/optional \
  /usr/include/c++/7/bits/enable_special_members.h \
- /usr/include/c++/7/bits/stl_map.h /usr/include/c++/7/tuple \
- /usr/include/c++/7/array /usr/include/c++/7/bits/uses_allocator.h \
- /usr/include/c++/7/bits/invoke.h /usr/include/c++/7/bits/stl_multimap.h \
+ /usr/include/c++/7/bits/stl_map.h /usr/include/c++/7/bits/stl_multimap.h \
  processTest/include/curlexceptions.h processTest/include/curlioadapter.h \
- /usr/include/c++/7/any processTest/include/curlthreadpool.h \
+ /usr/include/c++/7/any /usr/include/c++/7/cstring /usr/include/string.h \
+ /usr/include/strings.h \
+ /usr/include/x86_64-linux-gnu/bits/strings_fortified.h \
+ /usr/include/x86_64-linux-gnu/bits/string_fortified.h \
+ /usr/include/c++/7/stdlib.h processTest/include/curlthreadpool.h \
  /usr/include/c++/7/future /usr/include/c++/7/mutex \
  /usr/include/c++/7/chrono /usr/include/c++/7/ratio \
  /usr/include/c++/7/ctime /usr/include/c++/7/bits/parse_numbers.h \
  /usr/include/c++/7/bits/std_mutex.h /usr/include/c++/7/thread \
- /usr/include/c++/7/memory /usr/include/c++/7/bits/stl_tempbuf.h \
- /usr/include/c++/7/bits/stl_raw_storage_iter.h \
- /usr/include/c++/7/ext/concurrence.h \
- /usr/include/c++/7/bits/unique_ptr.h \
- /usr/include/c++/7/bits/shared_ptr.h \
- /usr/include/c++/7/bits/shared_ptr_base.h \
- /usr/include/c++/7/bits/allocated_ptr.h \
- /usr/include/c++/7/bits/refwrap.h \
- /usr/include/c++/7/bits/shared_ptr_atomic.h \
- /usr/include/c++/7/bits/atomic_base.h \
- /usr/include/c++/7/bits/atomic_lockfree_defines.h \
- /usr/include/c++/7/backward/auto_ptr.h \
  /usr/include/c++/7/condition_variable /usr/include/c++/7/atomic \
  /usr/include/c++/7/bits/atomic_futex.h \
  /usr/include/c++/7/bits/std_function.h /usr/include/c++/7/queue \

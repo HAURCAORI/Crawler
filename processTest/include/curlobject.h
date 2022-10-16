@@ -1,11 +1,28 @@
 #pragma once
 #include <vector>
+#include <memory>
 #include <curl/curl.h>
 #include <curltype.h>
 #include <curlexceptions.h>
 #include <curlioadapter.h>
 
+#include <cstring>
+#include <stdlib.h>
+
 namespace Crawler {
+
+class memory final {
+public:
+    memory();
+    ~memory();
+    
+    size_t append(char* data, size_t size);
+    const char* const getData() const { return mData; }
+    std::string getString() const { return std::string(mData); }
+private:
+    char* mData = nullptr;
+    size_t mSize = 0;
+};
 
 class CURLObject {
 public:
@@ -49,7 +66,8 @@ private:
     std::string mUrl;
     CURL* mHandle = nullptr;
     curl_slist* mHeader = nullptr;
-    IOAdapter mAdapter;
+    memory mData;
+    //std::unique_ptr<IOAdapter> mAdapter;
 };
  
 class CURLMultiObject {

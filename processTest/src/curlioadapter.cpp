@@ -21,7 +21,7 @@ IOAdapter& IOAdapter::operator=(IOAdapter&& rhs) noexcept {
 }
 
 void IOAdapter::out() {
-
+    std::cout << "IOAdapter" << std::endl;
 }
 
 void swap(IOAdapter& first, IOAdapter& second) noexcept {
