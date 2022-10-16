@@ -1,6 +1,8 @@
 #include "curlthreadpool.h"
 #include "curlobject.h"
 
+#include "iostream" //입출력 테스트용
+
 namespace Crawler {
 CURLThreadPool::CURLThreadPool(size_t num_threads): num_threads_(num_threads), stop_all(false) {
   worker_threads_.reserve(num_threads_);
@@ -40,12 +42,16 @@ void CURLThreadPool::WorkerThread() {
       curlmulti.addHandle(std::move(objs_.front()));
       objs_.pop();
       lock.unlock();
+      
+      //std::cout << "[" << std::hex <<  std::this_thread::get_id() << "]" << count << std::endl;
 
-      count++;
-
+      ++count;
       lock.lock();
     }
+    //std::cout << "[" << std::hex <<  std::this_thread::get_id() << "]end" << std::endl;
     lock.unlock();
+
+    
 
     curlmulti.perform();
   }

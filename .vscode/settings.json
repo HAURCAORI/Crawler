@@ -49,6 +49,8 @@
         "cinttypes": "cpp",
         "typeinfo": "cpp",
         "mutex": "cpp",
-        "condition_variable": "cpp"
+        "condition_variable": "cpp",
+        "future": "cpp",
+        "thread": "cpp"
     }
 }

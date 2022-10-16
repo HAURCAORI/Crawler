@@ -1,6 +1,5 @@
 processTest/obj/curlobject.o: processTest/src/curlobject.cpp \
- /usr/include/stdc-predef.h processTest/include/curlobject.h \
- /usr/include/c++/7/vector /usr/include/c++/7/bits/stl_algobase.h \
+ /usr/include/stdc-predef.h /usr/include/c++/7/utility \
  /usr/include/x86_64-linux-gnu/c++/7/bits/c++config.h \
  /usr/include/x86_64-linux-gnu/c++/7/bits/os_defines.h \
  /usr/include/features.h /usr/include/x86_64-linux-gnu/sys/cdefs.h \
@@ -9,13 +8,16 @@ processTest/obj/curlobject.o: processTest/src/curlobject.cpp \
  /usr/include/x86_64-linux-gnu/gnu/stubs.h \
  /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
  /usr/include/x86_64-linux-gnu/c++/7/bits/cpu_defines.h \
+ /usr/include/c++/7/bits/stl_relops.h /usr/include/c++/7/bits/stl_pair.h \
+ /usr/include/c++/7/bits/move.h /usr/include/c++/7/bits/concept_check.h \
+ /usr/include/c++/7/type_traits /usr/include/c++/7/initializer_list \
+ processTest/include/curlobject.h /usr/include/c++/7/vector \
+ /usr/include/c++/7/bits/stl_algobase.h \
  /usr/include/c++/7/bits/functexcept.h \
  /usr/include/c++/7/bits/exception_defines.h \
  /usr/include/c++/7/bits/cpp_type_traits.h \
  /usr/include/c++/7/ext/type_traits.h \
  /usr/include/c++/7/ext/numeric_traits.h \
- /usr/include/c++/7/bits/stl_pair.h /usr/include/c++/7/bits/move.h \
- /usr/include/c++/7/bits/concept_check.h /usr/include/c++/7/type_traits \
  /usr/include/c++/7/bits/stl_iterator_base_types.h \
  /usr/include/c++/7/bits/stl_iterator_base_funcs.h \
  /usr/include/c++/7/debug/assertions.h \
@@ -36,7 +38,7 @@ processTest/obj/curlobject.o: processTest/src/curlobject.cpp \
  /usr/include/c++/7/ext/alloc_traits.h \
  /usr/include/c++/7/bits/alloc_traits.h \
  /usr/include/c++/7/bits/stl_uninitialized.h \
- /usr/include/c++/7/bits/stl_vector.h /usr/include/c++/7/initializer_list \
+ /usr/include/c++/7/bits/stl_vector.h \
  /usr/include/c++/7/bits/stl_bvector.h \
  /usr/include/c++/7/bits/functional_hash.h \
  /usr/include/c++/7/bits/range_access.h \
@@ -150,7 +152,6 @@ processTest/obj/curlobject.o: processTest/src/curlobject.cpp \
  /usr/include/c++/7/bits/stl_tree.h \
  /usr/include/c++/7/ext/aligned_buffer.h \
  /usr/include/c++/7/bits/stl_map.h /usr/include/c++/7/tuple \
- /usr/include/c++/7/utility /usr/include/c++/7/bits/stl_relops.h \
  /usr/include/c++/7/array /usr/include/c++/7/stdexcept \
  /usr/include/c++/7/bits/uses_allocator.h \
  /usr/include/c++/7/bits/invoke.h /usr/include/c++/7/bits/stl_multimap.h \

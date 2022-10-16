@@ -67,17 +67,19 @@ public:
     void perform() const;
 
     // get, set
-    void setTimeOut(size_t time);
-
-    inline size_t getTimeOut() { return time_out; }
     inline CURLM* getHandle() { return mHandle; }
     const CURLM* getHandle() const { return mHandle; }
+
+    // global
+    static void interrupt();
+    static void setTimeOut(size_t time);
+    static size_t getTimeOut() { return time_out; }
 
     //기타
     friend void swap(CURLMultiObject& first, CURLMultiObject& second) noexcept;
 private:
-    bool isInterrupt = false;
-    size_t time_out = 1000;
+    static bool isInterrupt;
+    static size_t time_out;
     CURLM* mHandle = nullptr;
     std::vector<CURLObject> mContainer;
 };

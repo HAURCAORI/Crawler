@@ -1,19 +1,34 @@
 #include <iostream>
 #include <curlobject.h>
+#include <curlthreadpool.h>
 
 int main() {
     std::cout << "a" << std::endl;
     curl_global_init(CURL_GLOBAL_DEFAULT);
     
+    using namespace Crawler;
+    CURLThreadPool threads(5);
+    for(int i = 0; i < 1; i++) {
+        Crawler::CURLObject obj("https://www.naver.com/");
+        threads.EnqueueCURL(std::move(obj));
+    }
+    /*
     Crawler::CURLObject obj("https://www.naver.com/");
     if(obj) {
-        auto res = obj.perform();
+        CURLMultiObject mobj;
+        //std::cout << mobj.getTimeOut() << std::endl;
+        //CURLMultiObject::setTimeOut(100);
+        //std::cout << mobj.getTimeOut() << std::endl;
+        mobj.addHandle(std::move(obj));
+        mobj.perform();
+        //auto res = obj.perform();
 
-        if(res == CURLE_OK)
-            std::cout << "OK" << std::endl;
+        //if(res == CURLE_OK)
+            //std::cout << "OK" << std::endl;
     } else {
         std::cout << "null" << std::endl;
     }
+    */
     
     
     

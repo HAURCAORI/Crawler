@@ -170,4 +170,27 @@ processTest/obj/main.o: processTest/src/main.cpp \
  /usr/include/c++/7/utility /usr/include/c++/7/bits/stl_relops.h \
  /usr/include/c++/7/array /usr/include/c++/7/bits/uses_allocator.h \
  /usr/include/c++/7/bits/invoke.h /usr/include/c++/7/bits/stl_multimap.h \
- processTest/include/curlexceptions.h
+ processTest/include/curlexceptions.h \
+ processTest/include/curlthreadpool.h /usr/include/c++/7/future \
+ /usr/include/c++/7/mutex /usr/include/c++/7/chrono \
+ /usr/include/c++/7/ratio /usr/include/c++/7/limits \
+ /usr/include/c++/7/ctime /usr/include/c++/7/bits/parse_numbers.h \
+ /usr/include/c++/7/bits/std_mutex.h /usr/include/c++/7/thread \
+ /usr/include/c++/7/memory /usr/include/c++/7/bits/stl_tempbuf.h \
+ /usr/include/c++/7/bits/stl_raw_storage_iter.h \
+ /usr/include/c++/7/ext/concurrence.h \
+ /usr/include/c++/7/bits/unique_ptr.h \
+ /usr/include/c++/7/bits/shared_ptr.h \
+ /usr/include/c++/7/bits/shared_ptr_base.h \
+ /usr/include/c++/7/bits/allocated_ptr.h \
+ /usr/include/c++/7/bits/refwrap.h \
+ /usr/include/c++/7/bits/shared_ptr_atomic.h \
+ /usr/include/c++/7/bits/atomic_base.h \
+ /usr/include/c++/7/bits/atomic_lockfree_defines.h \
+ /usr/include/c++/7/backward/auto_ptr.h \
+ /usr/include/c++/7/condition_variable /usr/include/c++/7/atomic \
+ /usr/include/c++/7/bits/atomic_futex.h \
+ /usr/include/c++/7/bits/std_function.h /usr/include/c++/7/queue \
+ /usr/include/c++/7/deque /usr/include/c++/7/bits/stl_deque.h \
+ /usr/include/c++/7/bits/deque.tcc /usr/include/c++/7/bits/stl_heap.h \
+ /usr/include/c++/7/bits/stl_queue.h

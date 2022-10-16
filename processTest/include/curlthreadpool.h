@@ -13,18 +13,9 @@ class CURLObject;
 class CURLThreadPool {
 public:
   CURLThreadPool(size_t num_threads);
-  ~CURLThreadPool();
-/*
-  template <class... Args>
-  void EnqueueJob(Args&&... args) {
-    auto job = [args...](){ Load(args...); };
-    {
-      std::lock_guard<std::mutex> lock(m_job_q_);
-      jobs_.emplace(std::move(job));
-    }
-    cv_job_q_.notify_one();
-  }
-*/
+  CURLThreadPool(const CURLThreadPool& src) = delete;
+  virtual ~CURLThreadPool();
+  CURLThreadPool& operator=(const CURLThreadPool& rhs) = delete;
 
   void EnqueueCURL(CURLObject&& obj);
 
@@ -32,8 +23,6 @@ public:
   size_t num_threads_;
   size_t max_objs_ = 10;
   std::vector<std::thread> worker_threads_;
-  //std::queue<std::function<void()>> jobs_;
-
   std::queue<CURLObject> objs_;
 
   std::condition_variable cv_job_q_;
