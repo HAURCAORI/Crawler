@@ -20,6 +20,8 @@ IOAdapter& IOAdapter::operator=(IOAdapter&& rhs) noexcept {
     return *this;
 }
 
+void IOAdapter::set(std::string* data) { mData = data; }
+
 void IOAdapter::out() const {
     std::cout << "IOAdapter" << std::endl;
 }

@@ -33,6 +33,7 @@ public:
     IOAdapter& operator=(const IOAdapter& rhs) = delete;
     IOAdapter& operator=(IOAdapter&& rhs) noexcept;
 
+    void set(std::string* data);
     virtual void out() const;
     
     friend void swap(IOAdapter& first, IOAdapter& second) noexcept;
@@ -42,9 +43,9 @@ protected:
 
 class IOAdapterConsole : public IOAdapter {
 public:
-    IOAdapterConsole(std::string* data) : IOAdapter(data) {}
+    using IOAdapter::IOAdapter;
 
-    virtual void out() const;
+    virtual void out() const override;
 private:
     
 };
