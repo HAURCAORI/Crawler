@@ -4,9 +4,9 @@
 
 namespace Crawler {
 
-class CurlError : std::exception {
+class CURLError : std::exception {
 public:
-    CurlError(const std::string& message) : mMessage(message) {}
+    CURLError(const std::string& message) : mMessage(message) {}
 
     virtual const char* what() const noexcept override {
         return mMessage.c_str();
@@ -17,9 +17,14 @@ private:
     std::string mMessage;
 };
 
-class CurlErrorURL : CurlError {
+class CURLErrorURL : CURLError {
 public:
-    CurlErrorURL(const std::string& message) : CurlError(message) {}
+    CURLErrorURL(const std::string& message) : CURLError(message) {}
+};
+
+class CURLErrorAdapter : CURLError {
+public:
+    CURLErrorAdapter(const std::string& message) : CURLError(message) {}
 };
 
 }

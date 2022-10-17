@@ -5,28 +5,6 @@
 
 namespace Crawler {
 
-// memory Declaration
-memory::memory() {
-
-}
-
-memory::~memory() {
-    if(mData != NULL) { free(mData); }
-}
-
-size_t memory::append(char* data, size_t size) {
-    char *ptr = (char *)realloc(mData, mSize + size + 1);
-    if (ptr == NULL) {
-        return 0;
-    }
-    mData = ptr;
-    memcpy(&(mData[mSize]), data, size);
-    mSize += size;
-    mData[mSize] = 0;
-    return size;
-}
-
-
 // CURLObject Declaration
 
 CURLObject::CURLObject() : mHandle(curl_easy_init()) {
@@ -63,7 +41,7 @@ CURLObject::operator void*() const {
 
 CURLcode CURLObject::perform() const {
     if(!isURLSet) {
-        throw CurlErrorURL("Empty URL.");
+        throw CURLErrorURL("Empty URL.");
     }
     return curl_easy_perform(mHandle);
 }
@@ -73,8 +51,6 @@ void CURLObject::resetOption() noexcept {
 }
 
 void CURLObject::defaultOption() {
-
-    //mAdapter = std::make_unique<IOAdapterConsole>();
     if(isURLSet) {
         setOption(CURLOPT_URL, mUrl.c_str()); // URL 설정
     }
@@ -114,8 +90,8 @@ void CURLObject::appendHeader(HTMLHeader header, const std::string& arg) {
 
 size_t CURLObject::write_callback(char* data, size_t size, size_t nmemb, void* userdata) {
     size_t realsize = size * nmemb;
-    memory* mem = (memory*) (userdata);
-    mem->append(data,realsize);
+    std::string* mem = reinterpret_cast<std::string*> (userdata);
+    *mem += data;
     return realsize;
 }
 

@@ -13,31 +13,37 @@ int main() {
     //IOAdapter adapter;
     //adapter.set(1234);
     //adapter.out();
-    
+    /*
     CURLThreadPool threads(5);
-    for(int i = 0; i < 100; i++) {
+    for(int i = 0; i < 1; i++) {
         Crawler::CURLObject obj("https://www.naver.com/");
+        obj.setAdapter(IOAdapter());
         threads.EnqueueCURL(std::move(obj));
     }
-    
-/*
+    */
+
     Crawler::CURLObject obj("https://www.naver.com/");
     if(obj) {
         //std::cout << mobj.getTimeOut() << std::endl;
         //CURLMultiObject::setTimeOut(100);
         //std::cout << mobj.getTimeOut() << std::endl;
+
+        obj.setAdapter(IOAdapterConsole());
+
         auto res = obj.perform();
 
         CURLObject* memory;
         curl_easy_getinfo(obj, CURLINFO_PRIVATE, &memory);
-        //std::cout << memory->getData()->getData() << std::endl;
+        //std::cout << memory->getData() << std::endl;
+
+        obj.getAdapter()->out();
 
         if(res == CURLE_OK)
             std::cout << "OK" << std::endl;
     } else {
         std::cout << "null" << std::endl;
     }
-*/
+
     curl_global_cleanup();
     /*
     CURL *curl;

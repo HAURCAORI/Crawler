@@ -6,23 +6,7 @@
 #include <curlexceptions.h>
 #include <curlioadapter.h>
 
-
-
-
 namespace Crawler {
-
-class memory final {
-public:
-    memory();
-    ~memory();
-    
-    size_t append(char* data, size_t size);
-    const char* const getData() const { return mData; }
-    std::string getString() const { return std::string(mData); }
-private:
-    char* mData = NULL;
-    size_t mSize = 0;
-};
 
 class CURLObject {
 public:
@@ -52,11 +36,20 @@ public:
     void appendHeader(const MIME& type);
     void appendHeader(HTMLHeader header, const std::string& arg);
 
+    template<typename E>
+    void setAdapter(E&& adapter) {
+        if constexpr(std::is_base_of_v<IOAdapter,E>) {
+            mAdapter = std::make_unique<E>(std::move(adapter));
+        } else {
+            throw CURLErrorAdapter("Adapter should be base of 'IOAdapter'.");
+        }
+    }
+
     inline CURL* getHandle() { return mHandle; }
     const CURL* getHandle() const { return mHandle; }
     const std::string& getURL() const { return mUrl; }
-
-    memory* getData() { return &mData; }
+    const std::string& getData() const { return mData; }
+    const IOAdapter* const getAdapter() { return mAdapter.get(); }
 
     // event
     static size_t write_callback(char *ptr, size_t size, size_t nmemb, void *userdata);
@@ -68,8 +61,8 @@ private:
     std::string mUrl;
     CURL* mHandle = nullptr;
     curl_slist* mHeader = nullptr;
-    memory mData;
-    //std::unique_ptr<IOAdapter> mAdapter;
+    std::string mData;
+    std::unique_ptr<IOAdapter> mAdapter;
 };
  
 class CURLMultiObject {

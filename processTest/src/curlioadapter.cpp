@@ -20,7 +20,7 @@ IOAdapter& IOAdapter::operator=(IOAdapter&& rhs) noexcept {
     return *this;
 }
 
-void IOAdapter::out() {
+void IOAdapter::out() const {
     std::cout << "IOAdapter" << std::endl;
 }
 
@@ -28,8 +28,8 @@ void swap(IOAdapter& first, IOAdapter& second) noexcept {
     using std::swap;
 }
 
-void IOAdapterConsole::out() {
-    std::cout << mdata << std::endl;
+void IOAdapterConsole::out() const {
+    std::cout << "IOAdapterConsole" << std::endl;
 }
 
 

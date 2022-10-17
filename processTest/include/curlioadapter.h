@@ -36,7 +36,7 @@ public:
     template<typename E>
     void set(E data) { mdata = compatible_any(data); }
 
-    virtual void out();
+    virtual void out() const;
     
     friend void swap(IOAdapter& first, IOAdapter& second) noexcept;
 protected:
@@ -47,7 +47,7 @@ class IOAdapterConsole : public IOAdapter {
 public:
     IOAdapterConsole() = default;
 
-    virtual void out();
+    virtual void out() const;
 private:
     
 };
