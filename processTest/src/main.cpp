@@ -28,7 +28,7 @@ int main() {
         //CURLMultiObject::setTimeOut(100);
         //std::cout << mobj.getTimeOut() << std::endl;
 
-        obj.setAdapter(IOAdapterConsole());
+        obj.setAdapter<IOAdapterConsole>();
 
         auto res = obj.perform();
 

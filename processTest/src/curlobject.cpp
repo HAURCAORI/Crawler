@@ -97,8 +97,12 @@ size_t CURLObject::write_callback(char* data, size_t size, size_t nmemb, void* u
 
 void swap(CURLObject& first, CURLObject& second) noexcept {
     using std::swap;
+    swap(first.isURLSet, second.isURLSet);
     swap(first.mUrl, second.mUrl);
+    swap(first.mData, second.mData);
     swap(first.mHandle, second.mHandle);
+    swap(first.mHeader, second.mHeader);
+    swap(first.mAdapter, second.mAdapter);
 }
 
 // CURLMultiObject declaration

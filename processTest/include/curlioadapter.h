@@ -1,9 +1,7 @@
 #pragma once
-#include <any>
-#include <iostream>
 
 namespace Crawler {
-
+/*
 struct compatible_any {
   compatible_any() {}
   template <class T>
@@ -23,29 +21,28 @@ private:
     return os;
   }
 };
+*/
 
 class IOAdapter {
 public:
-    IOAdapter();
+    IOAdapter() = default;
+    IOAdapter(std::string* data) : mData(data) {}
     IOAdapter(const IOAdapter& src) = delete;
     IOAdapter(IOAdapter&& src) noexcept;
     virtual ~IOAdapter() noexcept;
     IOAdapter& operator=(const IOAdapter& rhs) = delete;
     IOAdapter& operator=(IOAdapter&& rhs) noexcept;
 
-    template<typename E>
-    void set(E data) { mdata = compatible_any(data); }
-
     virtual void out() const;
     
     friend void swap(IOAdapter& first, IOAdapter& second) noexcept;
 protected:
-    compatible_any mdata;
+    std::string* mData = nullptr;
 };
 
 class IOAdapterConsole : public IOAdapter {
 public:
-    IOAdapterConsole() = default;
+    IOAdapterConsole(std::string* data) : IOAdapter(data) {}
 
     virtual void out() const;
 private:

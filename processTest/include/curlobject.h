@@ -37,9 +37,9 @@ public:
     void appendHeader(HTMLHeader header, const std::string& arg);
 
     template<typename E>
-    void setAdapter(E&& adapter) {
+    void setAdapter() {
         if constexpr(std::is_base_of_v<IOAdapter,E>) {
-            mAdapter = std::make_unique<E>(std::move(adapter));
+            mAdapter = std::make_unique<E>(E(&mData));
         } else {
             throw CURLErrorAdapter("Adapter should be base of 'IOAdapter'.");
         }
@@ -59,9 +59,9 @@ public:
 private:
     bool isURLSet = false;
     std::string mUrl;
+    std::string mData;
     CURL* mHandle = nullptr;
     curl_slist* mHeader = nullptr;
-    std::string mData;
     std::unique_ptr<IOAdapter> mAdapter;
 };
  

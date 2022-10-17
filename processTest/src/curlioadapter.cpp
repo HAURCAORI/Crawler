@@ -4,11 +4,11 @@
 
 namespace Crawler {
 
-IOAdapter::IOAdapter() {}
 
-IOAdapter::IOAdapter(IOAdapter&& src) noexcept : IOAdapter() {
+IOAdapter::IOAdapter(IOAdapter&& src) noexcept : IOAdapter(std::move(src.mData)) {
     swap(*this, src);
 }
+
 
 IOAdapter::~IOAdapter() noexcept {
 
@@ -26,6 +26,7 @@ void IOAdapter::out() const {
 
 void swap(IOAdapter& first, IOAdapter& second) noexcept {
     using std::swap;
+    swap(first.mData,second.mData);
 }
 
 void IOAdapterConsole::out() const {
