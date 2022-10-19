@@ -21,15 +21,15 @@ int main() {
         threads.EnqueueCURL(std::move(obj));
     }
     */
-
     Crawler::CURLObject obj("https://www.naver.com/");
     if(obj) {
         //std::cout << mobj.getTimeOut() << std::endl;
         //CURLMultiObject::setTimeOut(100);
         //std::cout << mobj.getTimeOut() << std::endl;
-
-        obj.setAdapter<IOAdapterConsole>();
-
+        std::string path = "abcde";
+        obj.setAdapter<IOAdapterFile>();
+        obj.setAdapterOption(ADAPTER_OPT_PATH, path);
+        
         auto res = obj.perform();
 
         CURLObject* memory;

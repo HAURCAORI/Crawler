@@ -45,6 +45,8 @@ public:
         }
     }
 
+    void setAdapterOption(AdapterOption option, const std::any& value);
+
     inline CURL* getHandle() { return mHandle; }
     const CURL* getHandle() const { return mHandle; }
     const std::string& getURL() const { return mUrl; }

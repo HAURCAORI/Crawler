@@ -88,6 +88,13 @@ void CURLObject::appendHeader(HTMLHeader header, const std::string& arg) {
     }
 }
 
+void CURLObject::setAdapterOption(AdapterOption option, const std::any& value) {
+    if(!mAdapter) {
+        throw CURLErrorAdapter("Adapter should be initialized.");
+    }
+    mAdapter->setOption(option, value);
+}
+
 size_t CURLObject::write_callback(char* data, size_t size, size_t nmemb, void* userdata) {
     size_t realsize = size * nmemb;
     std::string* mem = reinterpret_cast<std::string*> (userdata);

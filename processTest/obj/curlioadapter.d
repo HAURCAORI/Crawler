@@ -136,4 +136,5 @@ processTest/obj/curlioadapter.o: processTest/src/curlioadapter.cpp \
  /usr/include/c++/7/bits/locale_facets.tcc \
  /usr/include/c++/7/bits/basic_ios.tcc \
  /usr/include/c++/7/bits/ostream.tcc /usr/include/c++/7/istream \
- /usr/include/c++/7/bits/istream.tcc processTest/include/curlioadapter.h
+ /usr/include/c++/7/bits/istream.tcc processTest/include/curlioadapter.h \
+ /usr/include/c++/7/any processTest/include/curlexceptions.h

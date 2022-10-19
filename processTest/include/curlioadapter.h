@@ -1,27 +1,12 @@
 #pragma once
+#include <any>
 
 namespace Crawler {
-/*
-struct compatible_any {
-  compatible_any() {}
-  template <class T>
-  compatible_any(T&& t) : m_val(std::forward<T>(t)) {
-    m_print_fn = [](std::ostream& os, const std::any& val) {
-      os << std::any_cast<std::decay_t<T>>(val);
-    };
-  }
-
-private:
-  using print_fn_t = void(*)(std::ostream&, const std::any&);
-  std::any m_val;
-  print_fn_t m_print_fn;
-  
-  friend std::ostream& operator<<(std::ostream& os, const compatible_any& val) {
-    val.m_print_fn(os, val.m_val);
-    return os;
-  }
+enum AdapterOption {
+  ADAPTER_OPT_NONE = 0,
+  ADAPTER_OPT_PATH
 };
-*/
+
 
 class IOAdapter {
 public:
@@ -35,6 +20,7 @@ public:
 
     void set(std::string* data);
     virtual void out() const;
+    virtual void setOption(AdapterOption option, const std::any& value);
     
     friend void swap(IOAdapter& first, IOAdapter& second) noexcept;
 protected:
@@ -46,8 +32,19 @@ public:
     using IOAdapter::IOAdapter;
 
     virtual void out() const override;
+
 private:
     
+};
+
+class IOAdapterFile : public IOAdapter {
+public:
+    using IOAdapter::IOAdapter;
+    
+    virtual void out() const override;
+    virtual void setOption(AdapterOption option, const std::any& value);
+private:
+    std::string mPath;
 };
 
 }
