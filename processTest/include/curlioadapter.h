@@ -19,7 +19,7 @@ public:
     IOAdapter& operator=(IOAdapter&& rhs) noexcept;
 
     void set(std::string* data);
-    virtual void out() const;
+    virtual void out();
     virtual void setOption(AdapterOption option, const std::any& value);
     
     friend void swap(IOAdapter& first, IOAdapter& second) noexcept;
@@ -31,8 +31,7 @@ class IOAdapterConsole : public IOAdapter {
 public:
     using IOAdapter::IOAdapter;
 
-    virtual void out() const override;
-
+    virtual void out() override;
 private:
     
 };
@@ -41,9 +40,10 @@ class IOAdapterFile : public IOAdapter {
 public:
     using IOAdapter::IOAdapter;
     
-    virtual void out() const override;
-    virtual void setOption(AdapterOption option, const std::any& value);
+    virtual void out() override;
+    virtual void setOption(AdapterOption option, const std::any& value) override;
 private:
+    void writeFile();
     std::string mPath;
 };
 

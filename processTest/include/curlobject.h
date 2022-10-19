@@ -51,7 +51,7 @@ public:
     const CURL* getHandle() const { return mHandle; }
     const std::string& getURL() const { return mUrl; }
     const std::string& getData() const { return mData; }
-    const IOAdapter* const getAdapter() { return mAdapter.get(); }
+    IOAdapter* const getAdapter() { return mAdapter.get(); }
 
     // event
     static size_t write_callback(char *ptr, size_t size, size_t nmemb, void *userdata);

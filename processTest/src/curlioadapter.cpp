@@ -1,5 +1,6 @@
 #include <utility>
 #include <iostream>
+#include <fstream>
 #include "curlioadapter.h"
 #include "curlexceptions.h"
 
@@ -23,7 +24,7 @@ IOAdapter& IOAdapter::operator=(IOAdapter&& rhs) noexcept {
 
 void IOAdapter::set(std::string* data) { mData = data; }
 
-void IOAdapter::out() const {
+void IOAdapter::out() {
     std::cout << "IOAdapter" << std::endl;
 }
 
@@ -34,13 +35,14 @@ void swap(IOAdapter& first, IOAdapter& second) noexcept {
     swap(first.mData,second.mData);
 }
 
-void IOAdapterConsole::out() const {
+void IOAdapterConsole::out() {
     std::cout << *mData << std::endl;
 }
 
 
-void IOAdapterFile::out() const {
+void IOAdapterFile::out() {
     std::cout << mPath << std::endl;
+    writeFile();
 }
 
 
@@ -54,9 +56,18 @@ void IOAdapterFile::setOption(AdapterOption option, const std::any& value) {
         }
         break;
         default:
+        IOAdapter::setOption(option, value); // Chain of responsibility pattern
         break;
     }
     
+}
+
+void IOAdapterFile::writeFile() {
+    std::ofstream outFile(mPath, std::ios_base::trunc);
+    if(!outFile.good()) {
+        throw CURLErrorAdapterOut("Error while opening file.");
+    }
+    outFile << *mData;
 }
 
 }

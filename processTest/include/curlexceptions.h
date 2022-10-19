@@ -32,4 +32,9 @@ public:
     CURLErrorAdapterOption(const std::string& message) : CURLError(message) {}
 };
 
+class CURLErrorAdapterOut : CURLError {
+public:
+    CURLErrorAdapterOut(const std::string& message) : CURLError(message) {}
+};
+
 }
