@@ -195,4 +195,8 @@ processTest/obj/main.o: processTest/src/main.cpp \
  /usr/include/c++/7/bits/std_function.h /usr/include/c++/7/queue \
  /usr/include/c++/7/deque /usr/include/c++/7/bits/stl_deque.h \
  /usr/include/c++/7/bits/deque.tcc /usr/include/c++/7/bits/stl_heap.h \
- /usr/include/c++/7/bits/stl_queue.h
+ /usr/include/c++/7/bits/stl_queue.h processTest/include/htmlparser.h \
+ processTest/include/tinyxml2.h /usr/include/c++/7/climits \
+ /usr/include/c++/7/cstring /usr/include/string.h /usr/include/strings.h \
+ /usr/include/x86_64-linux-gnu/bits/strings_fortified.h \
+ /usr/include/x86_64-linux-gnu/bits/string_fortified.h

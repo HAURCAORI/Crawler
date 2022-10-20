@@ -3,6 +3,8 @@
 #include <curlthreadpool.h>
 #include <curlioadapter.h>
 
+#include "htmlparser.h"
+
 int main() {
     std::cout << "a" << std::endl;
     curl_global_init(CURL_GLOBAL_DEFAULT);
@@ -21,7 +23,7 @@ int main() {
         threads.EnqueueCURL(std::move(obj));
     }
     */
-    Crawler::CURLObject obj("https://www.google.com/");
+    Crawler::CURLObject obj("https://www.naver.com/");
     if(obj) {
         //std::cout << mobj.getTimeOut() << std::endl;
         //CURLMultiObject::setTimeOut(100);
