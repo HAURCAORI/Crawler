@@ -1,11 +1,11 @@
 #pragma once
-#include "tinyxml2.h"
+#include "pugixml.hpp"
 
 namespace Crawler {
 class HTMLParser {
 public:
-    using xmlElement = tinyxml2::XMLElement;
-    using xmlDocument = tinyxml2::XMLDocument;
+    using xmlNode = pugi::xml_node;
+    using xmlDocument = pugi::xml_document;
 
     HTMLParser();
     HTMLParser(const char* xml);
@@ -16,22 +16,7 @@ public:
     HTMLParser& operator=(HTMLParser&& rhs) = default;
 
     void parse(const char* xml);
-
-    static xmlElement* getFirstChildElement(xmlElement* element, const char* value = (const char*) 0) {
-        return element->FirstChildElement(value);
-    }
-
-    static xmlElement* getLastChildElement(xmlElement* element, const char* value = (const char*) 0) {
-        return element->LastChildElement(value);
-    }
-
-    static xmlElement* getPreviousSiblingElement(xmlElement* element, const char* value = (const char*) 0) {
-        return element->PreviousSiblingElement(value);
-    }
-
-    static xmlElement* getNextSiblingElement(xmlElement* element, const char* value = (const char*) 0) {
-        return element->NextSiblingElement(value);
-    }
+    xmlDocument* getDocument() { return &doc;}
 
 private:
     xmlDocument doc;

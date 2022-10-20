@@ -5,8 +5,22 @@
 
 #include "htmlparser.h"
 
+static const std::string example = R"(
+    <document>
+	<data>1</data>
+	<data>2</data>
+	<data>3</data>
+    </document>
+)";
+
+static const char* xml =
+        "<?xml version=\"1.0\"?>"
+        "<!DOCTYPE PLAY SYSTEM \"play.dtd\">"
+        "<PLAY>"
+        "<TITLE>A Midsummer Night's Dream</TITLE>"
+        "</PLAY>";
+
 int main() {
-    std::cout << "a" << std::endl;
     curl_global_init(CURL_GLOBAL_DEFAULT);
     
     using namespace Crawler;
@@ -23,6 +37,7 @@ int main() {
         threads.EnqueueCURL(std::move(obj));
     }
     */
+   /*
     Crawler::CURLObject obj("https://www.naver.com/");
     if(obj) {
         //std::cout << mobj.getTimeOut() << std::endl;
@@ -45,7 +60,7 @@ int main() {
     } else {
         std::cout << "null" << std::endl;
     }
-
+*/
     curl_global_cleanup();
     /*
     CURL *curl;

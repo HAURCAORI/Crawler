@@ -11,6 +11,6 @@ HTMLParser::HTMLParser(const char* xml) {
 HTMLParser::~HTMLParser() {}
 
 void HTMLParser::parse(const char* xml) {
-    doc.Parse(xml);
+    
 }
 }
