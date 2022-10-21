@@ -5,6 +5,7 @@ namespace Crawler {
 class HTMLParser {
 public:
     using xmlNode = pugi::xml_node;
+    using xmlAttribute = pugi::xml_attribute;
     using xmlDocument = pugi::xml_document;
 
     HTMLParser();
@@ -16,23 +17,29 @@ public:
     HTMLParser& operator=(HTMLParser&& rhs) = default;
 
     void parse(const char* xml);
-    xmlDocument* getDocument() { return &doc;}
+    xmlDocument* getDocument() { return &doc; }
+    
 
 private:
     xmlDocument doc;
 
 };
 }
-/*
-const XMLNode* Parent()
-bool NoChildren()
-const XMLNode* FirstChild()
-const XMLElement* FirstChildElement(const char*)
-const XMLNode* lastChild()
-const XMLElement* LastChildElement(const char*)
-const XMLNode* PreviousSibling()
-const XMLElement* PreviousSiblingElement(const char*)
-const XMLNode* NextSibling()
-const XMLElement* NextSiblingElement(const char*)
 
+/*
+self closing tag
+<area />
+<base />
+<br />
+<col />
+<embed />
+<hr />
+<img />
+<input />
+<link />
+<meta />
+<param />
+<source />
+<track />
+<wbr />
 */

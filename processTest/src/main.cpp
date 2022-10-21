@@ -4,28 +4,33 @@
 #include <curlioadapter.h>
 
 #include "htmlparser.h"
+#include <chrono>
+#include "test.h"
 
-static const std::string example = R"(
-    <document>
-	<data>1</data>
-	<data>2</data>
-	<data>3</data>
-    </document>
-)";
+#define BEGIN_CHRONO std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+#define END_CHRONO std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - begin).count() << "[ms]" << std::endl;
 
-static const char* xml =
-        "<?xml version=\"1.0\"?>"
-        "<!DOCTYPE PLAY SYSTEM \"play.dtd\">"
-        "<PLAY>"
-        "<TITLE>A Midsummer Night's Dream</TITLE>"
-        "</PLAY>";
+
 
 int main() {
     curl_global_init(CURL_GLOBAL_DEFAULT);
     
     using namespace Crawler;
 
+    HTMLParser parser(example2.c_str());
+    auto doc = parser.getDocument();
 
+    auto target = doc->first_child();
+    for(auto node = target.first_child(); node; node = node.next_sibling()) {
+        std::cout << node.name() << std::endl;
+    }
+    /*
+    BEGIN_CHRONO
+    for(int i = 0; i < 1; i++) {
+        auto tool = doc->select_node(R"(/html/body)");
+        std::cout << tool.node() << std::endl;
+    }
+    END_CHRONO
     //IOAdapter adapter;
     //adapter.set(1234);
     //adapter.out();

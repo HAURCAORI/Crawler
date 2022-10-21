@@ -197,4 +197,5 @@ processTest/obj/main.o: processTest/src/main.cpp \
  /usr/include/c++/7/bits/deque.tcc /usr/include/c++/7/bits/stl_heap.h \
  /usr/include/c++/7/bits/stl_queue.h processTest/include/htmlparser.h \
  processTest/include/pugixml.hpp processTest/include/pugiconfig.hpp \
- /usr/include/c++/7/iterator /usr/include/c++/7/bits/stream_iterator.h
+ /usr/include/c++/7/iterator /usr/include/c++/7/bits/stream_iterator.h \
+ processTest/include/test.h
