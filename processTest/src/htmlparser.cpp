@@ -20,6 +20,7 @@ void HTMLParser::HTMLSelfClosing(std::string& str) {
     bool isTag = false;
     bool isClosingTag = false;
     bool isEscape = false;
+    bool isSingle = false;
     std::string::iterator iter_escape_begin;
     std::string::iterator iter_escape_end;
 
@@ -36,19 +37,28 @@ void HTMLParser::HTMLSelfClosing(std::string& str) {
                 }
             }
             if(match) {
-                str.erase(iter_escape_begin, iter_escape_end);
-                //it = iter_escape_begin;
+                str.erase(iter_escape_begin, iter_escape_end+1);
+                it = iter_escape_begin;
+                isTag = false;
                 isEscape = false;
             } else {
                 std::cout << "?" << std::endl;
             }
 
+        } else if(isSingle) {
+            if(*it != '>') { continue; }
+            iter_escape_end = it;
+            str.erase(iter_escape_begin, iter_escape_end+1);
+            it = iter_escape_begin;
+            isTag = false;
+            isEscape = false;
+            isSingle = false;
         } else if(isTag && *it == '>') {
             isTag = false;
             // Closing Tag이면 closing character 추가
             if(isClosingTag) {
                 if(*(it - 1) != '/') {
-                    str.insert(it,1,'/');
+                    str.insert(it+1,1,'/');
                 } 
                 isClosingTag = false;
             }
@@ -70,6 +80,13 @@ void HTMLParser::HTMLSelfClosing(std::string& str) {
                     isEscape = true;
                     break;
                 }
+            }
+            if(isEscape) { continue; }
+
+            // doctype 여부 확인
+            if(matchString(it + 1, str.end(), "!doctype")) {
+                iter_escape_begin = it;
+                isSingle = true;
             }
         }
     }
@@ -94,7 +111,7 @@ const std::vector<std::string> HTMLParser::SELF_CLOSING_TAGS = {
 };
 
 const std::vector<std::string> HTMLParser::ESCAPE_TAGS = {
-    "script", "style"
+    "script"
 };
 
 }

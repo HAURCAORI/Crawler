@@ -18,14 +18,6 @@ int main() {
     
     using namespace Crawler;
 
-
-    HTMLParser parser(&example);
-    auto doc = parser.getDocument();
-
-    auto target = doc->first_child();
-    for(auto node = target.first_child(); node; node = node.next_sibling()) {
-        std::cout << node.name() << std::endl;
-    }
     /*
     BEGIN_CHRONO
     for(int i = 0; i < 1; i++) {
@@ -61,7 +53,22 @@ int main() {
         curl_easy_getinfo(obj, CURLINFO_PRIVATE, &memory);
         //std::cout << memory->getData() << std::endl;
 
+        
         obj.getAdapter()->out();
+
+        HTMLParser parser(&example);
+        auto doc = parser.getDocument();
+    
+        auto tool = doc->select_node(R"(/html/body)");
+        std::cout << tool.node() << "/" << tool.node().name() << std::endl;
+    /*
+        auto target = doc->first_child().first_child().next_sibling();
+        for (auto node = target.first_child(); node; node = node.next_sibling())
+        {
+            std::cout << node.name() << "/" << node.first_attribute().value() << std::endl;
+        }
+        */
+        
 
         if(res == CURLE_OK)
             std::cout << "OK" << std::endl;
