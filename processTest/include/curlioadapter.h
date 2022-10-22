@@ -1,6 +1,8 @@
 #pragma once
 #include <any>
 
+#include "htmlparser.h" // include pos
+
 namespace Crawler {
 enum AdapterOption {
   ADAPTER_OPT_NONE = 0,

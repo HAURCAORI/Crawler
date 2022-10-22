@@ -9,7 +9,7 @@ public:
     using xmlDocument = pugi::xml_document;
 
     HTMLParser();
-    HTMLParser(const char* xml);
+    HTMLParser(const std::string* xml);
     HTMLParser(const HTMLParser& src) = default;
     HTMLParser(HTMLParser&& src) = default;
     virtual ~HTMLParser() noexcept;
@@ -18,7 +18,8 @@ public:
 
     void parse(const char* xml);
     xmlDocument* getDocument() { return &doc; }
-    
+        
+    static void HTMLSelfClosing(std::string& str);
 
 private:
     xmlDocument doc;

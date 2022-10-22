@@ -2,6 +2,7 @@
 #include <vector>
 #include <memory>
 #include <curl/curl.h>
+
 #include <curltype.h>
 #include <curlexceptions.h>
 #include <curlioadapter.h>
@@ -25,7 +26,7 @@ public:
     void setOption(CURLoption option, E&& param) {
         curl_easy_setopt(mHandle, option, param);
     }
-    CURLcode perform() const;
+    CURLcode perform();
     void resetOption() noexcept; // option reset
     void defaultOption();
 
@@ -58,6 +59,7 @@ public:
 
     //기타
     friend void swap(CURLObject& first, CURLObject& second) noexcept;
+    friend class CURLMultiObject;
 private:
     bool isURLSet = false;
     std::string mUrl;
@@ -65,6 +67,8 @@ private:
     CURL* mHandle = nullptr;
     curl_slist* mHeader = nullptr;
     std::unique_ptr<IOAdapter> mAdapter;
+
+    void performSuccess();
 };
  
 class CURLMultiObject {
@@ -79,7 +83,7 @@ public:
 
     // CURL_MULTI 동작 설정
     void addHandle(CURLObject&& obj) noexcept;
-    void perform() const;
+    void perform();
 
     // get, set
     inline CURLM* getHandle() { return mHandle; }

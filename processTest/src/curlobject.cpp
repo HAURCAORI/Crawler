@@ -39,11 +39,13 @@ CURLObject::operator void*() const {
     return mHandle;
 }
 
-CURLcode CURLObject::perform() const {
+CURLcode CURLObject::perform() {
     if(!isURLSet) {
         throw CURLErrorURL("Empty URL.");
     }
-    return curl_easy_perform(mHandle);
+    CURLcode ret = curl_easy_perform(mHandle);
+    if(ret == CURLE_OK) { performSuccess(); }
+    return ret;
 }
 
 void CURLObject::resetOption() noexcept {
@@ -58,7 +60,6 @@ void CURLObject::defaultOption() {
     setOption(CURLOPT_WRITEDATA, &mData);
     setOption(CURLOPT_WRITEFUNCTION, CURLObject::write_callback);
     setOption(CURLOPT_PRIVATE, this);
-
 }
 
 void CURLObject::setURL(const std::string& str) {
@@ -112,6 +113,11 @@ void swap(CURLObject& first, CURLObject& second) noexcept {
     swap(first.mAdapter, second.mAdapter);
 }
 
+void CURLObject::performSuccess() {
+    // After perform, modify HTML string data.
+    HTMLParser::HTMLSelfClosing(mData);
+}
+
 // CURLMultiObject declaration
 
 CURLMultiObject::CURLMultiObject() : mHandle(curl_multi_init()) {}
@@ -137,10 +143,10 @@ void CURLMultiObject::addHandle(CURLObject&& obj) noexcept {
     if(ret == CURLM_OK) {
         mContainer.push_back(std::move(obj));
     }
-    // 실패 시 동작 구현
+    // 실패 시 동작 구현size_t header_callback(char *buffer, size_t size, size_t nitems, void *userdata);
 }
 
-void CURLMultiObject::perform() const {
+void CURLMultiObject::perform() {
     isInterrupt = false;
 
     int isRunning = true;
@@ -155,9 +161,9 @@ void CURLMultiObject::perform() const {
             if(m->msg == CURLMSG_DONE) {
                 CURL *handle = m->easy_handle;
 
-                double time;
-                curl_easy_getinfo(handle, CURLINFO_TOTAL_TIME, &time);
-                printf("%f\r\n",time);
+                CURLObject* obj;
+                curl_easy_getinfo(handle, CURLINFO_PRIVATE, &obj);
+                obj->performSuccess();
 
                 curl_multi_remove_handle(mHandle, handle);
             }
@@ -171,6 +177,7 @@ void CURLMultiObject::setTimeOut(size_t time) { time_out = time; }
 void swap(CURLMultiObject& first, CURLMultiObject& second) noexcept {
     using std::swap;
 }
+
 
 // CURLMultiObject Global Variable
 bool CURLMultiObject::isInterrupt = false;

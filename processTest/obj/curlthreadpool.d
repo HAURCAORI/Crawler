@@ -182,9 +182,10 @@ processTest/obj/curlthreadpool.o: processTest/src/curlthreadpool.cpp \
  /usr/include/c++/7/bits/enable_special_members.h \
  /usr/include/c++/7/bits/stl_map.h /usr/include/c++/7/bits/stl_multimap.h \
  processTest/include/curlexceptions.h processTest/include/curlioadapter.h \
- /usr/include/c++/7/any /usr/include/c++/7/iostream \
- /usr/include/c++/7/ostream /usr/include/c++/7/ios \
- /usr/include/c++/7/bits/ios_base.h \
+ /usr/include/c++/7/any processTest/include/htmlparser.h \
+ processTest/include/pugixml.hpp processTest/include/pugiconfig.hpp \
+ /usr/include/c++/7/iterator /usr/include/c++/7/ostream \
+ /usr/include/c++/7/ios /usr/include/c++/7/bits/ios_base.h \
  /usr/include/c++/7/bits/locale_classes.h \
  /usr/include/c++/7/bits/locale_classes.tcc /usr/include/c++/7/streambuf \
  /usr/include/c++/7/bits/streambuf.tcc \
@@ -197,4 +198,5 @@ processTest/obj/curlthreadpool.o: processTest/src/curlthreadpool.cpp \
  /usr/include/c++/7/bits/locale_facets.tcc \
  /usr/include/c++/7/bits/basic_ios.tcc \
  /usr/include/c++/7/bits/ostream.tcc /usr/include/c++/7/istream \
- /usr/include/c++/7/bits/istream.tcc
+ /usr/include/c++/7/bits/istream.tcc \
+ /usr/include/c++/7/bits/stream_iterator.h /usr/include/c++/7/iostream

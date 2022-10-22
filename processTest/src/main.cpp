@@ -12,12 +12,14 @@
 
 
 
+
 int main() {
     curl_global_init(CURL_GLOBAL_DEFAULT);
     
     using namespace Crawler;
 
-    HTMLParser parser(example.c_str());
+
+    HTMLParser parser(&example);
     auto doc = parser.getDocument();
 
     auto target = doc->first_child();
@@ -34,7 +36,9 @@ int main() {
     //IOAdapter adapter;
     //adapter.set(1234);
     //adapter.out();
-    /*
+    */
+
+   /*
     CURLThreadPool threads(5);
     for(int i = 0; i < 1; i++) {
         Crawler::CURLObject obj("https://www.naver.com/");
@@ -42,7 +46,7 @@ int main() {
         threads.EnqueueCURL(std::move(obj));
     }
     */
-   /*
+   
     Crawler::CURLObject obj("https://www.naver.com/");
     if(obj) {
         //std::cout << mobj.getTimeOut() << std::endl;
@@ -53,7 +57,6 @@ int main() {
         obj.setAdapterOption(ADAPTER_OPT_PATH, path);
         
         auto res = obj.perform();
-
         CURLObject* memory;
         curl_easy_getinfo(obj, CURLINFO_PRIVATE, &memory);
         //std::cout << memory->getData() << std::endl;
@@ -65,7 +68,7 @@ int main() {
     } else {
         std::cout << "null" << std::endl;
     }
-*/
+
     curl_global_cleanup();
     /*
     CURL *curl;
