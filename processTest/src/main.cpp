@@ -17,7 +17,7 @@ int main() {
     
     using namespace Crawler;
 
-    HTMLParser parser(example2.c_str());
+    HTMLParser parser(example.c_str());
     auto doc = parser.getDocument();
 
     auto target = doc->first_child();
