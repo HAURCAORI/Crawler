@@ -141,7 +141,4 @@ processTest/obj/curlioadapter.o: processTest/src/curlioadapter.cpp \
  /usr/include/x86_64-linux-gnu/c++/7/bits/basic_file.h \
  /usr/include/x86_64-linux-gnu/c++/7/bits/c++io.h \
  /usr/include/c++/7/bits/fstream.tcc processTest/include/curlioadapter.h \
- /usr/include/c++/7/any processTest/include/htmlparser.h \
- processTest/include/pugixml.hpp processTest/include/pugiconfig.hpp \
- /usr/include/c++/7/iterator /usr/include/c++/7/bits/stream_iterator.h \
- processTest/include/curlexceptions.h
+ /usr/include/c++/7/any processTest/include/curlexceptions.h

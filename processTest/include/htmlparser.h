@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 #include "pugixml.hpp"
 
 namespace Crawler {
@@ -21,26 +22,11 @@ public:
         
     static void HTMLSelfClosing(std::string& str);
 
+    static const std::vector<std::string> SELF_CLOSING_TAGS;
+    static const std::vector<std::string> ESCAPE_TAGS;
 private:
     xmlDocument doc;
 
+    static bool matchString(std::string::iterator iter_begin, std::string::iterator iter_end, const std::string& target);
 };
 }
-
-/*
-self closing tag
-<area />
-<base />
-<br />
-<col />
-<embed />
-<hr />
-<img />
-<input />
-<link />
-<meta />
-<param />
-<source />
-<track />
-<wbr />
-*/

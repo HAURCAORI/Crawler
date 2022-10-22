@@ -6,6 +6,7 @@
 #include <curltype.h>
 #include <curlexceptions.h>
 #include <curlioadapter.h>
+#include "htmlparser.h" // include pos
 
 namespace Crawler {
 

@@ -13,7 +13,7 @@ std::string example = R"_(
   <meta property="og:article:thumbnailUrl" content=""> 
   <meta property="og:article:author" content="네이버금융"> 
   <meta property="og:article:author:url" content="http://FINANCE.NAVER.COM"> 
-  <link rel="stylesheet" type="text/css" href="https://ssl.pstatic.net/imgstock/static.pc/20221019125813/css/finance_header.css"> 
+  <link rel="stylesheet" type="text/css" href="https://ssl.pstatic.net/imgstock/static.pc/20221019125813/css/finance_header.css"> `
   <link rel="stylesheet" type="text/css" href="https://ssl.pstatic.net/imgstock/static.pc/20221019125813/css/finance.css"> 
   <link rel="stylesheet" type="text/css" href="https://ssl.pstatic.net/imgstock/static.pc/20221019125813/css/newstock3.css"> 
   <script type="text/javascript" src="https://ssl.pstatic.net/imgstock/static.pc/20221019125813/js/jindo.min.ns.1.5.3.euckr.js"></script> 
