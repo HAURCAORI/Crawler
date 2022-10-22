@@ -38,7 +38,7 @@ void HTMLParser::HTMLSelfClosing(std::string& str) {
             }
             if(match) {
                 str.erase(iter_escape_begin, iter_escape_end+1);
-                it = iter_escape_begin;
+                it = iter_escape_begin-1;
                 isTag = false;
                 isEscape = false;
             } else {
@@ -85,6 +85,12 @@ void HTMLParser::HTMLSelfClosing(std::string& str) {
 
             // doctype 여부 확인
             if(matchString(it + 1, str.end(), "!doctype")) {
+                iter_escape_begin = it;
+                isSingle = true;
+            }
+            
+            // 주석 여부 확인
+            if(matchString(it + 1, str.end(), "!--")) {
                 iter_escape_begin = it;
                 isSingle = true;
             }

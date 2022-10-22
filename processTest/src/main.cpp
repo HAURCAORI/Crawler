@@ -61,13 +61,13 @@ int main() {
     
         auto tool = doc->select_node(R"(/html/body/div[2]/div[2]/div[2])");
         std::cout << tool.node() << "/" << tool.node().name() << std::endl;
-    /*
-        auto target = doc->first_child().first_child().next_sibling();
+    
+        auto target = doc->first_child().first_child().next_sibling().child("div").next_sibling("div").child("div").next_sibling("div");
         for (auto node = target.first_child(); node; node = node.next_sibling())
         {
             std::cout << node.name() << "/" << node.first_attribute().value() << std::endl;
         }
-        */
+        
         
 
         if(res == CURLE_OK)

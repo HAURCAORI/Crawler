@@ -106,7 +106,6 @@ size_t CURLObject::write_callback(char* data, size_t size, size_t nmemb, void* u
     std::string* mem = reinterpret_cast<std::string*> (userdata);
     std::string temp(data, realsize);
     *mem += temp;
-    printf("%zu / %zu\r\n", temp.length(), realsize);
     return realsize;
 }
 
