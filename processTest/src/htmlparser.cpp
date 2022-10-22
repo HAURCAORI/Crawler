@@ -58,7 +58,7 @@ void HTMLParser::HTMLSelfClosing(std::string& str) {
             // Closing Tag이면 closing character 추가
             if(isClosingTag) {
                 if(*(it - 1) != '/') {
-                    str.insert(it+1,1,'/');
+                    str.insert(it,1,'/');
                 } 
                 isClosingTag = false;
             }
@@ -111,7 +111,7 @@ const std::vector<std::string> HTMLParser::SELF_CLOSING_TAGS = {
 };
 
 const std::vector<std::string> HTMLParser::ESCAPE_TAGS = {
-    "script"
+    "script", "style"
 };
 
 }

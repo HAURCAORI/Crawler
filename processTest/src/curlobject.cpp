@@ -53,13 +53,18 @@ void CURLObject::resetOption() noexcept {
 }
 
 void CURLObject::defaultOption() {
+    setOption(CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2TLS);
     if(isURLSet) {
         setOption(CURLOPT_URL, mUrl.c_str()); // URL 설정
     }
 
-    setOption(CURLOPT_WRITEDATA, &mData);
     setOption(CURLOPT_WRITEFUNCTION, CURLObject::write_callback);
+    setOption(CURLOPT_WRITEDATA, &mData);
     setOption(CURLOPT_PRIVATE, this);
+
+    setOption(CURLOPT_ACCEPT_ENCODING, "");
+
+    //setOption(CURLOPT_VERBOSE, 1L);
 }
 
 void CURLObject::setURL(const std::string& str) {
@@ -99,7 +104,9 @@ void CURLObject::setAdapterOption(AdapterOption option, const std::any& value) {
 size_t CURLObject::write_callback(char* data, size_t size, size_t nmemb, void* userdata) {
     size_t realsize = size * nmemb;
     std::string* mem = reinterpret_cast<std::string*> (userdata);
-    *mem += data;
+    std::string temp(data, realsize);
+    *mem += temp;
+    printf("%zu / %zu\r\n", temp.length(), realsize);
     return realsize;
 }
 

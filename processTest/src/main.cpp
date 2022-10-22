@@ -44,7 +44,7 @@ int main() {
         //std::cout << mobj.getTimeOut() << std::endl;
         //CURLMultiObject::setTimeOut(100);
         //std::cout << mobj.getTimeOut() << std::endl;
-        std::string path = "./Output/test";
+        std::string path = "./Output/test.html";
         obj.setAdapter<IOAdapterFile>();
         obj.setAdapterOption(ADAPTER_OPT_PATH, path);
         
@@ -59,7 +59,7 @@ int main() {
         HTMLParser parser(&example);
         auto doc = parser.getDocument();
     
-        auto tool = doc->select_node(R"(/html/body/div[2]/div[2]/div[2]/)");
+        auto tool = doc->select_node(R"(/html/body/div[2]/div[2]/div[2])");
         std::cout << tool.node() << "/" << tool.node().name() << std::endl;
     /*
         auto target = doc->first_child().first_child().next_sibling();
