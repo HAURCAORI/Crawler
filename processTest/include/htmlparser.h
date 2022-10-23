@@ -30,7 +30,8 @@ private:
     xmlDocument doc;
 
     static bool matchString(std::string::iterator iter_begin, std::string::iterator iter_end, const std::string& target);
-    static void endSpace(std::string::iterator& it);
+    static void rigntEndSpace(std::string::iterator& it);
+    static void leftEndSpace(std::string::iterator& it);
     static bool isAlphabet(char ch);
     static std::string indent(int depth);
     struct HTMLTag {

@@ -58,8 +58,8 @@ void HTMLParser::HTMLPreprocessing(std::string& str) {
                     break;
                 }
             }
-            endSpace(iter_erase_end); // 공백 영역 추가
-            it = str.erase(iter_erase_begin, iter_erase_end + 1) - 1;
+            rigntEndSpace(iter_erase_end); // 공백 영역 추가
+            it = str.erase(iter_erase_begin, iter_erase_end) - 1; // end에 + 1
             
             isTag = false;
             isEscape = false;
@@ -75,8 +75,8 @@ void HTMLParser::HTMLPreprocessing(std::string& str) {
 
             iter_erase_end = it;
 
-            endSpace(iter_erase_end); // 공백 영역 추가
-            it = str.erase(iter_erase_begin, iter_erase_end + 1) - 1;
+            rigntEndSpace(iter_erase_end); // 공백 영역 추가
+            it = str.erase(iter_erase_begin, iter_erase_end) - 1;  // end에 + 1
             
             isTag = false;
             isSingle = false;
@@ -189,7 +189,14 @@ void HTMLParser::HTMLCorrectError(std::string& str) {
             std::string temp(iter_tag_begin, iter_tag_end);
             if(temp.at(0) == '/') {
                 //pop
-
+                temp = temp.substr(1);
+                if(temp != stack.top().tag && depth > stack.top().depth) {
+                    std::string insert_str = "</" + stack.top().tag + ">";
+                    auto insert_it = iter_tag_begin - 1;
+                    leftEndSpace(insert_it);
+                    std::cout << *insert_it << std::endl;
+                    str.insert(insert_it, insert_str.begin(), insert_str.end());
+                }
                 stack.pop();
                 --depth;
             } else if(!isSelfClose) {
@@ -212,44 +219,6 @@ void HTMLParser::HTMLCorrectError(std::string& str) {
             iter_tag_begin = it + 1;
             isTagNameSet = false;
         }
-        
-        /*
-        if(isTag && *it == '>') {
-            isTag = false;
-            if(!isTagNameSet) {
-                if(*iter_tag_begin == '/') {
-                    std::string temp(iter_tag_begin + 1, it);
-                    if(stack.top() == temp) {
-                        stack.pop();
-                    } else {
-                        std::string closing = "</" + stack.top() + ">";
-                        it = str.insert(it+1, closing.begin(), closing.end()) + 1;
-                        std::cout << temp << "(invalid)" << std::endl;
-                    }
-                } else {
-                    std::string temp(iter_tag_begin, it);
-                    stack.push(std::move(temp));
-                }
-                isTagNameSet = true;
-            } else {
-                if(*(it - 1) == '/') {
-                    stack.pop();
-                }
-            }
-        } else if(isTag) {
-            if(*it == ' ' || *it == '\n') {
-                if(!isTagNameSet) {
-                    std::string temp(iter_tag_begin, it);
-                    stack.push(std::move(temp));
-                    isTagNameSet = true;
-                }
-            }
-        } else if(!isTag && *it == '<') {
-            isTag = true;
-            iter_tag_begin = it + 1;
-            isTagNameSet = false;
-        }
-        */
 
     }
 
@@ -271,8 +240,12 @@ bool HTMLParser::matchString(std::string::iterator iter_begin, std::string::iter
     return match;
 }
 
-void HTMLParser::endSpace(std::string::iterator& it) {
+void HTMLParser::rigntEndSpace(std::string::iterator& it) {
     while(*(it+1) == ' ' || *(it+1) == '\n') { ++it; }
+}
+
+void HTMLParser::leftEndSpace(std::string::iterator& it) {
+    while(*(it-1) == ' ' || *(it-1) == '\n' || *(it-1) == '\t') { --it; }
 }
 
 bool HTMLParser::isAlphabet(char ch) {
