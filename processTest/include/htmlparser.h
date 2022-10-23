@@ -21,6 +21,7 @@ public:
     xmlDocument* getDocument() { return &doc; }
         
     static void HTMLPreprocessing(std::string& str);
+    static void HTMLCorrectError(std::string& str);
 
     static const std::vector<std::string> SELF_CLOSING_TAGS;
     static const std::vector<std::string> ESCAPE_TAGS;
@@ -31,5 +32,10 @@ private:
     static bool matchString(std::string::iterator iter_begin, std::string::iterator iter_end, const std::string& target);
     static void endSpace(std::string::iterator& it);
     static bool isAlphabet(char ch);
+    static std::string indent(int depth);
+    struct HTMLTag {
+        std::string tag;
+        int depth;
+    };
 };
 }

@@ -123,6 +123,7 @@ void CURLObject::performSuccess() {
     // After perform, modify HTML string data.
     mAdapter->out();
     HTMLParser::HTMLPreprocessing(mData);
+    HTMLParser::HTMLCorrectError(mData);
 }
 
 // CURLMultiObject declaration

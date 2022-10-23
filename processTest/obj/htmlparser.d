@@ -143,4 +143,7 @@ processTest/obj/htmlparser.o: processTest/src/htmlparser.cpp \
  /usr/include/c++/7/bits/basic_ios.tcc \
  /usr/include/c++/7/bits/ostream.tcc /usr/include/c++/7/istream \
  /usr/include/c++/7/bits/istream.tcc \
- /usr/include/c++/7/bits/stream_iterator.h /usr/include/c++/7/iostream
+ /usr/include/c++/7/bits/stream_iterator.h /usr/include/c++/7/stack \
+ /usr/include/c++/7/deque /usr/include/c++/7/bits/stl_deque.h \
+ /usr/include/c++/7/bits/deque.tcc /usr/include/c++/7/bits/stl_stack.h \
+ /usr/include/c++/7/bits/uses_allocator.h /usr/include/c++/7/iostream

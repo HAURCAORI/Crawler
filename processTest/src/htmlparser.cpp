@@ -1,4 +1,5 @@
 #include "htmlparser.h"
+#include <stack>
 
 #include <iostream>
 
@@ -157,6 +158,107 @@ void HTMLParser::HTMLPreprocessing(std::string& str) {
     }
 }
 
+void HTMLParser::HTMLCorrectError(std::string& str) {
+    std::stack<HTMLTag> stack;
+    bool isTag = false;
+    bool isTagNameSet = false;
+    bool isAttributeSkip = false;
+    bool hasAttribute = false;
+    std::string::iterator iter_tag_begin;
+    std::string::iterator iter_tag_end;
+    int depth = 0;
+    for(auto it = str.begin(); it != str.end(); ++it) {
+        if(isTag) {
+            if(*it == '"') { 
+                isAttributeSkip = !isAttributeSkip;
+            }
+            if(isAttributeSkip) { continue; }
+        }
+
+
+        if(isTag && *it == '>') {
+            bool isSelfClose = false;
+            isTag = false;
+            
+            if(!hasAttribute) {
+                iter_tag_end = it;
+            }
+            if(*(it-1) == '/') {
+                isSelfClose = true;
+            }
+            std::string temp(iter_tag_begin, iter_tag_end);
+            if(temp.at(0) == '/') {
+                //pop
+
+                stack.pop();
+                --depth;
+            } else if(!isSelfClose) {
+                //push
+                std::cout << depth << " : " << temp << std::endl;
+                stack.push({temp, depth++});
+            }
+
+
+            isAttributeSkip = false;
+            hasAttribute = false;
+        } else if(isTag) {
+            if(hasAttribute) { continue; }
+            if(*it == ' ' || *it == '\n') {
+                hasAttribute = true;
+                iter_tag_end = it;
+            }
+        } else if(!isTag && *it == '<') {
+            isTag = true;
+            iter_tag_begin = it + 1;
+            isTagNameSet = false;
+        }
+        
+        /*
+        if(isTag && *it == '>') {
+            isTag = false;
+            if(!isTagNameSet) {
+                if(*iter_tag_begin == '/') {
+                    std::string temp(iter_tag_begin + 1, it);
+                    if(stack.top() == temp) {
+                        stack.pop();
+                    } else {
+                        std::string closing = "</" + stack.top() + ">";
+                        it = str.insert(it+1, closing.begin(), closing.end()) + 1;
+                        std::cout << temp << "(invalid)" << std::endl;
+                    }
+                } else {
+                    std::string temp(iter_tag_begin, it);
+                    stack.push(std::move(temp));
+                }
+                isTagNameSet = true;
+            } else {
+                if(*(it - 1) == '/') {
+                    stack.pop();
+                }
+            }
+        } else if(isTag) {
+            if(*it == ' ' || *it == '\n') {
+                if(!isTagNameSet) {
+                    std::string temp(iter_tag_begin, it);
+                    stack.push(std::move(temp));
+                    isTagNameSet = true;
+                }
+            }
+        } else if(!isTag && *it == '<') {
+            isTag = true;
+            iter_tag_begin = it + 1;
+            isTagNameSet = false;
+        }
+        */
+
+    }
+
+    while(!stack.empty()) {
+        str.append("\r\n" + indent(stack.top().depth) + "</" + stack.top().tag + ">");
+        stack.pop();
+    }
+}
+
 bool HTMLParser::matchString(std::string::iterator iter_begin, std::string::iterator iter_end, const std::string& target) {
     bool match = true;
     auto it_target_tag = target.begin();
@@ -177,6 +279,9 @@ bool HTMLParser::isAlphabet(char ch) {
     return (ch>='a' && ch<='z') || (ch>='A' && ch<='Z');
 }
 
+std::string HTMLParser::indent(int depth) {
+    return std::string(std::max(depth-1,0), '\t');
+}
 const std::vector<std::string> HTMLParser::SELF_CLOSING_TAGS = {
     "area", "base", "br", "col ", "embed",
     "hr",  "link",//, "meta", //, "input"
