@@ -43,16 +43,23 @@ void HTMLParser::HTMLPreprocessing(std::string& str) {
             if(*(it + 1) != '/') { continue; }
             
             bool match = false;
-            for(iter_erase_end = it; iter_erase_end != str.end(); ++iter_erase_end) {
-                if(*iter_erase_end == '>') {
+
+            for(auto&& escape_tag : ESCAPE_TAGS) {
+                if(matchString(it + 2, str.end(), escape_tag)) {
                     match = true;
                     break;
                 }
             }
-            if(match) {
-                endSpace(iter_erase_end); // 공백 영역 추가
-                it = str.erase(iter_erase_begin, iter_erase_end + 1) - 1;
+            if(!match) { continue; }
+            
+            for(iter_erase_end = it; iter_erase_end != str.end(); ++iter_erase_end) {
+                if(*iter_erase_end == '>') {
+                    break;
+                }
             }
+            endSpace(iter_erase_end); // 공백 영역 추가
+            it = str.erase(iter_erase_begin, iter_erase_end + 1) - 1;
+            
             isTag = false;
             isEscape = false;
         } else if(isSingle) { // Single Tag 중 삭제할 Tag에 해당할 경우
@@ -142,7 +149,8 @@ void HTMLParser::HTMLPreprocessing(std::string& str) {
 bool HTMLParser::matchString(std::string::iterator iter_begin, std::string::iterator iter_end, const std::string& target) {
     bool match = true;
     auto it_target_tag = target.begin();
-    for (auto it_tag = iter_begin; it_target_tag != target.end() && it_tag != iter_end; ++it_tag, ++it_target_tag) {
+    auto it_tag = iter_begin;
+    for (; it_target_tag != target.end() && it_tag != iter_end; ++it_tag, ++it_target_tag) {
         if (*it_tag != *it_target_tag) {
             match = false;
             break;
@@ -160,7 +168,7 @@ bool HTMLParser::isAlphabet(char ch) {
 }
 
 const std::vector<std::string> HTMLParser::SELF_CLOSING_TAGS = {
-    "area", "base", "br", "col", "embed",
+    "area", "base", "br", "col ", "embed",
     "hr",  "link",//, "meta", //, "input"
     "param", "source", "track", "wbr"
 };

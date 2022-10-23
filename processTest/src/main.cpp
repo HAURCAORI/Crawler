@@ -53,7 +53,7 @@ int main() {
     }
     */
    
-    Crawler::CURLObject obj("https://www.naver.com/");
+    Crawler::CURLObject obj("https://news.naver.com/");
     if(obj) {
         //CURLMultiObject::setTimeOut(100);
         std::string path = "./Output/original.html";
@@ -76,10 +76,10 @@ int main() {
         HTMLParser parser(&test_set);
         //HTMLParser parser(&memory->getData());
         auto doc = parser.getDocument();
-        auto tool = doc->select_node(R"(/html/body/div[2]/div[3]/div[2]/div[3]/div/div[2])"); // container
-        printNode(tool.node(),3);
+        //auto tool = doc->select_node(R"(/html/body/div[2]/div[3]/div[2]/div[3]/div/div[2])"); // container
+        //printNode(tool.node(),3);
         std::cout << "==" << std::endl;
-        printNode(doc->root(),3);
+        printNode(doc->root(), 6);
         
         
 
