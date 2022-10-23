@@ -99,7 +99,7 @@ void HTMLParser::HTMLPreprocessing(std::string& str) {
         } else if(isTag) {
             // Tag Attribute 체크
 
-            if(*it == '=') {
+            if(*it == '=' || *(it + 1) == '=') {
                 isAttributeHasValue = true;
                 isAttribute = false;
             }

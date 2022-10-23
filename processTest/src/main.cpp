@@ -53,7 +53,7 @@ int main() {
     }
     */
    
-    Crawler::CURLObject obj("https://obank.kbstar.com/quics?page=C030037&QSL=F&_ga=2.132432201.618949892.1666510104-318391392.1666510104#loading");
+    Crawler::CURLObject obj("https://www.dcinside.com/");
     if(obj) {
         //CURLMultiObject::setTimeOut(100);
         std::string path = "./Output/original.html";
@@ -68,8 +68,8 @@ int main() {
         curl_easy_getinfo(obj, CURLINFO_PRIVATE, &memory);
 
         
-        //std::string test_set = readFile("./Output/original.html");
-        std::string test_set = readFile("./Output/input.html");
+        std::string test_set = readFile("./Output/original.html");
+        //std::string test_set = readFile("./Output/input.html");
         HTMLParser::HTMLPreprocessing(test_set);
         writeFile("./Output/test.html",test_set);
         
@@ -79,7 +79,7 @@ int main() {
         //auto tool = doc->select_node(R"(/html/body/div[2]/div[3]/div[2]/div[3]/div/div[2])"); // container
         //printNode(tool.node(),3);
         std::cout << "==" << std::endl;
-        printNode(doc->root(), 6);
+        printNode(doc->root(), 8);
         
         
 
