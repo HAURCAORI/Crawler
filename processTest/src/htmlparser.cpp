@@ -64,6 +64,14 @@ void HTMLParser::HTMLPreprocessing(std::string& str) {
             isEscape = false;
         } else if(isSingle) { // Single Tag 중 삭제할 Tag에 해당할 경우
             if(*it != '>') { continue; }
+
+            if(*(iter_erase_begin + 2) == '-') {
+                //<!--의 경우 -->로 끝나야 함
+                if(*(it - 1) != '-') {
+                    continue;
+                } 
+            }
+
             iter_erase_end = it;
 
             endSpace(iter_erase_end); // 공백 영역 추가
@@ -113,14 +121,16 @@ void HTMLParser::HTMLPreprocessing(std::string& str) {
             } else {
                 isTag = true;
             }
-            // Closing Tag 여부 확인
-            for(auto&& self_closing_tag : SELF_CLOSING_TAGS) {
-                if(matchString(it + 1, str.end(), self_closing_tag)) {
-                    isClosingTag = true;
+
+            // Single Tag 여부 확인
+            for(auto&& single_tag : SINGLE_ERASE_TAGS) {
+                if(matchString(it + 1, str.end(), single_tag)) {
+                    iter_erase_begin = it;
+                    isSingle = true;
                     break;
                 }
             }
-            if(isClosingTag) { continue; }
+            if(isSingle) { continue; }
 
             // Escape Tag 여부 확인
             for(auto&& escape_tag : ESCAPE_TAGS) {
@@ -132,14 +142,15 @@ void HTMLParser::HTMLPreprocessing(std::string& str) {
             }
             if(isEscape) { continue; }
 
-            // Single Tag 여부 확인
-            for(auto&& single_tag : SINGLE_ERASE_TAGS) {
-                if(matchString(it + 1, str.end(), single_tag)) {
-                    iter_erase_begin = it;
-                    isSingle = true;
+            // Closing Tag 여부 확인
+            for(auto&& self_closing_tag : SELF_CLOSING_TAGS) {
+                if(matchString(it + 1, str.end(), self_closing_tag)) {
+                    isClosingTag = true;
                     break;
                 }
             }
+            if(isClosingTag) { continue; }
+            
         } else if(!isTag && *it == '>') {
             str.replace(it,it+1,"&gt");
         }
@@ -149,8 +160,7 @@ void HTMLParser::HTMLPreprocessing(std::string& str) {
 bool HTMLParser::matchString(std::string::iterator iter_begin, std::string::iterator iter_end, const std::string& target) {
     bool match = true;
     auto it_target_tag = target.begin();
-    auto it_tag = iter_begin;
-    for (; it_target_tag != target.end() && it_tag != iter_end; ++it_tag, ++it_target_tag) {
+    for (auto it_tag = iter_begin; it_target_tag != target.end() && it_tag != iter_end; ++it_tag, ++it_target_tag) {
         if (*it_tag != *it_target_tag) {
             match = false;
             break;

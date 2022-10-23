@@ -53,7 +53,7 @@ int main() {
     }
     */
    
-    Crawler::CURLObject obj("https://news.naver.com/");
+    Crawler::CURLObject obj("https://obank.kbstar.com/quics?page=C030037&QSL=F&_ga=2.132432201.618949892.1666510104-318391392.1666510104#loading");
     if(obj) {
         //CURLMultiObject::setTimeOut(100);
         std::string path = "./Output/original.html";
@@ -67,9 +67,9 @@ int main() {
         CURLObject* memory;
         curl_easy_getinfo(obj, CURLINFO_PRIVATE, &memory);
 
-
-        std::string test_set = readFile("./Output/original.html");
-        //std::string test_set = readFile("./Output/input.html");
+        
+        //std::string test_set = readFile("./Output/original.html");
+        std::string test_set = readFile("./Output/input.html");
         HTMLParser::HTMLPreprocessing(test_set);
         writeFile("./Output/test.html",test_set);
         
