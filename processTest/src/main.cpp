@@ -56,22 +56,29 @@ int main() {
     Crawler::CURLObject obj("https://www.naver.com/");
     if(obj) {
         //CURLMultiObject::setTimeOut(100);
-        std::string path = "./Output/test.html";
+        std::string path = "./Output/original.html";
         obj.setAdapter<IOAdapterFile>();
         obj.setAdapterOption(ADAPTER_OPT_PATH, path);
         
         auto res = obj.perform();
         
-        obj.getAdapter()->out();
+        //obj.getAdapter()->out();
         
         CURLObject* memory;
         curl_easy_getinfo(obj, CURLINFO_PRIVATE, &memory);
 
-        HTMLParser parser(&memory->getData());
+
+        //std::string test_set = readFile("./Output/original.html");
+        std::string test_set = readFile("./Output/input.html");
+        HTMLParser::HTMLPreprocessing(test_set);
+        writeFile("./Output/test.html",test_set);
+        
+        HTMLParser parser(&test_set);
+        //HTMLParser parser(&memory->getData());
         auto doc = parser.getDocument();
         //auto tool = doc->select_node(R"(/html/body/div[2]/div[2]/div[1]/div/div[3])"); // search
         //printNode(tool.node(),4);
-        printNode(doc->root(),5);
+        printNode(doc->root(),3);
         
         
 

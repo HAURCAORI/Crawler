@@ -32,6 +32,12 @@ void HTMLParser::HTMLPreprocessing(std::string& str) {
 
     // 각 글자에 대해 처리
     for(auto it = str.begin(); it != str.end(); ++it) {
+        if(isTag) {
+            if(*it == '"') { 
+                isAttributeSkip = !isAttributeSkip;
+            }
+            if(isAttributeSkip) { continue; }
+        }
         if(isEscape){ // 내용 전체를 삭제할 Tag에 해당할 경우(script, style 등)
             if(*it != '<') { continue; }
             if(*(it + 1) != '/') { continue; }
@@ -78,10 +84,6 @@ void HTMLParser::HTMLPreprocessing(std::string& str) {
             isAttributeSkip = false;
         } else if(isTag) {
             // Tag Attribute 체크
-            if(*it == '"') { 
-                isAttributeSkip = !isAttributeSkip;
-            }
-            if(isAttributeSkip) { continue; }
 
             if(*it == '=') {
                 isAttributeHasValue = true;
@@ -153,7 +155,7 @@ bool HTMLParser::isAlphabet(char ch) {
 
 const std::vector<std::string> HTMLParser::SELF_CLOSING_TAGS = {
     "area", "base", "br", "col", "embed",
-    "hr", "img", "link",//, "meta", //, "input"
+    "hr",  "link",//, "meta", //, "input"
     "param", "source", "track", "wbr"
 };
 
@@ -162,7 +164,7 @@ const std::vector<std::string> HTMLParser::ESCAPE_TAGS = {
 };
 
 const std::vector<std::string> HTMLParser::SINGLE_ERASE_TAGS = {
-    "!doctype", "!--", "input" ,"meta"
+    "!doctype", "!--", "input" ,"meta", "img"
 };
 
 
