@@ -159,7 +159,7 @@ void HTMLParser::HTMLPreprocessing(std::string& str) {
 }
 
 void HTMLParser::HTMLCorrectError(std::string& str) {
-    std::stack<HTMLTag> stack;
+    std::vector<HTMLTag> stack;
     bool isTag = false;
     bool isTextNode = false;
     bool isAttributeSkip = false;
@@ -197,21 +197,32 @@ void HTMLParser::HTMLCorrectError(std::string& str) {
                 //pop
                 temp = temp.substr(1);
                 
+                bool valid = false;
+                for(auto iter_stack = stack.rbegin(); iter_stack != stack.rend(); ++iter_stack) {
+                    if( (*iter_stack).tag == temp ) {
+                        valid = true;
+                    }
+                }
 
-                if(temp != stack.top().tag && depth > stack.top().depth) {
-                    std::string insert_str = "</" + stack.top().tag + ">";
+                if(!valid) {
+                    it = str.erase(iter_tag_begin - 1,iter_tag_end + 1) - 1;
+                    continue;
+                }
+
+                if(temp != stack.back().tag && depth > stack.back().depth) {
+                    std::string insert_str = "</" + stack.back().tag + ">";
                     auto insert_it = iter_tag_begin - 1;
                     leftEndSpace(insert_it);
                     it = str.insert(insert_it, insert_str.begin(), insert_str.end());
-                    it += insert_str.length();
+                    //it += insert_str.length();
                 }
                 
-                stack.pop();
+                stack.pop_back();
                 --depth;
             } else if(!isSelfClose) {
                 //push
                 //std::cout << depth << " : " << temp << std::endl;
-                stack.push({temp, depth++});
+                stack.push_back({temp, depth++});
             }
             isTextNode = false;
             isAttributeSkip = false;
@@ -235,8 +246,8 @@ void HTMLParser::HTMLCorrectError(std::string& str) {
     }
 
     while(!stack.empty()) {
-        str.append("\r\n" + indent(stack.top().depth) + "</" + stack.top().tag + ">");
-        stack.pop();
+        str.append("\r\n" + indent(stack.back().depth) + "</" + stack.back().tag + ">");
+        stack.pop_back();
     }
 }
 
