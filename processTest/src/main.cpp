@@ -7,15 +7,22 @@
 #include <chrono>
 #include "test.h"
 
+#include <fstream>
+#include <sstream>
+
 #define BEGIN_CHRONO std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 #define END_CHRONO std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - begin).count() << "[ms]" << std::endl;
 
 
-void printNode(Crawler::HTMLParser::xmlNode target) {
+void printNode(Crawler::HTMLParser::xmlNode target, size_t deep) {
+    std::cout << target.path() << " : " << target.first_attribute().value() << std::endl;
+    if(deep == 0) {
+        return;
+    }
+    deep--;
     for (auto node = target.first_child(); node; node = node.next_sibling())
     {
-        printNode(node);
-        std::cout << target.path() << " : " << target.first_attribute().value() << std::endl;
+        printNode(node, deep);
     }
 }
 
@@ -31,9 +38,6 @@ int main() {
         std::cout << tool.node() << std::endl;
     }
     END_CHRONO
-    //IOAdapter adapter;
-    //adapter.set(1234);
-    //adapter.out();
     */
 
    /*
@@ -47,32 +51,43 @@ int main() {
    
     Crawler::CURLObject obj("https://www.naver.com/");
     if(obj) {
-        //std::cout << mobj.getTimeOut() << std::endl;
         //CURLMultiObject::setTimeOut(100);
-        //std::cout << mobj.getTimeOut() << std::endl;
         std::string path = "./Output/test.html";
         obj.setAdapter<IOAdapterFile>();
         obj.setAdapterOption(ADAPTER_OPT_PATH, path);
         
         auto res = obj.perform();
         
-        //std::cout << memory->getData() << std::endl;
+        //obj.getAdapter()->out();
 
-        
-        obj.getAdapter()->out();
-
-        using namespace std::chrono_literals;
-        std::this_thread::sleep_for(3s);
+        //using namespace std::chrono_literals;
+        //std::this_thread::sleep_for(1s);
         
         CURLObject* memory;
         curl_easy_getinfo(obj, CURLINFO_PRIVATE, &memory);
-        HTMLParser parser(&example);//&memory->getData()
-        auto doc = parser.getDocument();
-    
-        
 
-        auto tool = doc->select_node(R"(/html/body)");
-        printNode(tool.node());
+
+        std::ifstream inFile("./Output/test2.html");
+        if(!inFile.good()) {
+            throw CURLErrorAdapterOut("Error while opening file.");
+        }
+        std::stringstream buffer;
+        buffer << inFile.rdbuf();
+        std::string test_set = buffer.str();
+        HTMLParser::HTMLPreprocessing(test_set);
+        
+        std::ofstream outFile(path, std::ios_base::trunc);
+        if(!outFile.good()) {
+            throw CURLErrorAdapterOut("Error while opening file.");
+        }
+        
+        outFile << test_set;
+        HTMLParser parser(&test_set);//&memory->getData()
+        
+        //auto doc = parser.getDocument();
+        //auto tool = doc->select_node(R"(/html/body/div[2]/div[2]/div[1]/div/div[3])"); // search
+        //printNode(tool.node(),4);
+        //printNode(doc->root(),5);
         
         
         

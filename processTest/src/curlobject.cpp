@@ -121,7 +121,7 @@ void swap(CURLObject& first, CURLObject& second) noexcept {
 
 void CURLObject::performSuccess() {
     // After perform, modify HTML string data.
-    HTMLParser::HTMLSelfClosing(mData);
+    HTMLParser::HTMLPreprocessing(mData);
 }
 
 // CURLMultiObject declaration

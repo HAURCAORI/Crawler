@@ -20,7 +20,7 @@ public:
     void parse(const char* xml);
     xmlDocument* getDocument() { return &doc; }
         
-    static void HTMLSelfClosing(std::string& str);
+    static void HTMLPreprocessing(std::string& str);
 
     static const std::vector<std::string> SELF_CLOSING_TAGS;
     static const std::vector<std::string> ESCAPE_TAGS;
@@ -29,5 +29,7 @@ private:
     xmlDocument doc;
 
     static bool matchString(std::string::iterator iter_begin, std::string::iterator iter_end, const std::string& target);
+    static void endSpace(std::string::iterator& it);
+    static bool isAlphabet(char ch);
 };
 }
