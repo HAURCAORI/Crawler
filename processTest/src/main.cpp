@@ -12,7 +12,6 @@
 
 
 void printNode(Crawler::HTMLParser::xmlNode target) {
-    using namespace std::chrono_literals;
     for (auto node = target.first_child(); node; node = node.next_sibling())
     {
         printNode(node);
@@ -70,10 +69,10 @@ int main() {
         HTMLParser parser(&example);//&memory->getData()
         auto doc = parser.getDocument();
     
-        printNode(doc->root());
+        
 
-        auto tool = doc->select_node(R"(/html/body/div[2]/div[2]/div[2])");
-        std::cout << tool.node() << "/" << tool.node().name() << std::endl;
+        auto tool = doc->select_node(R"(/html/body)");
+        printNode(tool.node());
         
         
         
