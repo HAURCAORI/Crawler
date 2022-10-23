@@ -52,10 +52,9 @@ void HTMLParser::HTMLPreprocessing(std::string& str) {
             if(match) {
                 endSpace(iter_erase_end); // 공백 영역 추가
                 it = str.erase(iter_erase_begin, iter_erase_end + 1) - 1;
-
-                isTag = false;
-                isEscape = false;
             }
+            isTag = false;
+            isEscape = false;
         } else if(isSingle) { // Single Tag 중 삭제할 Tag에 해당할 경우
             if(*it != '>') { continue; }
             iter_erase_end = it;
@@ -70,15 +69,15 @@ void HTMLParser::HTMLPreprocessing(std::string& str) {
             // Closing Tag이면 closing character 추가
             if(isClosingTag) {
                 if(*(it - 1) != '/') {
-                    it = str.insert(it,1,'/');
+                    it = str.insert(it,1,'/') + 1;
                 } 
                 isClosingTag = false;
             }
 
             // Tag Attribute 체크
             if(isAttribute == true && !isAttributeHasValue) {
-                it = str.insert(it, 2, '"');
-                it = str.insert(it, 1, '=');
+                it = str.insert(it, 1, '=') + 1;
+                it = str.insert(it, 2, '"') + 2;
             }
             isAttribute = false;
             isAttributeSkip = false;
@@ -91,8 +90,8 @@ void HTMLParser::HTMLPreprocessing(std::string& str) {
             }
             else if(*it == ' ') {
                 if(isAttribute == true && !isAttributeHasValue) {
-                    it = str.insert(it, 2, '"');
-                    it = str.insert(it, 1, '=');
+                    it = str.insert(it, 1, '=') + 1;
+                    it = str.insert(it, 2, '"') + 2;
                     isAttribute = false;
                 }
                 if(isAlphabet(*(it + 1))) {
@@ -101,7 +100,12 @@ void HTMLParser::HTMLPreprocessing(std::string& str) {
                 }
             }
         } else if(!isTag && *it == '<') {
-            isTag = true;
+            if(!isAlphabet(*(it + 1)) && *(it + 1) != '!' && *(it + 1) != '/'){
+                // 일반 텍스트 중 < 포함 여부 확인
+                str.replace(it,it+1,"&lt");
+            } else {
+                isTag = true;
+            }
             // Closing Tag 여부 확인
             for(auto&& self_closing_tag : SELF_CLOSING_TAGS) {
                 if(matchString(it + 1, str.end(), self_closing_tag)) {
@@ -129,6 +133,8 @@ void HTMLParser::HTMLPreprocessing(std::string& str) {
                     break;
                 }
             }
+        } else if(!isTag && *it == '>') {
+            str.replace(it,it+1,"&gt");
         }
     }
 }

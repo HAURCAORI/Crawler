@@ -68,8 +68,8 @@ int main() {
         curl_easy_getinfo(obj, CURLINFO_PRIVATE, &memory);
 
 
-        //std::string test_set = readFile("./Output/original.html");
-        std::string test_set = readFile("./Output/input.html");
+        std::string test_set = readFile("./Output/original.html");
+        //std::string test_set = readFile("./Output/input.html");
         HTMLParser::HTMLPreprocessing(test_set);
         writeFile("./Output/test.html",test_set);
         
