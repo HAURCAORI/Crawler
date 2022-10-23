@@ -198,7 +198,7 @@ processTest/obj/main.o: processTest/src/main.cpp \
  /usr/include/c++/7/bits/std_function.h /usr/include/c++/7/queue \
  /usr/include/c++/7/deque /usr/include/c++/7/bits/stl_deque.h \
  /usr/include/c++/7/bits/deque.tcc /usr/include/c++/7/bits/stl_heap.h \
- /usr/include/c++/7/bits/stl_queue.h processTest/include/test.h \
+ /usr/include/c++/7/bits/stl_queue.h processTest/include/testset.h \
  /usr/include/c++/7/fstream /usr/include/c++/7/bits/codecvt.h \
  /usr/include/x86_64-linux-gnu/c++/7/bits/basic_file.h \
  /usr/include/x86_64-linux-gnu/c++/7/bits/c++io.h \

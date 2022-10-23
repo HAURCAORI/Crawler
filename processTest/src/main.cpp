@@ -4,12 +4,10 @@
 #include <curlioadapter.h>
 
 #include "htmlparser.h"
+
+#include "testset.h"
+
 #include <chrono>
-#include "test.h"
-
-#include <fstream>
-#include <sstream>
-
 #define BEGIN_CHRONO std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 #define END_CHRONO std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - begin).count() << "[ms]" << std::endl;
 
@@ -30,6 +28,12 @@ int main() {
     curl_global_init(CURL_GLOBAL_DEFAULT);
     
     using namespace Crawler;
+
+    /* [HTMLPreprocessing Test Code]
+    std::string test_set = readFile("./Output/input.html");
+    HTMLParser::HTMLPreprocessing(test_set);
+    writeFile("./Output/test.html",test_set);
+    */
 
     /*
     BEGIN_CHRONO
@@ -58,38 +62,16 @@ int main() {
         
         auto res = obj.perform();
         
-        //obj.getAdapter()->out();
-
-        //using namespace std::chrono_literals;
-        //std::this_thread::sleep_for(1s);
+        obj.getAdapter()->out();
         
         CURLObject* memory;
         curl_easy_getinfo(obj, CURLINFO_PRIVATE, &memory);
 
-
-        std::ifstream inFile("./Output/test2.html");
-        if(!inFile.good()) {
-            throw CURLErrorAdapterOut("Error while opening file.");
-        }
-        std::stringstream buffer;
-        buffer << inFile.rdbuf();
-        std::string test_set = buffer.str();
-        HTMLParser::HTMLPreprocessing(test_set);
-        
-        std::ofstream outFile(path, std::ios_base::trunc);
-        if(!outFile.good()) {
-            throw CURLErrorAdapterOut("Error while opening file.");
-        }
-        
-        outFile << test_set;
-        HTMLParser parser(&test_set);//&memory->getData()
-        
-        //auto doc = parser.getDocument();
+        HTMLParser parser(&memory->getData());
+        auto doc = parser.getDocument();
         //auto tool = doc->select_node(R"(/html/body/div[2]/div[2]/div[1]/div/div[3])"); // search
         //printNode(tool.node(),4);
-        //printNode(doc->root(),5);
-        
-        
+        printNode(doc->root(),5);
         
         
 

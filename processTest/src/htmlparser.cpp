@@ -45,25 +45,21 @@ void HTMLParser::HTMLPreprocessing(std::string& str) {
             }
             if(match) {
                 endSpace(iter_erase_end); // 공백 영역 추가
-                str.erase(iter_erase_begin, iter_erase_end + 1);
-                it = iter_erase_begin - 1;
+                it = str.erase(iter_erase_begin, iter_erase_end + 1) - 1;
 
                 isTag = false;
                 isEscape = false;
             }
-        } else if(isSingle) {
-            // Single 시 삭제
+        } else if(isSingle) { // Single Tag 중 삭제할 Tag에 해당할 경우
             if(*it != '>') { continue; }
             iter_erase_end = it;
 
             endSpace(iter_erase_end); // 공백 영역 추가
-
-            str.erase(iter_erase_begin, iter_erase_end + 1);
-            it = iter_erase_begin - 1;
+            it = str.erase(iter_erase_begin, iter_erase_end + 1) - 1;
+            
             isTag = false;
-            isEscape = false;
             isSingle = false;
-        } else if(isTag && *it == '>') {
+        } else if(isTag && *it == '>') { // Tag를 벗어날 때
             isTag = false;
             // Closing Tag이면 closing character 추가
             if(isClosingTag) {
@@ -80,7 +76,6 @@ void HTMLParser::HTMLPreprocessing(std::string& str) {
             }
             isAttribute = false;
             isAttributeSkip = false;
-            isAttributeHasValue = false;
         } else if(isTag) {
             // Tag Attribute 체크
             if(*it == '"') { 
@@ -103,7 +98,6 @@ void HTMLParser::HTMLPreprocessing(std::string& str) {
                     isAttributeHasValue = false;
                 }
             }
-
         } else if(!isTag && *it == '<') {
             isTag = true;
             // Closing Tag 여부 확인
