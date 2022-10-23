@@ -161,7 +161,7 @@ void HTMLParser::HTMLPreprocessing(std::string& str) {
 void HTMLParser::HTMLCorrectError(std::string& str) {
     std::stack<HTMLTag> stack;
     bool isTag = false;
-    bool isTagNameSet = false;
+    bool isTextNode = false;
     bool isAttributeSkip = false;
     bool hasAttribute = false;
     std::string::iterator iter_tag_begin;
@@ -186,7 +186,13 @@ void HTMLParser::HTMLCorrectError(std::string& str) {
             if(*(it-1) == '/') {
                 isSelfClose = true;
             }
+
             std::string temp(iter_tag_begin, iter_tag_end);
+
+            if(isTextNode) {
+                std::cout << "TextNode " << temp << std::endl;
+            }
+
             if(temp.at(0) == '/') {
                 //pop
                 temp = temp.substr(1);
@@ -194,7 +200,6 @@ void HTMLParser::HTMLCorrectError(std::string& str) {
                     std::string insert_str = "</" + stack.top().tag + ">";
                     auto insert_it = iter_tag_begin - 1;
                     leftEndSpace(insert_it);
-                    std::cout << *insert_it << std::endl;
                     str.insert(insert_it, insert_str.begin(), insert_str.end());
                 }
                 stack.pop();
@@ -204,8 +209,7 @@ void HTMLParser::HTMLCorrectError(std::string& str) {
                 std::cout << depth << " : " << temp << std::endl;
                 stack.push({temp, depth++});
             }
-
-
+            isTextNode = false;
             isAttributeSkip = false;
             hasAttribute = false;
         } else if(isTag) {
@@ -217,7 +221,11 @@ void HTMLParser::HTMLCorrectError(std::string& str) {
         } else if(!isTag && *it == '<') {
             isTag = true;
             iter_tag_begin = it + 1;
-            isTagNameSet = false;
+        } else if(!isTag) {
+            if(isTextNode) { continue; }
+            if(isWord(*it)) {
+                isTextNode = true;
+            }
         }
 
     }
@@ -255,6 +263,11 @@ bool HTMLParser::isAlphabet(char ch) {
 std::string HTMLParser::indent(int depth) {
     return std::string(std::max(depth-1,0), '\t');
 }
+
+bool HTMLParser::isWord(char ch) {
+    return (ch>='a' && ch<='z') || (ch>='A' && ch<='Z') || (ch & 0x80);
+}
+
 const std::vector<std::string> HTMLParser::SELF_CLOSING_TAGS = {
     "area", "base", "br", "col ", "embed",
     "hr",  "link",//, "meta", //, "input"

@@ -34,6 +34,7 @@ private:
     static void leftEndSpace(std::string::iterator& it);
     static bool isAlphabet(char ch);
     static std::string indent(int depth);
+    static bool isWord(char ch);
     struct HTMLTag {
         std::string tag;
         int depth;
