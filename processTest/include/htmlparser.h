@@ -24,6 +24,7 @@ public:
 
     static const std::vector<std::string> SELF_CLOSING_TAGS;
     static const std::vector<std::string> ESCAPE_TAGS;
+    static const std::vector<std::string> SINGLE_ERASE_TAGS;
 private:
     xmlDocument doc;
 

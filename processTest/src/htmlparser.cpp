@@ -26,6 +26,7 @@ void HTMLParser::HTMLSelfClosing(std::string& str) {
 
     for(auto it = str.begin(); it != str.end(); ++it) {
         if(isEscape){
+            // Escape 시 삭제
             if(*it != '<') { continue; }
             if(*(it + 1) != '/') { continue; }
             
@@ -44,10 +45,11 @@ void HTMLParser::HTMLSelfClosing(std::string& str) {
             } else {
                 std::cout << "?" << std::endl;
             }
-
         } else if(isSingle) {
+            // Single 시 삭제
             if(*it != '>') { continue; }
             iter_escape_end = it;
+
             str.erase(iter_escape_begin, iter_escape_end+1);
             it = iter_escape_begin;
             isTag = false;
@@ -83,16 +85,13 @@ void HTMLParser::HTMLSelfClosing(std::string& str) {
             }
             if(isEscape) { continue; }
 
-            // doctype 여부 확인
-            if(matchString(it + 1, str.end(), "!doctype")) {
-                iter_escape_begin = it;
-                isSingle = true;
-            }
-            
-            // 주석 여부 확인
-            if(matchString(it + 1, str.end(), "!--")) {
-                iter_escape_begin = it;
-                isSingle = true;
+            // Single Tag 여부 확인
+            for(auto&& single_tag : SINGLE_ERASE_TAGS) {
+                if(matchString(it + 1, str.end(), single_tag)) {
+                    iter_escape_begin = it;
+                    isSingle = true;
+                    break;
+                }
             }
         }
     }
@@ -112,13 +111,19 @@ bool HTMLParser::matchString(std::string::iterator iter_begin, std::string::iter
 
 const std::vector<std::string> HTMLParser::SELF_CLOSING_TAGS = {
     "area", "base", "br", "col", "embed",
-    "hr", "img", "input", "link", "meta",
+    "hr", "img", "link",//, "meta", //, "input"
     "param", "source", "track", "wbr"
 };
 
 const std::vector<std::string> HTMLParser::ESCAPE_TAGS = {
     "script", "style"
 };
+
+const std::vector<std::string> HTMLParser::SINGLE_ERASE_TAGS = {
+    "!doctype", "!--", "input" ,"meta"
+};
+
+
 
 }
 /*

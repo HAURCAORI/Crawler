@@ -11,7 +11,14 @@
 #define END_CHRONO std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - begin).count() << "[ms]" << std::endl;
 
 
-
+void printNode(Crawler::HTMLParser::xmlNode target) {
+    using namespace std::chrono_literals;
+    for (auto node = target.first_child(); node; node = node.next_sibling())
+    {
+        printNode(node);
+        std::cout << target.path() << " : " << target.first_attribute().value() << std::endl;
+    }
+}
 
 int main() {
     curl_global_init(CURL_GLOBAL_DEFAULT);
@@ -49,24 +56,26 @@ int main() {
         obj.setAdapterOption(ADAPTER_OPT_PATH, path);
         
         auto res = obj.perform();
-        CURLObject* memory;
-        curl_easy_getinfo(obj, CURLINFO_PRIVATE, &memory);
+        
         //std::cout << memory->getData() << std::endl;
 
         
         obj.getAdapter()->out();
 
-        HTMLParser parser(&example);
+        using namespace std::chrono_literals;
+        std::this_thread::sleep_for(3s);
+        
+        CURLObject* memory;
+        curl_easy_getinfo(obj, CURLINFO_PRIVATE, &memory);
+        HTMLParser parser(&example);//&memory->getData()
         auto doc = parser.getDocument();
     
+        printNode(doc->root());
+
         auto tool = doc->select_node(R"(/html/body/div[2]/div[2]/div[2])");
         std::cout << tool.node() << "/" << tool.node().name() << std::endl;
-    
-        auto target = doc->first_child().first_child().next_sibling().child("div").next_sibling("div").child("div").next_sibling("div");
-        for (auto node = target.first_child(); node; node = node.next_sibling())
-        {
-            std::cout << node.name() << "/" << node.first_attribute().value() << std::endl;
-        }
+        
+        
         
         
 
