@@ -60,7 +60,7 @@ int main() {
         obj.setAdapter<IOAdapterFile>();
         obj.setAdapterOption(ADAPTER_OPT_PATH, path);
         
-        //auto res = obj.perform();
+        auto res = obj.perform();
         
         //obj.getAdapter()->out();
         
@@ -70,20 +70,21 @@ int main() {
         
         //std::string test_set = readFile("./Output/original.html");
         std::string test_set = readFile("./Output/input.html");
-        HTMLParser::HTMLPreprocessing(test_set);
+        //HTMLParser::HTMLPreprocessing(test_set);
         HTMLParser::HTMLCorrectError(test_set);
         writeFile("./Output/test.html",test_set);
         
+
         HTMLParser parser(&test_set);
         auto doc = parser.getDocument();
-        auto tool = doc->select_node(R"(/html/body/div[2]/main)"); // container
+        //auto tool = doc->select_node(R"(/html/body/div[2]/main)"); // container
         //printNode(tool.node(),5);
         //std::cout << "==" << std::endl;
-        //printNode(doc->root(), 4);
+        printNode(doc->root(), 3);
         
         
 
-        //if(res == CURLE_OK)
+        if(res == CURLE_OK)
             std::cout << "OK" << std::endl;
     } else {
         std::cout << "null" << std::endl;

@@ -13,12 +13,13 @@ std::string readFile(std::string path) {
     return buffer.str();
 }
 
-void writeFile(std::string path, const std::string& data) {
+bool writeFile(std::string path, const std::string& data) {
     std::ofstream outFile(path, std::ios_base::trunc);
     if(!outFile.good()) {
-        return;
+        return false;
     }
     outFile << data;
+    return true;
 }
 
 std::string example = R"_(

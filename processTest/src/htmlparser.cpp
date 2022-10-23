@@ -190,23 +190,27 @@ void HTMLParser::HTMLCorrectError(std::string& str) {
             std::string temp(iter_tag_begin, iter_tag_end);
 
             if(isTextNode) {
-                std::cout << "TextNode " << temp << std::endl;
+                //std::cout << "TextNode " << temp << std::endl;
             }
 
             if(temp.at(0) == '/') {
                 //pop
                 temp = temp.substr(1);
+                
+
                 if(temp != stack.top().tag && depth > stack.top().depth) {
                     std::string insert_str = "</" + stack.top().tag + ">";
                     auto insert_it = iter_tag_begin - 1;
                     leftEndSpace(insert_it);
-                    str.insert(insert_it, insert_str.begin(), insert_str.end());
+                    it = str.insert(insert_it, insert_str.begin(), insert_str.end());
+                    it += insert_str.length();
                 }
+                
                 stack.pop();
                 --depth;
             } else if(!isSelfClose) {
                 //push
-                std::cout << depth << " : " << temp << std::endl;
+                //std::cout << depth << " : " << temp << std::endl;
                 stack.push({temp, depth++});
             }
             isTextNode = false;
@@ -279,7 +283,7 @@ const std::vector<std::string> HTMLParser::ESCAPE_TAGS = {
 };
 
 const std::vector<std::string> HTMLParser::SINGLE_ERASE_TAGS = {
-    "!doctype", "!--", "input" ,"meta", "img"
+    "!doctype", "!DOCTYPE", "!--", "input" ,"meta", "img"
 };
 
 
