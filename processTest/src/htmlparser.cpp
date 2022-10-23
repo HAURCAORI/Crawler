@@ -59,7 +59,7 @@ void HTMLParser::HTMLPreprocessing(std::string& str) {
                 }
             }
             rigntEndSpace(iter_erase_end); // 공백 영역 추가
-            it = str.erase(iter_erase_begin, iter_erase_end) - 1; // end에 + 1
+            it = str.erase(iter_erase_begin, iter_erase_end+1) - 1; // end에 + 1
             
             isTag = false;
             isEscape = false;
@@ -76,7 +76,7 @@ void HTMLParser::HTMLPreprocessing(std::string& str) {
             iter_erase_end = it;
 
             rigntEndSpace(iter_erase_end); // 공백 영역 추가
-            it = str.erase(iter_erase_begin, iter_erase_end) - 1;  // end에 + 1
+            it = str.erase(iter_erase_begin, iter_erase_end+1) - 1;  // end에 + 1
             
             isTag = false;
             isSingle = false;

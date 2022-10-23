@@ -68,9 +68,9 @@ int main() {
         curl_easy_getinfo(obj, CURLINFO_PRIVATE, &memory);
 
         
-        //std::string test_set = readFile("./Output/original.html");
-        std::string test_set = readFile("./Output/input.html");
-        //HTMLParser::HTMLPreprocessing(test_set);
+        std::string test_set = readFile("./Output/original.html");
+        //std::string test_set = readFile("./Output/input.html");
+        HTMLParser::HTMLPreprocessing(test_set);
         HTMLParser::HTMLCorrectError(test_set);
         writeFile("./Output/test.html",test_set);
         
@@ -80,7 +80,7 @@ int main() {
         //auto tool = doc->select_node(R"(/html/body/div[2]/main)"); // container
         //printNode(tool.node(),5);
         //std::cout << "==" << std::endl;
-        printNode(doc->root(), 3);
+        printNode(doc->root(), 5);
         
         
 
