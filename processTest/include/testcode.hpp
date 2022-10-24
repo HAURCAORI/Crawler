@@ -25,20 +25,39 @@ static bool writeFile(std::string path, const std::string& data) {
     return true;
 }
 
-struct Sites {
-    std::string site;
-    std::string last_tag;
-};
 
-static const std::vector<Sites> site_list = {
-    {"https://www.naver.com/", "div"}
+static const std::vector<std::string> site_list = {
+    {"https://www.naver.com/"}
 };
 
 class HTMLTest {
 public:
     HTMLTest() {}
 
+    void execute() {
+        for(auto&& site : site_list) {
+            std::cout << site << " => " << perform(site) << std::endl;
+        }
+    }
+    static std::string perform(std::string url) {
+        Crawler::CURLObject obj(url);
+        if(!obj) { return "obj error"; }
+        
+        auto res = obj.perform();
+        if(res != CURLE_OK) {
+            return "perfomr error";
+        }
+/*
+        Crawler::CURLObject* memory;
+        curl_easy_getinfo(obj, CURLINFO_PRIVATE, &memory);
 
+        Crawler::HTMLParser parser(&memory->getData());
+        if(!parser.success()) {
+            return "parser error";
+        }
+        */
+         return "success";
+    }
     
 
 private:

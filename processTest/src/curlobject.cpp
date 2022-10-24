@@ -43,6 +43,9 @@ CURLcode CURLObject::perform() {
     if(!isURLSet) {
         throw CURLErrorURL("Empty URL.");
     }
+    if(!mAdapter) {
+        setAdapter<IOAdapter>();
+    }
     CURLcode ret = curl_easy_perform(mHandle);
     if(ret == CURLE_OK) { performSuccess(); }
     return ret;
@@ -123,7 +126,7 @@ void CURLObject::performSuccess() {
     // After perform, modify HTML string data.
     mAdapter->out();
     HTMLParser::HTMLPreprocessing(mData);
-    //HTMLParser::HTMLCorrectError(mData);
+    HTMLParser::HTMLCorrectError(mData);
 }
 
 // CURLMultiObject declaration

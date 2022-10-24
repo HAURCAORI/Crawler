@@ -25,7 +25,7 @@ IOAdapter& IOAdapter::operator=(IOAdapter&& rhs) noexcept {
 void IOAdapter::set(std::string* data) { mData = data; }
 
 void IOAdapter::out() {
-    std::cout << "IOAdapter" << std::endl;
+    //std::cout << "IOAdapter" << std::endl;
 }
 
 void IOAdapter::setOption(AdapterOption option, const std::any& value) {}
