@@ -80,10 +80,9 @@ int main() {
         //auto tool = doc->select_node(R"(/html/body/div[2]/main)"); // container
         //printNode(tool.node(),5);
         //std::cout << "==" << std::endl;
-        printNode(doc->root(), 5);
+        //printNode(doc->root(), 5);
         auto ln = parser.lastNodeTag();
-        std::cout << ln.tag << "|" << ln.depth << "|" << ln.attribute << std::endl;
-        
+        std::cout << parser.success() << std::endl;
         if(res == CURLE_OK)
             std::cout << "OK" << std::endl;
     } else {

@@ -29,6 +29,8 @@ public:
     xmlNode lastNode() const;
     HTMLTag lastNodeTag() const;
 
+    bool success() const;
+
     static void HTMLPreprocessing(std::string& str);
     static void HTMLCorrectError(std::string& str);
 

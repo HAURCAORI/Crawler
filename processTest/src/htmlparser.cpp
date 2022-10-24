@@ -1,7 +1,25 @@
 #include "htmlparser.h"
 #include <stack>
-
 #include <iostream>
+
+std::vector<std::string> split(std::string s, std::string delimiter) {
+    size_t pos_start = 0, pos_end, delim_len = delimiter.length();
+    std::string token;
+    std::vector<std::string> res;
+
+    while ((pos_end = s.find (delimiter, pos_start)) != std::string::npos) {
+        if(pos_start == pos_end) {
+            pos_start = pos_end + delim_len;
+            continue;
+        }
+        token = s.substr (pos_start, pos_end - pos_start);
+        pos_start = pos_end + delim_len;
+        res.push_back (token);
+    }
+
+    res.push_back (s.substr (pos_start));
+    return res;
+}
 
 bool matchString(std::string::iterator iter_begin, std::string::iterator iter_end, const std::string& target) {
     bool match = true;
@@ -66,7 +84,7 @@ HTMLTag HTMLParser::lastNodeTag() const {
     std::string::const_reverse_iterator iter_tag_end;
 
     std::string tag;
-    std::string attribute;
+    std::string attribute = "";
     int depth = -1;
     for(auto it = mXml->crbegin(); it != mXml->crend(); ++it) {
         if(isTag) {
@@ -98,6 +116,25 @@ HTMLTag HTMLParser::lastNodeTag() const {
         }
     }
     return { tag, depth, attribute };
+}
+
+bool HTMLParser::success() const {
+    xmlNode tnode = lastNode();
+    HTMLTag rnode = lastNodeTag();
+    bool attribute_check = true;
+    if(tnode.first_attribute()) {
+        std::vector<std::string> rattrs = split(rnode.attribute, " ");
+        auto iter_t = tnode.attributes_begin();
+        for(auto attr : rattrs) {
+            if(iter_t == tnode.attributes_end()) { break; }
+            if(attr.substr(0, attr.find('=')) != iter_t->name() || attr.substr(attr.find('"') + 1, attr.length()-attr.find('"')-2) != iter_t->value()) {
+                attribute_check = false;
+                break;
+            }
+            ++iter_t;
+        }
+    }
+    return (tnode.name() == rnode.tag) && attribute_check;
 }
 
 void HTMLParser::HTMLPreprocessing(std::string& str) {

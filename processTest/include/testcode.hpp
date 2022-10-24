@@ -36,10 +36,10 @@ static const std::vector<Sites> site_list = {
 
 class HTMLTest {
 public:
-    HTMLTest();
+    HTMLTest() {}
 
 
-void HTMLPreprocessingTest(std::string str);
+    
 
 private:
 
