@@ -1,5 +1,6 @@
 #pragma once
 #include <any>
+#include "htmlparser.h"
 
 namespace Crawler {
 enum AdapterOption {

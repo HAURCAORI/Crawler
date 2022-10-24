@@ -5,7 +5,7 @@
 
 #include "htmlparser.h"
 
-#include "testset.h"
+#include "testcode.hpp"
 
 #include <chrono>
 #define BEGIN_CHRONO std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
@@ -52,8 +52,8 @@ int main() {
         threads.EnqueueCURL(std::move(obj));
     }
     */
-   
-    Crawler::CURLObject obj("https://www.dcinside.com/");
+
+    Crawler::CURLObject obj("https://www.naver.com/");
     if(obj) {
         //CURLMultiObject::setTimeOut(100);
         std::string path = "./Output/original.html";
@@ -68,8 +68,8 @@ int main() {
         curl_easy_getinfo(obj, CURLINFO_PRIVATE, &memory);
 
         
-        std::string test_set = readFile("./Output/original.html");
-        //std::string test_set = readFile("./Output/input.html");
+        //std::string test_set = readFile("./Output/original.html");
+        std::string test_set = readFile("./Output/input.html");
         HTMLParser::HTMLPreprocessing(test_set);
         HTMLParser::HTMLCorrectError(test_set);
         writeFile("./Output/test.html",test_set);
@@ -81,9 +81,9 @@ int main() {
         //printNode(tool.node(),5);
         //std::cout << "==" << std::endl;
         printNode(doc->root(), 5);
+        auto ln = parser.lastNodeTag();
+        std::cout << ln.tag << "|" << ln.depth << "|" << ln.attribute << std::endl;
         
-        
-
         if(res == CURLE_OK)
             std::cout << "OK" << std::endl;
     } else {

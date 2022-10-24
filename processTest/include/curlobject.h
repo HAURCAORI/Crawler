@@ -3,10 +3,9 @@
 #include <memory>
 #include <curl/curl.h>
 
-#include <curltype.h>
-#include <curlexceptions.h>
-#include <curlioadapter.h>
-#include "htmlparser.h" // include pos
+#include "curltype.h"
+#include "curlexceptions.h"
+#include "curlioadapter.h"
 
 namespace Crawler {
 

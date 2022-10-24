@@ -3,13 +3,44 @@
 
 #include <iostream>
 
+bool matchString(std::string::iterator iter_begin, std::string::iterator iter_end, const std::string& target) {
+    bool match = true;
+    auto it_target_tag = target.begin();
+    for (auto it_tag = iter_begin; it_target_tag != target.end() && it_tag != iter_end; ++it_tag, ++it_target_tag) {
+        if (*it_tag != *it_target_tag) {
+            match = false;
+            break;
+        }
+    }
+    return match;
+}
+
+void rigntEndSpace(std::string::iterator& it) {
+    while(*(it+1) == ' ' || *(it+1) == '\n') { ++it; }
+}
+
+void leftEndSpace(std::string::iterator& it) {
+    while(*(it-1) == ' ' || *(it-1) == '\n' || *(it-1) == '\t') { --it; }
+}
+
+bool isAlphabet(char ch) {
+    return (ch>='a' && ch<='z') || (ch>='A' && ch<='Z');
+}
+
+bool isWord(char ch) {
+    return (ch>='a' && ch<='z') || (ch>='A' && ch<='Z') || (ch & 0x80);
+}
+
+std::string indent(int depth) {
+    return std::string(std::max(depth-1,0), '\t');
+}
 
 
 namespace Crawler {
 
 HTMLParser::HTMLParser() {}
 
-HTMLParser::HTMLParser(const std::string* xml) {
+HTMLParser::HTMLParser(const std::string* xml) : mXml(xml) {
     parse(xml->c_str());
 }
 
@@ -17,6 +48,56 @@ HTMLParser::~HTMLParser() {}
 
 void HTMLParser::parse(const char* xml) {
     doc.load_string(xml);
+}
+
+HTMLParser::xmlNode HTMLParser::lastNode() const {
+    xmlNode node = doc;
+    while(node.last_child()) {
+        node = node.last_child();
+    }
+    return node;
+}
+
+HTMLTag HTMLParser::lastNodeTag() const {
+    bool isTag = false;
+    bool isAttributeSkip = false;
+    std::string::const_reverse_iterator iter_tag_begin;
+    std::string::const_reverse_iterator iter_tag_middle;
+    std::string::const_reverse_iterator iter_tag_end;
+
+    std::string tag;
+    std::string attribute;
+    int depth = -1;
+    for(auto it = mXml->crbegin(); it != mXml->crend(); ++it) {
+        if(isTag) {
+            if(*it == '"') { 
+                isAttributeSkip = !isAttributeSkip;
+            }
+            if(isAttributeSkip) { continue; }
+        }
+        if(*it == '>') {
+            if(*(it + 1) == '/') { continue; }
+            isTag = true;
+            iter_tag_end = it;
+            iter_tag_middle = it;
+            ++depth;
+        } else if(*it == ' ') {
+            iter_tag_middle = it;
+        } else if(isTag && *it == '<') {
+            isTag = false;
+            isAttributeSkip = false;
+            if(*(it - 1) == '/') { continue; }
+            iter_tag_begin = it;
+
+            tag = std::string(iter_tag_begin.base(), iter_tag_middle.base() - 1);
+            if(iter_tag_middle != iter_tag_end) {
+                attribute = std::string(iter_tag_middle.base(), iter_tag_end.base() - 1);
+            }
+            --depth;
+            break;
+        }
+    }
+    return { tag, depth, attribute };
 }
 
 void HTMLParser::HTMLPreprocessing(std::string& str) {
@@ -249,38 +330,6 @@ void HTMLParser::HTMLCorrectError(std::string& str) {
         str.append("\r\n" + indent(stack.back().depth) + "</" + stack.back().tag + ">");
         stack.pop_back();
     }
-}
-
-bool HTMLParser::matchString(std::string::iterator iter_begin, std::string::iterator iter_end, const std::string& target) {
-    bool match = true;
-    auto it_target_tag = target.begin();
-    for (auto it_tag = iter_begin; it_target_tag != target.end() && it_tag != iter_end; ++it_tag, ++it_target_tag) {
-        if (*it_tag != *it_target_tag) {
-            match = false;
-            break;
-        }
-    }
-    return match;
-}
-
-void HTMLParser::rigntEndSpace(std::string::iterator& it) {
-    while(*(it+1) == ' ' || *(it+1) == '\n') { ++it; }
-}
-
-void HTMLParser::leftEndSpace(std::string::iterator& it) {
-    while(*(it-1) == ' ' || *(it-1) == '\n' || *(it-1) == '\t') { --it; }
-}
-
-bool HTMLParser::isAlphabet(char ch) {
-    return (ch>='a' && ch<='z') || (ch>='A' && ch<='Z');
-}
-
-std::string HTMLParser::indent(int depth) {
-    return std::string(std::max(depth-1,0), '\t');
-}
-
-bool HTMLParser::isWord(char ch) {
-    return (ch>='a' && ch<='z') || (ch>='A' && ch<='Z') || (ch & 0x80);
 }
 
 const std::vector<std::string> HTMLParser::SELF_CLOSING_TAGS = {
