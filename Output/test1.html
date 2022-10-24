@@ -1,0 +1,1243 @@
+<html lang="ko">
+ <head> 
+  <title>네이버 금융</title> 
+  <link rel="stylesheet" type="text/css" href="https://ssl.pstatic.net/imgstock/static.pc/20221019125813/css/finance_header.css" /> 
+  <link rel="stylesheet" type="text/css" href="https://ssl.pstatic.net/imgstock/static.pc/20221019125813/css/finance.css" /> 
+  <link rel="stylesheet" type="text/css" href="https://ssl.pstatic.net/imgstock/static.pc/20221019125813/css/newstock3.css" /> 
+  <link rel="shortcut icon" href="https://ssl.pstatic.net/imgstock/favi/favicon.ico" type="image/x-icon" /> 
+  </head> 
+ <body onload="getGNB();"> 
+  <div id="u_skip"> 
+   <a href="#menu" tabindex="1"><span>메인 메뉴로 바로가기</span></a> 
+   <a href="#start" tabindex="2"><span>본문으로 바로가기</span></a> 
+  </div> 
+  <div id="header"> 
+   <div class="snb_area"> 
+    <div class="snb_inner"> 
+     <div id="gnb_area"> 
+      <div id="gnb"> 
+       </div> 
+     </div> 
+     <div class="sta"> 
+      <h1 class="logo"> <a href="https://www.naver.com/" class="logo_naver" onclick="clickcr(this, 'STA.naver', '', '', event);"><span class="blind">네이버</span></a> <a href="/" class="logo_service" onclick="clickcr(this, 'STA.finance', '', '', event);"><span class="blind">금융</span></a> </h1> 
+      <form name="search" action="/search/search.naver" method="get" onsubmit="return delayed_submit(this)" style="margin:0; padding:0;"> 
+       <fieldset> 
+        <legend>검색</legend> 
+        <div class="snb_search_box"> 
+         <div class="snb_search_box_sub"> 
+          <a id="nautocomplete" href="#" onclick="return false" class="btn_arrow"><span class="blind">자동완성 펼치기</span></a> 
+         </div> 
+         <div class="auto_area"> 
+          <h2 class="blind">자동완성</h2> 
+          <div id="autoFrame" style="display: none;"> 
+           <div class="wrap" id="atcmp" style="display:none;"> 
+            <div class="wrap_in"> 
+             <div class="words"> 
+              <ul class="_resultBox"> 
+               <li> <a href="#" onclick="clickcr(this, 'AUT.list', '', '', event); return false;" class="_au_real_list"> <span class="num _au_real_list">@code@</span> <span class="_au_real_list">@txt@</span> <span class="type _au_real_list">@market@</span> </a> 
+                <div style="display:none" class="_au_full">
+                 @full_txt@
+                </div> 
+                <div style="display:none" class="_au_code">
+                 @in_code@
+                </div> 
+                <div style="display:none" class="_au_name">
+                 @in_name@
+                </div> 
+                <div style="display:none" class="_au_link">
+                 @in_link@
+                </div> 
+                <div style="display:none" class="_au_market">
+                 @in_market@
+                </div> </li> 
+              </ul> 
+             </div> 
+             <p class="func"> <span><a href="#" class="fire_event funoff" onclick="clickcr(this, 'AUT.x', '', '', event); smartSearch.unuse(); return false;">기능끄기</a></span> </p> 
+            </div> 
+           </div> 
+           <div class="wrap" id="atcmpIng" style="display:none;"> 
+            <div class="wrap_in"> 
+             <div class="words"> 
+              <p class="msg"> 현재 자동완성 기능을 사용하고 계십니다. </p> 
+             </div> 
+             <p class="func"> <span><a href="#" class="fire_event funoff" onclick="clickcr(this, 'AUT.x', '', '', event); smartSearch.unuse(); return false;">기능끄기</a></span> </p> 
+            </div> 
+           </div> 
+           <div class="wrap" id="atcmpStart" style="display:none;"> 
+            <div class="wrap_in"> 
+             <div class="words"> 
+              <p class="msg"> 자동완성 기능이 활성화되었습니다. </p> 
+             </div> 
+             <p class="func"> <span><a href="#" class="fire_event funoff" onclick="clickcr(this, 'AUT.x', '', '', event); smartSearch.unuse(); return false;">기능끄기</a></span> </p> 
+            </div> 
+           </div> 
+          </div> 
+         </div> 
+         <button type="submit" class="snb_search_btn" onclick="clickcr(this, 'STA.search', '', '', event);" alt="검색"><span class="blind">검색</span></button> 
+         <a href="#" target="_blank" class="snb_search_btn-total" onclick="itegrationSearch();clickcr(this, 'STA.nx', '', '', event);return false;">통합검색</a> 
+        </div> 
+       </fieldset> 
+      </form> 
+     </div> 
+    </div> 
+   </div> 
+   <div class="lnb_area "> 
+    <div class="lnb_inner"> 
+     <div id="menu"> 
+      <ul class="menu"> 
+       <li class="m1 first on"><a href="/" onclick="clickcr(this, 'LNB.home', '', '', event);"><span class="tx">금융 홈</span></a></li> 
+       <li class="m2 "><a href="/sise/" onclick="clickcr(this, 'LNB.sise', '', '', event);"><span class="tx">국내증시</span></a></li> 
+       <li class="m3 "><a href="/world/" onclick="clickcr(this, 'LNB.world', '', '', event);"><span class="tx">해외증시</span></a></li> 
+       <li class="m4 "><a href="/marketindex/" onclick="clickcr(this, 'LNB.market', '', '', event);"><span class="tx">시장지표</span></a></li> 
+       <li class="m6 "><a href="/research/" onclick="clickcr(this, 'LNB.research', '', '', event);"><span class="tx">리서치</span></a></li> 
+       <li class="m7 "><a href="/news/"><span class="tx">뉴스</span></a></li> 
+       <li class="m8 "><a href="/mystock/" onclick="clickcr(this, 'LNB.mystock', '', '', event);"><span class="tx">MY</span></a></li> 
+      </ul> 
+     </div> 
+    </div> 
+   </div> 
+   <iframe id="me_layers" name="test" title="네이버미 영역" width="0" height="0" scrolling="no" frameborder="0" style="display:block;top: 22px; right: 209px; position: absolute; z-index: 15;"></iframe> 
+  </div> 
+  <div id="wrap"> 
+   <hr /> 
+   <div id="start" class="blind">
+    <strong name="start">본문시작</strong>
+   </div> 
+   <dl class="blind"> 
+    <dt>
+     오늘의 코스피/코스닥 지수
+    </dt> 
+    <dd>
+     2022년 10월 24일 장마감
+    </dd> 
+    <dd>
+     코스피 지수 2,236.16 전일대비 상승 23.04 플러스 1.04 퍼센트
+    </dd> 
+    <dd>
+     코스닥 지수 688.50 전일대비 상승 14.02 플러스 2.08 퍼센트
+    </dd> 
+   </dl> 
+   <div class="home_spot view_on"> 
+    <div class="bx_spot"> 
+     <div class="tab_spot tab2" id="tab_search"> 
+      <ul> 
+       <li><a href="#" onclick="javascript:showMainRecentMyStockSearchStock('tab_search', 'tab_spot tab1', '000000', 'recent');clickcr(this, 'mys.recent', '', '', event);return false;"><span>최근조회종목</span></a></li> 
+       <li><a href="#" onclick="javascript:showMainRecentMyStockSearchStock('tab_search', 'tab_spot tab2', '000000', 'mystock');clickcr(this, 'mys.interest', '', '', event);return false;"><span>MY STOCK</span></a></li> 
+      </ul> 
+     </div> 
+     <div class="section_tab" id="recent_search_tab"> 
+      <strong class="blind" id="recent_mystock_blind">최근 조회종목 리스트</strong> 
+      <ul class="tab_list"> 
+      </ul> 
+     </div> 
+     </div> 
+   </div> 
+   <div id="container" class="home"> 
+    <div id="content"> 
+     <div class="article"> 
+      <div class="section"> 
+       <div class="news_area"> 
+        <div class="section_strategy"> 
+         <h2 class="h_strategy"><span>주요뉴스</span></h2> 
+         <ul> 
+          <li> <span><a href="/news/news_read.naver?mode=mainnews&amp;office_id=008&amp;article_id=0004809476" onclick="clickcr(this, 'tdn.list', '008_0004809476', '0', event);">&quot;시진핑 독주 공포감&quot;…홍콩증시 6%대 폭락 [Asia마감]</a></span> </li> 
+          <li> <span><a href="/news/news_read.naver?mode=mainnews&amp;office_id=366&amp;article_id=0000849672" onclick="clickcr(this, 'tdn.list', '366_0000849672', '1', event);">[마켓뷰] 코스피, 1% 오르며 2230선 마감…中시장 불안에 상승폭은 제한</a></span> </li> 
+          <li> <span><a href="/news/news_read.naver?mode=mainnews&amp;office_id=421&amp;article_id=0006412739" onclick="clickcr(this, 'tdn.list', '421_0006412739', '2', event);">[시황종합] 코스피, 1.04% 상승한 2236선 마감…&quot;연준 속도조절 기대감&quot;</a></span> </li> 
+          <li> <span><a href="/news/news_read.naver?mode=mainnews&amp;office_id=018&amp;article_id=0005348921" onclick="clickcr(this, 'tdn.list', '018_0005348921', '3', event);">[코스닥 마감]2% 상승…美피봇&middot;韓유동성 공급 힘입어</a></span> </li> 
+          <li> <span><a href="/news/news_read.naver?mode=mainnews&amp;office_id=003&amp;article_id=0011493700" onclick="clickcr(this, 'tdn.list', '003_0011493700', '4', event);">[마감시황]코스피, 美 긴축 속도 조절 기대감에 상승…2230선 마감</a></span> </li> 
+          <li> <span><a href="/news/news_read.naver?mode=mainnews&amp;office_id=018&amp;article_id=0005348909" onclick="clickcr(this, 'tdn.list', '018_0005348909', '5', event);">환율, 1430원대 약보합 하락 그쳐…위안화 약세+결제 수요[외환마감]</a></span> </li> 
+         </ul> 
+         <a href="/news/mainnews.naver" class="btn_more" onclick="clickcr(this, 'tdn.more', '', '', event);"><em class="btn_more4"><span class="blind">주요뉴스 더보기</span></em></a> 
+        </div> 
+       </div> 
+       <div class="section_sise_top"> 
+        <h2 class="h_type"><span>TOP 종목</span></h2> 
+        <ul class="tab_area sise_top1"> 
+         <li class="tab1"><a href="#" onclick="clickcr(this, 'spe.sale', '', '', event);return false;" class="is_active"><span>거래상위</span></a></li> 
+         <li class="tab2"><a href="#" onclick="clickcr(this, 'spe.ceiling', '', '', event);return false;"><span>상승</span></a></li> 
+         <li class="tab3"><a href="#" onclick="clickcr(this, 'spe.bottom', '', '', event);return false;"><span>하락</span></a></li> 
+         <li class="tab4"><a href="#" onclick="clickcr(this, 'spe.value', '', '', event);return false;"><span>시가총액 상위</span></a></li> 
+        </ul> 
+        <div class="group_type is_active"> 
+         <table class="tbl_home"> 
+          <caption>
+           거래상위 TOP 종목
+           <span>종목명에 대한 현재가, 전일대비, 등락률로 구분되어 있습니다.</span>
+          </caption> 
+          <colgroup> 
+           <col width="40%" /> 
+           <col /> 
+          </colgroup> 
+          <thead> 
+           <tr> 
+            <th scope="col">종목명</th> 
+            <th scope="col">현재가</th> 
+            <th scope="col">전일대비</th> 
+            <th scope="col">등락률</th> 
+           </tr> 
+          </thead> 
+          <tbody id="_topItems1"> 
+           <tr class="down"> 
+            <th scope="row"><a href="/item/main.naver?code=252670" onclick="clickcr(this, 'spe.slist', '252670', '1', event);">KODEX 200선물인버스2X</a></th> 
+            <td>3,595</td> 
+            <td><em class="bu_p bu_pdn"><span class="blind">하락</span></em> 70</td> 
+            <td> <em class="down"> -1.91% </em> </td> 
+           </tr> 
+           <tr class="down"> 
+            <th scope="row"><a href="/item/main.naver?code=096300" onclick="clickcr(this, 'spe.slist', '096300', '2', event);">베트남개발1</a></th> 
+            <td>303</td> 
+            <td><em class="bu_p bu_pdn"><span class="blind">하락</span></em> 7</td> 
+            <td> <em class="down"> -2.26% </em> </td> 
+           </tr> 
+           <tr class="down"> 
+            <th scope="row"><a href="/item/main.naver?code=251340" onclick="clickcr(this, 'spe.slist', '251340', '3', event);">KODEX 코스닥150선물인버스</a></th> 
+            <td>5,490</td> 
+            <td><em class="bu_p bu_pdn"><span class="blind">하락</span></em> 190</td> 
+            <td> <em class="down"> -3.35% </em> </td> 
+           </tr> 
+           <tr class="down"> 
+            <th scope="row"><a href="/item/main.naver?code=159910" onclick="clickcr(this, 'spe.slist', '159910', '4', event);">스킨앤스킨</a></th> 
+            <td>264</td> 
+            <td><em class="bu_p bu_pdn"><span class="blind">하락</span></em> 6</td> 
+            <td> <em class="down"> -2.22% </em> </td> 
+           </tr> 
+           <tr class="up"> 
+            <th scope="row"><a href="/item/main.naver?code=278650" onclick="clickcr(this, 'spe.slist', '278650', '5', event);">노터스</a></th> 
+            <td>5,770</td> 
+            <td><em class="bu_p bu_pup"><span class="blind">상승</span></em> 1,330</td> 
+            <td> <em class="up"> +29.95% </em> </td> 
+           </tr> 
+           <tr class="up"> 
+            <th scope="row"><a href="/item/main.naver?code=122630" onclick="clickcr(this, 'spe.slist', '122630', '6', event);">KODEX 레버리지</a></th> 
+            <td>12,625</td> 
+            <td><em class="bu_p bu_pup"><span class="blind">상승</span></em> 240</td> 
+            <td> <em class="up"> +1.94% </em> </td> 
+           </tr> 
+           <tr class="up"> 
+            <th scope="row"><a href="/item/main.naver?code=382480" onclick="clickcr(this, 'spe.slist', '382480', '7', event);">지아이텍</a></th> 
+            <td>4,480</td> 
+            <td><em class="bu_p bu_pup"><span class="blind">상승</span></em> 290</td> 
+            <td> <em class="up"> +6.92% </em> </td> 
+           </tr> 
+           <tr class="up"> 
+            <th scope="row"><a href="/item/main.naver?code=233740" onclick="clickcr(this, 'spe.slist', '233740', '8', event);">KODEX 코스닥150레버리지</a></th> 
+            <td>6,585</td> 
+            <td><em class="bu_p bu_pup"><span class="blind">상승</span></em> 405</td> 
+            <td> <em class="up"> +6.55% </em> </td> 
+           </tr> 
+           <tr class="down"> 
+            <th scope="row"><a href="/item/main.naver?code=114800" onclick="clickcr(this, 'spe.slist', '114800', '9', event);">KODEX 인버스</a></th> 
+            <td>5,260</td> 
+            <td><em class="bu_p bu_pdn"><span class="blind">하락</span></em> 50</td> 
+            <td> <em class="down"> -0.94% </em> </td> 
+           </tr> 
+           <tr class="up"> 
+            <th scope="row"><a href="/item/main.naver?code=500032" onclick="clickcr(this, 'spe.slist', '500032', '10', event);">신한 인버스 2X 천연가스 선물 ETN(H)</a></th> 
+            <td>210</td> 
+            <td><em class="bu_p bu_pup"><span class="blind">상승</span></em> 20</td> 
+            <td> <em class="up"> +10.53% </em> </td> 
+           </tr> 
+           <tr class="up"> 
+            <th scope="row"><a href="/item/main.naver?code=044060" onclick="clickcr(this, 'spe.slist', '044060', '11', event);">조광ILI</a></th> 
+            <td>1,450</td> 
+            <td><em class="bu_p bu_pup"><span class="blind">상승</span></em> 130</td> 
+            <td> <em class="up"> +9.85% </em> </td> 
+           </tr> 
+           <tr class="up"> 
+            <th scope="row"><a href="/item/main.naver?code=500054" onclick="clickcr(this, 'spe.slist', '500054', '12', event);">신한 인버스 2X 천연가스 선물 ETN</a></th> 
+            <td>385</td> 
+            <td><em class="bu_p bu_pup"><span class="blind">상승</span></em> 40</td> 
+            <td> <em class="up"> +11.59% </em> </td> 
+           </tr> 
+           <tr class="up"> 
+            <th scope="row"><a href="/item/main.naver?code=025820" onclick="clickcr(this, 'spe.slist', '025820', '13', event);">이구산업</a></th> 
+            <td>3,250</td> 
+            <td><em class="bu_p bu_pup"><span class="blind">상승</span></em> 435</td> 
+            <td> <em class="up"> +15.45% </em> </td> 
+           </tr> 
+           <tr class="up"> 
+            <th scope="row"><a href="/item/main.naver?code=005930" onclick="clickcr(this, 'spe.slist', '005930', '14', event);">삼성전자</a></th> 
+            <td>57,500</td> 
+            <td><em class="bu_p bu_pup"><span class="blind">상승</span></em> 1,600</td> 
+            <td> <em class="up"> +2.86% </em> </td> 
+           </tr> 
+           <tr class="down"> 
+            <th scope="row"><a href="/item/main.naver?code=378800" onclick="clickcr(this, 'spe.slist', '378800', '15', event);">샤페론</a></th> 
+            <td>8,750</td> 
+            <td><em class="bu_p bu_pdn"><span class="blind">하락</span></em> 540</td> 
+            <td> <em class="down"> -5.81% </em> </td> 
+           </tr> 
+          </tbody> 
+         </table> 
+         <a href="/sise/sise_quant.naver" class="btn_more" onclick="clickcr(this, 'spe.more', '', '', event);"><em class="btn_more4"><span class="blind">거래상위 더보기</span></em></a> 
+        </div> 
+        <div class="group_type"> 
+         <table class="tbl_home"> 
+          <caption>
+           상승 TOP 종목
+           <span>종목명에 대한 현재가, 전일대비, 등락률로 구분되어 있습니다.</span>
+          </caption> 
+          <colgroup> 
+           <col width="40%" /> 
+           <col /> 
+          </colgroup> 
+          <thead> 
+           <tr> 
+            <th scope="col">종목명</th> 
+            <th scope="col">현재가</th> 
+            <th scope="col">전일대비</th> 
+            <th scope="col">등락률</th> 
+           </tr> 
+          </thead> 
+          <tbody id="_topItems2"> 
+           <tr class="up"> 
+            <th scope="row"><a href="/item/main.naver?code=278650" onclick="clickcr(this, 'spe.clist', '278650', '1', event);">노터스</a></th> 
+            <td>5,770</td> 
+            <td><em class="bu_p bu_pup2"><span class="blind">상한가</span></em> 1,330 </td> 
+            <td> <em class="up"> +29.95% </em> </td> 
+           </tr> 
+           <tr class="up"> 
+            <th scope="row"><a href="/item/main.naver?code=012320" onclick="clickcr(this, 'spe.clist', '012320', '2', event);">경동인베스트</a></th> 
+            <td>63,400</td> 
+            <td><em class="bu_p bu_pup2"><span class="blind">상한가</span></em> 14,600 </td> 
+            <td> <em class="up"> +29.92% </em> </td> 
+           </tr> 
+           <tr class="up"> 
+            <th scope="row"><a href="/item/main.naver?code=187270" onclick="clickcr(this, 'spe.clist', '187270', '3', event);">신화콘텍</a></th> 
+            <td>5,410</td> 
+            <td><em class="bu_p bu_pup2"><span class="blind">상한가</span></em> 1,245 </td> 
+            <td> <em class="up"> +29.89% </em> </td> 
+           </tr> 
+           <tr class="up"> 
+            <th scope="row"><a href="/item/main.naver?code=002025" onclick="clickcr(this, 'spe.clist', '002025', '4', event);">코오롱우</a></th> 
+            <td>27,400</td> 
+            <td><em class="bu_p bu_pup2"><span class="blind">상한가</span></em> 6,300 </td> 
+            <td> <em class="up"> +29.86% </em> </td> 
+           </tr> 
+           <tr class="up"> 
+            <th scope="row"><a href="/item/main.naver?code=004985" onclick="clickcr(this, 'spe.clist', '004985', '5', event);">성신양회우</a></th> 
+            <td>14,400</td> 
+            <td><em class="bu_p bu_pup2"><span class="blind">상한가</span></em> 3,300 </td> 
+            <td> <em class="up"> +29.73% </em> </td> 
+           </tr> 
+           <tr class="up"> 
+            <th scope="row"><a href="/item/main.naver?code=101670" onclick="clickcr(this, 'spe.clist', '101670', '6', event);">코리아에스이</a></th> 
+            <td>13,350</td> 
+            <td><em class="bu_p bu_pup2"><span class="blind">상한가</span></em> 3,050 </td> 
+            <td> <em class="up"> +29.61% </em> </td> 
+           </tr> 
+           <tr class="up"> 
+            <th scope="row"><a href="/item/main.naver?code=550075" onclick="clickcr(this, 'spe.clist', '550075', '7', event);">QV 블룸버그 -2X 천연가스 선물 ETN(H)</a></th> 
+            <td>29,735</td> 
+            <td><em class="bu_p bu_pup"><span class="blind">상승</span></em> 6,710 </td> 
+            <td> <em class="up"> +29.14% </em> </td> 
+           </tr> 
+           <tr class="up"> 
+            <th scope="row"><a href="/item/main.naver?code=700020" onclick="clickcr(this, 'spe.clist', '700020', '8', event);">하나 블룸버그 -2X 천연가스 선물 ETN(H)</a></th> 
+            <td>29,730</td> 
+            <td><em class="bu_p bu_pup"><span class="blind">상승</span></em> 6,700 </td> 
+            <td> <em class="up"> +29.09% </em> </td> 
+           </tr> 
+           <tr class="up"> 
+            <th scope="row"><a href="/item/main.naver?code=500074" onclick="clickcr(this, 'spe.clist', '500074', '9', event);">신한 블룸버그 -2X 천연가스 선물 ETN(H)</a></th> 
+            <td>29,705</td> 
+            <td><em class="bu_p bu_pup"><span class="blind">상승</span></em> 6,680 </td> 
+            <td> <em class="up"> +29.01% </em> </td> 
+           </tr> 
+           <tr class="up"> 
+            <th scope="row"><a href="/item/main.naver?code=610054" onclick="clickcr(this, 'spe.clist', '610054', '10', event);">메리츠 블룸버그 -2X 천연가스 선물 ETN(H)</a></th> 
+            <td>29,695</td> 
+            <td><em class="bu_p bu_pup"><span class="blind">상승</span></em> 6,670 </td> 
+            <td> <em class="up"> +28.97% </em> </td> 
+           </tr> 
+           <tr class="up"> 
+            <th scope="row"><a href="/item/main.naver?code=123840" onclick="clickcr(this, 'spe.clist', '123840', '11', event);">한일진공</a></th> 
+            <td>630</td> 
+            <td><em class="bu_p bu_pup"><span class="blind">상승</span></em> 135 </td> 
+            <td> <em class="up"> +27.27% </em> </td> 
+           </tr> 
+           <tr class="up"> 
+            <th scope="row"><a href="/item/main.naver?code=004980" onclick="clickcr(this, 'spe.clist', '004980', '12', event);">성신양회</a></th> 
+            <td>9,700</td> 
+            <td><em class="bu_p bu_pup"><span class="blind">상승</span></em> 1,980 </td> 
+            <td> <em class="up"> +25.65% </em> </td> 
+           </tr> 
+           <tr class="up"> 
+            <th scope="row"><a href="/item/main.naver?code=080520" onclick="clickcr(this, 'spe.clist', '080520', '13', event);">오디텍</a></th> 
+            <td>5,270</td> 
+            <td><em class="bu_p bu_pup"><span class="blind">상승</span></em> 1,030 </td> 
+            <td> <em class="up"> +24.29% </em> </td> 
+           </tr> 
+           <tr class="up"> 
+            <th scope="row"><a href="/item/main.naver?code=006740" onclick="clickcr(this, 'spe.clist', '006740', '14', event);">영풍제지</a></th> 
+            <td>7,870</td> 
+            <td><em class="bu_p bu_pup"><span class="blind">상승</span></em> 1,340 </td> 
+            <td> <em class="up"> +20.52% </em> </td> 
+           </tr> 
+           <tr class="up"> 
+            <th scope="row"><a href="/item/main.naver?code=217270" onclick="clickcr(this, 'spe.clist', '217270', '15', event);">넵튠</a></th> 
+            <td>14,300</td> 
+            <td><em class="bu_p bu_pup"><span class="blind">상승</span></em> 2,300 </td> 
+            <td> <em class="up"> +19.17% </em> </td> 
+           </tr> 
+          </tbody> 
+         </table> 
+         <a href="/sise/sise_rise.naver" class="btn_more" onclick="clickcr(this, 'spe.more', '', '', event);"><em class="btn_more4"><span class="blind">상승 더보기</span></em></a> 
+        </div> 
+        <div class="group_type"> 
+         <table class="tbl_home"> 
+          <caption>
+           하락 TOP 종목
+           <span>종목명에 대한 현재가, 전일대비, 등락률로 구분되어 있습니다.</span>
+          </caption> 
+          <colgroup> 
+           <col width="40%" /> 
+           <col /> 
+          </colgroup> 
+          <thead> 
+           <tr> 
+            <th scope="col">종목명</th> 
+            <th scope="col">현재가</th> 
+            <th scope="col">전일대비</th> 
+            <th scope="col">등락률</th> 
+           </tr> 
+          </thead> 
+          <tbody id="_topItems3"> 
+           <tr class="down"> 
+            <th scope="row"><a href="/item/main.naver?code=438320" onclick="clickcr(this, 'spe.blist', '438320', '1', event);">TIGER 차이나항셍테크레버리지(합성 H)</a></th> 
+            <td>4,350</td> 
+            <td><em class="bu_p bu_pdn"><span class="blind">하락</span></em> -950</td> 
+            <td> <em class="down"> -17.92% </em> </td> 
+           </tr> 
+           <tr class="down"> 
+            <th scope="row"><a href="/item/main.naver?code=580018" onclick="clickcr(this, 'spe.blist', '580018', '2', event);">KB 레버리지 항셍테크 선물 ETN(H)</a></th> 
+            <td>920</td> 
+            <td><em class="bu_p bu_pdn"><span class="blind">하락</span></em> -185</td> 
+            <td> <em class="down"> -16.74% </em> </td> 
+           </tr> 
+           <tr class="down"> 
+            <th scope="row"><a href="/item/main.naver?code=530081" onclick="clickcr(this, 'spe.blist', '530081', '3', event);">삼성 레버리지 항셍테크 ETN(H)</a></th> 
+            <td>1,120</td> 
+            <td><em class="bu_p bu_pdn"><span class="blind">하락</span></em> -225</td> 
+            <td> <em class="down"> -16.73% </em> </td> 
+           </tr> 
+           <tr class="down"> 
+            <th scope="row"><a href="/item/main.naver?code=530075" onclick="clickcr(this, 'spe.blist', '530075', '4', event);">삼성 레버리지 HSCEI ETN(H)</a></th> 
+            <td>1,985</td> 
+            <td><em class="bu_p bu_pdn"><span class="blind">하락</span></em> -310</td> 
+            <td> <em class="down"> -13.51% </em> </td> 
+           </tr> 
+           <tr class="down"> 
+            <th scope="row"><a href="/item/main.naver?code=570031" onclick="clickcr(this, 'spe.blist', '570031', '5', event);">TRUE 레버리지 HSCEI ETN(H)</a></th> 
+            <td>2,300</td> 
+            <td><em class="bu_p bu_pdn"><span class="blind">하락</span></em> -325</td> 
+            <td> <em class="down"> -12.38% </em> </td> 
+           </tr> 
+           <tr class="down"> 
+            <th scope="row"><a href="/item/main.naver?code=510028" onclick="clickcr(this, 'spe.blist', '510028', '6', event);">대신 S&amp;P 2X 천연가스 선물 ETN</a></th> 
+            <td>12,705</td> 
+            <td><em class="bu_p bu_pdn"><span class="blind">하락</span></em> -1,785</td> 
+            <td> <em class="down"> -12.32% </em> </td> 
+           </tr> 
+           <tr class="down"> 
+            <th scope="row"><a href="/item/main.naver?code=291810" onclick="clickcr(this, 'spe.blist', '291810', '7', event);">핀텔</a></th> 
+            <td>10,050</td> 
+            <td><em class="bu_p bu_pdn"><span class="blind">하락</span></em> -1,400</td> 
+            <td> <em class="down"> -12.23% </em> </td> 
+           </tr> 
+           <tr class="down"> 
+            <th scope="row"><a href="/item/main.naver?code=550074" onclick="clickcr(this, 'spe.blist', '550074', '8', event);">QV 블룸버그 2X 천연가스 선물 ETN(H)</a></th> 
+            <td>12,730</td> 
+            <td><em class="bu_p bu_pdn"><span class="blind">하락</span></em> -1,770</td> 
+            <td> <em class="down"> -12.21% </em> </td> 
+           </tr> 
+           <tr class="down"> 
+            <th scope="row"><a href="/item/main.naver?code=610053" onclick="clickcr(this, 'spe.blist', '610053', '9', event);">메리츠 블룸버그 2X 천연가스 선물 ETN(H)</a></th> 
+            <td>12,765</td> 
+            <td><em class="bu_p bu_pdn"><span class="blind">하락</span></em> -1,750</td> 
+            <td> <em class="down"> -12.06% </em> </td> 
+           </tr> 
+           <tr class="down"> 
+            <th scope="row"><a href="/item/main.naver?code=580045" onclick="clickcr(this, 'spe.blist', '580045', '10', event);">KB 블룸버그 레버리지 천연가스선물 ETN(H)</a></th> 
+            <td>12,770</td> 
+            <td><em class="bu_p bu_pdn"><span class="blind">하락</span></em> -1,745</td> 
+            <td> <em class="down"> -12.02% </em> </td> 
+           </tr> 
+           <tr class="down"> 
+            <th scope="row"><a href="/item/main.naver?code=520058" onclick="clickcr(this, 'spe.blist', '520058', '11', event);">미래에셋 S&amp;P 2X 천연가스 선물 ETN(H)</a></th> 
+            <td>12,805</td> 
+            <td><em class="bu_p bu_pdn"><span class="blind">하락</span></em> -1,745</td> 
+            <td> <em class="down"> -11.99% </em> </td> 
+           </tr> 
+           <tr class="down"> 
+            <th scope="row"><a href="/item/main.naver?code=570083" onclick="clickcr(this, 'spe.blist', '570083', '12', event);">TRUE 블룸버그 레버리지 천연가스 선물 ETN</a></th> 
+            <td>12,850</td> 
+            <td><em class="bu_p bu_pdn"><span class="blind">하락</span></em> -1,745</td> 
+            <td> <em class="down"> -11.96% </em> </td> 
+           </tr> 
+           <tr class="down"> 
+            <th scope="row"><a href="/item/main.naver?code=500073" onclick="clickcr(this, 'spe.blist', '500073', '13', event);">신한 블룸버그 2X 천연가스 선물 ETN(H)</a></th> 
+            <td>12,775</td> 
+            <td><em class="bu_p bu_pdn"><span class="blind">하락</span></em> -1,710</td> 
+            <td> <em class="down"> -11.81% </em> </td> 
+           </tr> 
+           <tr class="down"> 
+            <th scope="row"><a href="/item/main.naver?code=204450" onclick="clickcr(this, 'spe.blist', '204450', '14', event);">KODEX 차이나H레버리지(H)</a></th> 
+            <td>1,410</td> 
+            <td><em class="bu_p bu_pdn"><span class="blind">하락</span></em> -185</td> 
+            <td> <em class="down"> -11.60% </em> </td> 
+           </tr> 
+           <tr class="down"> 
+            <th scope="row"><a href="/item/main.naver?code=570045" onclick="clickcr(this, 'spe.blist', '570045', '15', event);">TRUE 레버리지 천연가스 선물 ETN(H)</a></th> 
+            <td>6,810</td> 
+            <td><em class="bu_p bu_pdn"><span class="blind">하락</span></em> -870</td> 
+            <td> <em class="down"> -11.33% </em> </td> 
+           </tr> 
+          </tbody> 
+         </table> 
+         <a href="/sise/sise_fall.naver" class="btn_more" onclick="clickcr(this, 'spe.more', '', '', event);"><em class="btn_more4"><span class="blind">하락 더보기</span></em></a> 
+        </div> 
+        <div class="group_type"> 
+         <table class="tbl_home"> 
+          <caption>
+           시가총액 상위 TOP 종목
+           <span>종목명에 대한 현재가, 전일대비, 등락률로 구분되어 있습니다.</span>
+          </caption> 
+          <colgroup> 
+           <col /> 
+           <col width="40%" /> 
+           <col /> 
+          </colgroup> 
+          <thead> 
+           <tr> 
+            <th scope="col">종목명</th> 
+            <th scope="col">현재가</th> 
+            <th scope="col">전일대비</th> 
+            <th scope="col">등락률</th> 
+           </tr> 
+          </thead> 
+          <tbody id="_topItems4"> 
+           <tr class="up"> 
+            <th scope="row"><a href="/item/main.naver?code=005930" onclick="clickcr(this, 'spe.vlist', '005930', '1', event);">삼성전자</a></th> 
+            <td>57,500</td> 
+            <td><em class="bu_p bu_pup"><span class="blind">상승</span></em> 1,600</td> 
+            <td> <em class="up"> +2.86% </em> </td> 
+           </tr> 
+           <tr class="up"> 
+            <th scope="row"><a href="/item/main.naver?code=373220" onclick="clickcr(this, 'spe.vlist', '373220', '2', event);">LG에너지솔루션</a></th> 
+            <td>509,000</td> 
+            <td><em class="bu_p bu_pup"><span class="blind">상승</span></em> 10,000</td> 
+            <td> <em class="up"> +2.00% </em> </td> 
+           </tr> 
+           <tr class="up"> 
+            <th scope="row"><a href="/item/main.naver?code=000660" onclick="clickcr(this, 'spe.vlist', '000660', '3', event);">SK하이닉스</a></th> 
+            <td>91,800</td> 
+            <td><em class="bu_p bu_pup"><span class="blind">상승</span></em> 1,300</td> 
+            <td> <em class="up"> +1.44% </em> </td> 
+           </tr> 
+           <tr class="up"> 
+            <th scope="row"><a href="/item/main.naver?code=207940" onclick="clickcr(this, 'spe.vlist', '207940', '4', event);">삼성바이오로직스</a></th> 
+            <td>873,000</td> 
+            <td><em class="bu_p bu_pup"><span class="blind">상승</span></em> 26,000</td> 
+            <td> <em class="up"> +3.07% </em> </td> 
+           </tr> 
+           <tr class="up"> 
+            <th scope="row"><a href="/item/main.naver?code=006400" onclick="clickcr(this, 'spe.vlist', '006400', '5', event);">삼성SDI</a></th> 
+            <td>650,000</td> 
+            <td><em class="bu_p bu_pup"><span class="blind">상승</span></em> 23,000</td> 
+            <td> <em class="up"> +3.67% </em> </td> 
+           </tr> 
+           <tr class="up"> 
+            <th scope="row"><a href="/item/main.naver?code=005935" onclick="clickcr(this, 'spe.vlist', '005935', '6', event);">삼성전자우</a></th> 
+            <td>52,500</td> 
+            <td><em class="bu_p bu_pup"><span class="blind">상승</span></em> 500</td> 
+            <td> <em class="up"> +0.96% </em> </td> 
+           </tr> 
+           <tr class="up"> 
+            <th scope="row"><a href="/item/main.naver?code=051910" onclick="clickcr(this, 'spe.vlist', '051910', '7', event);">LG화학</a></th> 
+            <td>575,000</td> 
+            <td><em class="bu_p bu_pup"><span class="blind">상승</span></em> 7,000</td> 
+            <td> <em class="up"> +1.23% </em> </td> 
+           </tr> 
+           <tr class="down"> 
+            <th scope="row"><a href="/item/main.naver?code=005380" onclick="clickcr(this, 'spe.vlist', '005380', '8', event);">현대차</a></th> 
+            <td>161,500</td> 
+            <td><em class="bu_p bu_pdn"><span class="blind">하락</span></em> 5,500</td> 
+            <td> <em class="down"> -3.29% </em> </td> 
+           </tr> 
+           <tr class="down"> 
+            <th scope="row"><a href="/item/main.naver?code=035420" onclick="clickcr(this, 'spe.vlist', '035420', '9', event);">NAVER</a></th> 
+            <td>164,000</td> 
+            <td><em class="bu_p bu_pdn"><span class="blind">하락</span></em> 2,000</td> 
+            <td> <em class="down"> -1.20% </em> </td> 
+           </tr> 
+           <tr class="down"> 
+            <th scope="row"><a href="/item/main.naver?code=000270" onclick="clickcr(this, 'spe.vlist', '000270', '10', event);">기아</a></th> 
+            <td>65,300</td> 
+            <td><em class="bu_p bu_pdn"><span class="blind">하락</span></em> 2,600</td> 
+            <td> <em class="down"> -3.83% </em> </td> 
+           </tr> 
+           <tr class="up"> 
+            <th scope="row"><a href="/item/main.naver?code=068270" onclick="clickcr(this, 'spe.vlist', '068270', '11', event);">셀트리온</a></th> 
+            <td>178,000</td> 
+            <td><em class="bu_p bu_pup"><span class="blind">상승</span></em> 4,000</td> 
+            <td> <em class="up"> +2.30% </em> </td> 
+           </tr> 
+           <tr class="down"> 
+            <th scope="row"><a href="/item/main.naver?code=035720" onclick="clickcr(this, 'spe.vlist', '035720', '12', event);">카카오</a></th> 
+            <td>48,450</td> 
+            <td><em class="bu_p bu_pdn"><span class="blind">하락</span></em> 400</td> 
+            <td> <em class="down"> -0.82% </em> </td> 
+           </tr> 
+           <tr class="down"> 
+            <th scope="row"><a href="/item/main.naver?code=005490" onclick="clickcr(this, 'spe.vlist', '005490', '13', event);">POSCO홀딩스</a></th> 
+            <td>248,000</td> 
+            <td><em class="bu_p bu_pdn"><span class="blind">하락</span></em> 1,000</td> 
+            <td> <em class="down"> -0.40% </em> </td> 
+           </tr> 
+           <tr class="up"> 
+            <th scope="row"><a href="/item/main.naver?code=028260" onclick="clickcr(this, 'spe.vlist', '028260', '14', event);">삼성물산</a></th> 
+            <td>111,000</td> 
+            <td><em class="bu_p bu_pup"><span class="blind">상승</span></em> 1,500</td> 
+            <td> <em class="up"> +1.37% </em> </td> 
+           </tr> 
+           <tr class="down"> 
+            <th scope="row"><a href="/item/main.naver?code=012330" onclick="clickcr(this, 'spe.vlist', '012330', '15', event);">현대모비스</a></th> 
+            <td>198,000</td> 
+            <td><em class="bu_p bu_pdn"><span class="blind">하락</span></em> 6,000</td> 
+            <td> <em class="down"> -2.94% </em> </td> 
+           </tr> 
+          </tbody> 
+         </table> 
+         <a href="/sise/sise_market_sum.naver" class="btn_more" onclick="clickcr(this, 'spe.more', '', '', event);"><em class="btn_more4"><span class="blind">시가총액 상위 더보기</span></em></a> 
+        </div> 
+       </div> 
+      </div> 
+      <div class="section2"> 
+       <div class="section_stock_market"> 
+        <div class="group_heading"> 
+         <h2 class="h_market"><span>오늘의 증시</span></h2> 
+         <div class="ly_realtime"> 
+          <span href="#" class="btn_realtime"> </span> 
+          <span id="time"> 2022.10.24<span>장마감</span> </span> 
+         </div> 
+        </div> 
+        <div class="section_stock"> 
+         <div class="kospi_area group_quot quot_opn" style="height:269px"> 
+          <div class="heading_area"> 
+           <h4 class="h_opn"><a href="/sise/sise_index.naver?code=KOSPI" onclick="clickcr(this, 'tsc*k.title', '', '', event);" title="코스피지수 상세보기" class="_stock_section"><em><span class="blind">코스피</span></em></a></h4> 
+           <a href="/sise/sise_index.naver?code=KOSPI" onclick="clickcr(this, 'tsc*k.title', '', '', event);" title="코스피지수 상세보기"> <span class="num_quot up"> <span class="num">2,236.16</span> <span class="num2">23.04</span> <span class="num3"><span class="blind">+</span>1.04<span class="per">%</span></span> <span class="blind">상승</span> </span> </a> 
+           <span class="clse_bg"></span> 
+          </div> 
+          <div class="chart_area"> 
+           <p class="blind">코스피 시세 차트</p> 
+           <a href="/sise/sise_index.naver?code=KOSPI" onclick="clickcr(this, 'tsc*k.chart', '', '', event);" title="코스피지수 상세보기"></a> 
+          </div> 
+          <div class="dsc_area"> 
+           <dl class="dl"> 
+            <dt>
+             <a href="/sise/sise_trans_style.naver?sosok=01" onclick="clickcr(this, 'tsc*k.private', '', '', event);" title="투자자별 매매 동향 상세보기">개인</a>
+            </dt> 
+            <dd class="dn">
+             <a href="/sise/sise_trans_style.naver?sosok=01" onclick="clickcr(this, 'tsc*k.private', '', '', event);">-4,823</a>
+             <span class="blind">억원</span>
+            </dd> 
+            <dt>
+             <a href="/sise/sise_trans_style.naver?sosok=01" onclick="clickcr(this, 'tsc*k.foreign', '', '', event);" title="투자자별 매매 동향 상세보기">외국인</a>
+            </dt> 
+            <dd class="up">
+             <a href="/sise/sise_trans_style.naver?sosok=01" onclick="clickcr(this, 'tsc*k.foreign', '', '', event);">+1,453</a>
+             <span class="blind">억원</span>
+            </dd> 
+            <dt>
+             <a href="/sise/sise_trans_style.naver?sosok=01" onclick="clickcr(this, 'tsc*k.institutional', '', '', event);" title="투자자별 매매 동향 상세보기">기관</a>
+            </dt> 
+            <dd class="up">
+             <a href="/sise/sise_trans_style.naver?sosok=01" onclick="clickcr(this, 'tsc*k.institutional', '', '', event);">+3,216</a>
+             <span class="blind">억원</span>
+            </dd> 
+           </dl> 
+           <dl class="dl2"> 
+            <dt class="blind">
+             상한종목수
+            </dt> 
+            <dd class="dd">
+             <a href="/sise/sise_upper.naver" onclick="clickcr(this, 'tsc*k.ceiling', '', '', event);" title="상한종목 상세보기">3</a>
+            </dd> 
+            <dt class="blind">
+             상승종목수
+            </dt> 
+            <dd class="dd2">
+             <a href="/sise/sise_rise.naver?sosok=0" onclick="clickcr(this, 'tsc*k.rise', '', '', event);" title="상승종목 상세보기">622</a>
+            </dd> 
+            <dt class="blind">
+             보합종목수
+            </dt> 
+            <dd class="dd3">
+             <a href="/sise/sise_steady.naver?sosok=0" onclick="clickcr(this, 'tsc*k.steady', '', '', event);" title="보합종목 상세보기">63</a>
+            </dd> 
+            <dt class="blind">
+             하락종목수
+            </dt> 
+            <dd class="dd4">
+             <a href="/sise/sise_fall.naver?sosok=0" onclick="clickcr(this, 'tsc*k.drop', '', '', event);" title="하락종목 상세보기">246</a>
+            </dd> 
+            <dt class="blind">
+             하한종목수
+            </dt> 
+            <dd class="dd5">
+             <a href="/sise/sise_lower.naver" onclick="clickcr(this, 'tsc*k.floor', '', '', event);" title="하한종목 상세보기">0</a>
+            </dd> 
+           </dl> 
+          </div> 
+         </div> 
+         <div class="kosdaq_area group_quot" style="height:40px"> 
+          <div class="heading_area"> 
+           <h4><a href="/sise/sise_index.naver?code=KOSDAQ" onclick="clickcr(this, 'tsc*q.title', '', '', event);" title="코스닥지수 상세보기" class="_stock_section"><em><span class="blind">코스닥</span></em></a></h4> 
+           <a href="/sise/sise_index.naver?code=KOSDAQ" onclick="clickcr(this, 'tsc*q.title', '', '', event);" title="코스닥지수 상세보기"> <span class="num_quot up"> <span class="num">688.50</span> <span class="num2">14.02</span> <span class="num3"><span class="blind">+</span>2.08<span class="per">%</span></span> <span class="blind">상승</span> </span> </a> 
+           <span class="clse_bg"></span> 
+          </div> 
+          <div class="chart_area"> 
+           <p class="blind">코스닥 시세 차트</p> 
+           <a href="/sise/sise_index.naver?code=KOSDAQ" onclick="clickcr(this, 'tsc*q.chart', '', '', event);" title="코스닥지수 상세보기"></a> 
+          </div> 
+          <div class="dsc_area"> 
+           <dl class="dl"> 
+            <dt>
+             <a href="/sise/sise_trans_style.naver?sosok=02" onclick="clickcr(this, 'tsc*q.private', '', '', event);" title="투자자별 매매 동향 상세보기">개인</a>
+            </dt> 
+            <dd class="dn">
+             <a href="/sise/sise_trans_style.naver?sosok=02" onclick="clickcr(this, 'tsc*q.private', '', '', event);">-3,165</a>
+             <span class="blind">억원</span>
+            </dd> 
+            <dt>
+             <a href="/sise/sise_trans_style.naver?sosok=02" onclick="clickcr(this, 'tsc*q.foreign', '', '', event);" title="투자자별 매매 동향 상세보기">외국인</a>
+            </dt> 
+            <dd class="up">
+             <a href="/sise/sise_trans_style.naver?sosok=02" onclick="clickcr(this, 'tsc*q.foreign', '', '', event);">+1,152</a>
+             <span class="blind">억원</span>
+            </dd> 
+            <dt>
+             <a href="/sise/sise_trans_style.naver?sosok=02" onclick="clickcr(this, 'tsc*q.institutional', '', '', event);" title="투자자별 매매 동향 상세보기">기관</a>
+            </dt> 
+            <dd class="up">
+             <a href="/sise/sise_trans_style.naver?sosok=02" onclick="clickcr(this, 'tsc*q.institutional', '', '', event);">+1,988</a>
+             <span class="blind">억원</span>
+            </dd> 
+           </dl> 
+           <dl class="dl2"> 
+            <dt class="blind">
+             상한종목수
+            </dt> 
+            <dd class="dd">
+             <a href="/sise/sise_upper.naver" onclick="clickcr(this, 'tsc*q.ceiling', '', '', event);" title="상한종목 상세보기">3</a>
+            </dd> 
+            <dt class="blind">
+             상승종목수
+            </dt> 
+            <dd class="dd2">
+             <a href="/sise/sise_rise.naver?sosok=1" onclick="clickcr(this, 'tsc*q.rise', '', '', event);" title="상승종목 상세보기">1108</a>
+            </dd> 
+            <dt class="blind">
+             보합종목수
+            </dt> 
+            <dd class="dd3">
+             <a href="/sise/sise_steady.naver?sosok=1" onclick="clickcr(this, 'tsc*q.steady', '', '', event);" title="보합종목 상세보기">82</a>
+            </dd> 
+            <dt class="blind">
+             하락종목수
+            </dt> 
+            <dd class="dd4">
+             <a href="/sise/sise_fall.naver?sosok=1" onclick="clickcr(this, 'tsc*q.drop', '', '', event);" title="하락종목 상세보기">342</a>
+            </dd> 
+            <dt class="blind">
+             하한종목수
+            </dt> 
+            <dd class="dd5">
+             <a href="/sise/sise_lower.naver" onclick="clickcr(this, 'tsc*q.floor', '', '', event);" title="하한종목 상세보기">0</a>
+            </dd> 
+           </dl> 
+          </div> 
+         </div> 
+         <div class="kospi200_area group_quot" style="height:40px"> 
+          <div class="heading_area"> 
+           <h4><a href="/sise/sise_index.naver?code=KPI200" onclick="clickcr(this, 'tsc*f.title', '', '', event);" title="코스피200지수 상세보기" class="_stock_section"><em><span class="blind">코스피200</span></em></a></h4> 
+           <a href="/sise/sise_index.naver?code=KPI200" onclick="clickcr(this,'tsc*o.title','','',event);" title="코스피200지수 상세보기"> <span class="num_quot up"> <span class="num">291.47</span> <span class="num2">2.90</span> <span class="num3"><span class="blind">+</span>1.00<span class="per">%</span></span> <span class="blind">상승</span> </span> </a> 
+           <span class="clse_bg"></span> 
+          </div> 
+          <div class="chart_area"> 
+           <p class="blind">코스피200 시세 차트</p> 
+           <a href="/sise/sise_index.naver?code=KPI200" onclick="clickcr(this,'tsc*o.chart','','',event);" title="코스피200지수 상세보기"></a> 
+          </div> 
+          <div class="dsc_area dsc_area2"> 
+           <dl class="dl"> 
+            <dt>
+             개인
+            </dt> 
+            <dd class="dn">
+             -4,468
+             <span class="blind">억원</span>
+            </dd> 
+            <dt>
+             외국인
+            </dt> 
+            <dd class="up">
+             +1,029
+             <span class="blind">억원</span>
+            </dd> 
+            <dt>
+             기관
+            </dt> 
+            <dd class="up">
+             +3,287
+             <span class="blind">억원</span>
+            </dd> 
+           </dl> 
+          </div> 
+          <div class="basis_area"> 
+           <dl> 
+            <dt class="dt">
+             <a href="/sise/sise_program.naver?sosok=01" title="프로그램매매 동향 상세보기"><span class="blind">프로그램</span></a>
+            </dt> 
+            <dd class="dd2 up" id="_kospiProgram">
+             <a href="/sise/sise_program.naver?sosok=01" onclick="clickcr(this,'tsc*o.program','','',event);" title="프로그램매매 동향 상세보기">+688<span>억</span></a>
+            </dd> 
+            <dt id="basis_name" class="blind">
+             베이시스
+            </dt> 
+            <dd id="basis_value" class="dd up">
+             <span>+1.43 </span> 
+            </dd> 
+           </dl> 
+          </div> 
+         </div> 
+        </div> 
+       </div> 
+       <div class="section_top section_top_first"> 
+        <h2 class="h_top"><span>업종상위</span></h2> 
+        <ul class="list_rank"> 
+         <li class="ranking1"> <span class="info_num info_num1"><span class="blind">1</span></span> <p class="item"> <a href="/sise/sise_group_detail.naver?type=upjong&amp;no=262" onclick="clickcr(this, 'tos.cat1', 'upjong_262', '', event);"><strong>생명과학도구및..</strong></a> <em class="up"> +3.65% </em> </p> <p> <a href="/item/main.naver?code=278650" onclick="clickcr(this, 'tos.list1', '278650', '1', event);">노터스</a> <em class="up"> +29.95% </em> </p> <p> <a href="/item/main.naver?code=141080" onclick="clickcr(this, 'tos.list1', '141080', '2', event);">레고켐바이오</a> <em class="up"> +3.84% </em> </p> </li> 
+         <li class="ranking2"> <span class="info_num info_num2"><span class="blind">2</span></span> <p class="item"> <a href="/sise/sise_group_detail.naver?type=upjong&amp;no=320" onclick="clickcr(this, 'tos.cat2', 'upjong_320', '', event);"><strong>건축제품</strong></a> <em class="up"> +3.11% </em> </p> <p> <a href="/item/main.naver?code=192390" onclick="clickcr(this, 'tos.list2', '192390', '1', event);">윈하이텍</a> <em class="up"> +6.69% </em> </p> <p> <a href="/item/main.naver?code=206400" onclick="clickcr(this, 'tos.list2', '206400', '2', event);">베노홀딩스</a> <em class="up"> +5.86% </em> </p> </li> 
+         <li class="ranking3"> <span class="info_num info_num3"><span class="blind">3</span></span> <p class="item"> <a href="/sise/sise_group_detail.naver?type=upjong&amp;no=316" onclick="clickcr(this, 'tos.cat3', 'upjong_316', '', event);"><strong>건강관리업체및..</strong></a> <em class="up"> +3.10% </em> </p> <p> <a href="/item/main.naver?code=144510" onclick="clickcr(this, 'tos.list3', '144510', '1', event);">지씨셀</a> <em class="up"> +3.37% </em> </p> <p> <a href="/item/main.naver?code=226330" onclick="clickcr(this, 'tos.list3', '226330', '2', event);">신테카바이오</a> <em class="up"> +2.41% </em> </p> </li> 
+        </ul> 
+        <a href="/sise/sise_group.naver?type=upjong" class="btn_more" onclick="clickcr(this, 'tos.more', '', '', event);"><em class="btn_more4"><span class="blind">업종상위 더보기</span></em></a> 
+       </div> 
+       <div class="section_top group_top"> 
+        <h2 class="h_theme"><span>테마상위</span></h2> 
+        <ul class="list_rank"> 
+         <li class="ranking1"> <span class="info_num info_num1"><span class="blind">1</span></span> <p class="item"> <a href="/sise/sise_group_detail.naver?type=theme&amp;no=374" onclick="clickcr(this, 'pol.type1', 'thema_374', '', event);"><strong>4대강 복원</strong></a> <em class="up"> +5.78% </em> </p> <p> <a href="/item/main.naver?code=101670" onclick="clickcr(this, 'pol.list1', '101670', '1', event);"> 코리아에스.. </a> <em class="up"> +29.61% </em> </p> <p> <a href="/item/main.naver?code=001840" onclick="clickcr(this, 'pol.list1', '001840', '2', event);"> 이화공영 </a> <em class="up"> +5.02% </em> </p> </li> 
+         <li class="ranking2"> <span class="info_num info_num2"><span class="blind">2</span></span> <p class="item"> <a href="/sise/sise_group_detail.naver?type=theme&amp;no=44" onclick="clickcr(this, 'pol.type2', 'thema_44', '', event);"><strong>시멘트/레미콘</strong></a> <em class="up"> +5.51% </em> </p> <p> <a href="/item/main.naver?code=004980" onclick="clickcr(this, 'pol.list2', '004980', '1', event);"> 성신양회 </a> <em class="up"> +25.65% </em> </p> <p> <a href="/item/main.naver?code=198440" onclick="clickcr(this, 'pol.list2', '198440', '2', event);"> 고려시멘트 </a> <em class="up"> +9.86% </em> </p> </li> 
+         <li class="ranking3"> <span class="info_num info_num3"><span class="blind">3</span></span> <p class="item"> <a href="/sise/sise_group_detail.naver?type=theme&amp;no=341" onclick="clickcr(this, 'pol.type3', 'thema_341', '', event);"><strong>밥솥</strong></a> <em class="up"> +5.06% </em> </p> <p> <a href="/item/main.naver?code=024940" onclick="clickcr(this, 'pol.list3', '024940', '1', event);"> PN풍년 </a> <em class="up"> +17.83% </em> </p> <p> <a href="/item/main.naver?code=102120" onclick="clickcr(this, 'pol.list3', '102120', '2', event);"> 어보브반도.. </a> <em class="up"> +3.64% </em> </p> </li> 
+        </ul> 
+        <a href="/sise/theme.naver" class="btn_more" onclick="clickcr(this, 'pol.more', '', '', event);"><em class="btn_more4"><span class="blind">테마상위 더보기</span></em></a> 
+       </div> 
+      </div> 
+     </div> 
+     <div class="article2"> 
+      <div class="section1"> 
+       <div class="group1"> 
+        <h2 class="h_exchange"><span>환전 고시 환율</span></h2> 
+        <table class="tbl_home"> 
+         <caption>
+          환전 고시 환율
+          <span>통화명에 대한 현재가,전일대비로 구분되어 있습니다.</span>
+         </caption> 
+         <colgroup> 
+          <col /> 
+          <col width="50" /> 
+          <col width="50" /> 
+         </colgroup> 
+         <thead> 
+          <tr> 
+           <th scope="col">구분</th> 
+           <th scope="col">현재가</th> 
+           <th scope="col">전일대비</th> 
+          </tr> 
+         </thead> 
+         <tbody> 
+          <tr class="up bold"> 
+           <th scope="row"><a href="/marketindex/exchangeDetail.naver?marketindexCd=FX_USDKRW" onclick="clickcr(this, 'exr.list', 'FX_USDKRW', '1', event);">미국USD</a></th> 
+           <td>1,442.00</td> 
+           <td><em class="bu_p bu_pup"><span class="blind">상승</span></em> 4.00</td> 
+          </tr> 
+          <tr class="down"> 
+           <th scope="row"><a href="/marketindex/exchangeDetail.naver?marketindexCd=FX_JPYKRW" onclick="clickcr(this, 'exr.list', 'FX_JPYKRW', '2', event);">일본JPY (100엔)</a></th> 
+           <td>965.61</td> 
+           <td><em class="bu_p bu_pdn"><span class="blind">하락</span></em> 8.28</td> 
+          </tr> 
+          <tr class="down"> 
+           <th scope="row"><a href="/marketindex/exchangeDetail.naver?marketindexCd=FX_EURKRW" onclick="clickcr(this, 'exr.list', 'FX_EURKRW', '3', event);">유럽연합EUR</a></th> 
+           <td>1,415.76</td> 
+           <td><em class="bu_p bu_pdn"><span class="blind">하락</span></em> 2.40</td> 
+          </tr> 
+          <tr class="down"> 
+           <th scope="row"><a href="/marketindex/exchangeDetail.naver?marketindexCd=FX_CNYKRW" onclick="clickcr(this, 'exr.list', 'FX_CNYKRW', '4', event);">중국CNY</a></th> 
+           <td>197.37</td> 
+           <td><em class="bu_p bu_pdn"><span class="blind">하락</span></em> 1.54</td> 
+          </tr> 
+         </tbody> 
+        </table> 
+        <p class="dec_exchange"><em>2022.10.24 20:07</em> 하나은행 기준</p> 
+        <a href="/marketindex/?tabSel=exchange#tab_section" class="btn_more" onclick="clickcr(this, 'exr.more', '', '', event);"><em class="btn_more4"><span class="blind">환전 고시 환율 더보기</span></em></a> 
+       </div> 
+       <div class="group2"> 
+        <h2 class="h_foreign"><span>국제 시장 환율</span></h2> 
+        <table class="tbl_home"> 
+         <caption>
+          국제 시장 환율
+          <span>통화명에 대한 현재가,전일대비로 구분되어 있습니다.</span>
+         </caption> 
+         <colgroup> 
+          <col /> 
+          <col width="53" /> 
+          <col width="50" /> 
+         </colgroup> 
+         <thead> 
+          <tr> 
+           <th scope="col">구분</th> 
+           <th scope="col">현재가</th> 
+           <th scope="col">전일대비</th> 
+          </tr> 
+         </thead> 
+         <tbody> 
+          <tr class="down"> 
+           <th scope="row"><a href="/marketindex/worldExchangeDetail.naver?marketindexCd=FX_USDJPY" onclick="clickcr(this, 'wmc.list', 'FX_USDJPY', '1', event);">달러/일본 엔(10.22)</a></th> 
+           <td>147.6700</td> 
+           <td><em class="bu_p bu_pdn"><span class="blind">하락</span></em> 2.33</td> 
+          </tr> 
+          <tr class="up"> 
+           <th scope="row"><a href="/marketindex/worldExchangeDetail.naver?marketindexCd=FX_EURUSD" onclick="clickcr(this, 'wmc.list', 'FX_EURUSD', '2', event);"> 유로/달러(10.22)</a></th> 
+           <td>0.9861</td> 
+           <td><em class="bu_p bu_pup"><span class="blind">상승</span></em> 0.01</td> 
+          </tr> 
+          <tr class="up"> 
+           <th scope="row"><a href="/marketindex/worldExchangeDetail.naver?marketindexCd=FX_GBPUSD" onclick="clickcr(this, 'wmc.list', 'FX_GBPUSD', '3', event);"> 파운드/달러(10.22)</a></th> 
+           <td>1.1305</td> 
+           <td><em class="bu_p bu_pup"><span class="blind">상승</span></em> 0.01</td> 
+          </tr> 
+          <tr class="down bold"> 
+           <th scope="row"><a href="/marketindex/worldExchangeDetail.naver?marketindexCd=FX_USDX" onclick="clickcr(this, 'wmc.list', 'FX_USDX', '4', event);"> 달러인덱스(10.21)</a></th> 
+           <td>111.9800</td> 
+           <td><em class="bu_p bu_pdn"><span class="blind">하락</span></em> 0.83</td> 
+          </tr> 
+         </tbody> 
+        </table> 
+        <a href="/marketindex/?tabSel=worldExchange#tab_section" class="btn_more" onclick="clickcr(this, 'wmc.more', '', '', event);"><em class="btn_more4"><span class="blind">국제 시장 환율 더보기</span></em></a> 
+       </div> 
+       <div class="group3"> 
+        <h2 class="h_interest"><span>금리</span></h2> 
+        <table class="tbl_home"> 
+         <caption>
+          금리
+          <span>종류에 대한 현재가,전일대비로 구분되어 있습니다.</span>
+         </caption> 
+         <colgroup> 
+          <col /> 
+          <col width="50" /> 
+          <col width="52" /> 
+         </colgroup> 
+         <thead> 
+          <tr> 
+           <th scope="col">구분</th> 
+           <th scope="col">현재가</th> 
+           <th scope="col">전일대비</th> 
+          </tr> 
+         </thead> 
+         <tbody> 
+          <tr class="up bold"> 
+           <th scope="row"><a href="/marketindex/interestDetail.naver?marketindexCd=IRR_CD91" onclick="clickcr(this, 'int.list', 'IRR_CD91', '1', event);">CD(91일)(10.24)</a></th> 
+           <td>3.92</td> 
+           <td><em class="bu_p bu_pup"><span class="blind">상승</span></em> 0.02</td> 
+          </tr> 
+          <tr class="down"> 
+           <th scope="row"><a href="/marketindex/interestDetail.naver?marketindexCd=IRR_CALL" onclick="clickcr(this, 'int.list', 'IRR_CALL', '2', event);">콜금리(10.21)</a></th> 
+           <td>3.10</td> 
+           <td><em class="bu_p bu_pdn"><span class="blind">하락</span></em> 0.03</td> 
+          </tr> 
+          <tr class="down"> 
+           <th scope="row"><a href="/marketindex/interestDetail.naver?marketindexCd=IRR_GOVT03Y" onclick="clickcr(this, 'int.list', 'IRR_GOVT03Y', '3', event);">국고채(3년)(10.24)</a></th> 
+           <td>4.30</td> 
+           <td><em class="bu_p bu_pdn"><span class="blind">하락</span></em> 0.19</td> 
+          </tr> 
+          <tr class="down"> 
+           <th scope="row"><a href="/marketindex/interestDetail.naver?marketindexCd=IRR_CORP03Y" onclick="clickcr(this, 'int.list', 'IRR_CORP03Y', '4', event);">회사채(3년)(10.24)</a></th> 
+           <td>5.59</td> 
+           <td><em class="bu_p bu_pdn"><span class="blind">하락</span></em> 0.14</td> 
+          </tr> 
+         </tbody> 
+        </table> 
+        <a href="/marketindex/interestMain.naver" class="btn_more" onclick="clickcr(this, 'int.more', '', '', event);"><em class="btn_more4"><span class="blind">금리 더보기</span></em></a> 
+       </div> 
+      </div> 
+      <div class="section2"> 
+       <div class="group1"> 
+        <h2 class="h_oil"><span>유가</span></h2> 
+        <table class="tbl_home"> 
+         <caption>
+          유가
+          <span>종류에 대한 현재가,전일대비로 구분되어 있습니다.</span>
+         </caption> 
+         <colgroup> 
+          <col /> 
+          <col width="50" /> 
+          <col width="50" /> 
+         </colgroup> 
+         <thead> 
+          <tr> 
+           <th scope="col">구분</th> 
+           <th scope="col">현재가</th> 
+           <th scope="col">전일대비</th> 
+          </tr> 
+         </thead> 
+         <tbody> 
+          <tr class="up"> 
+           <th scope="row"><a href="/marketindex/worldOilDetail.naver?fdtc=2&amp;marketindexCd=OIL_DU" onclick="clickcr(this, 'oil.list', 'OIL_DU', '1', event);">두바이유(10.21)</a></th> 
+           <td>90.95</td> 
+           <td><em class="bu_p bu_pup"><span class="blind">상승</span></em> 0.41</td> 
+          </tr> 
+          <tr class="up bold"> 
+           <th scope="row"><a href="/marketindex/worldOilDetail.naver?fdtc=2&amp;marketindexCd=OIL_CL" onclick="clickcr(this, 'oil.list', 'OIL_CL', '2', event);"> WTI(10.21)</a></th> 
+           <td>85.05</td> 
+           <td><em class="bu_p bu_pup"><span class="blind">상승</span></em> 0.54</td> 
+          </tr> 
+          <tr class="down"> 
+           <th scope="row"><a href="/marketindex/oilDetail.naver?marketindexCd=OIL_GSL" onclick="clickcr(this, 'oil.list', 'OIL_GSL', '3', event);"> 휘발유(10.24)</a></th> 
+           <td>1,663.98</td> 
+           <td><em class="bu_p bu_pdn"><span class="blind">하락</span></em> 0.04</td> 
+          </tr> 
+          <tr class="up"> 
+           <th scope="row"><a href="/marketindex/oilDetail.naver?marketindexCd=OIL_HGSL" onclick="clickcr(this, 'oil.list', 'OIL_HGSL', '4', event);"> 고급휘발유(10.24)</a></th> 
+           <td>1,950.70</td> 
+           <td><em class="bu_p bu_pup"><span class="blind">상승</span></em> 0.87</td> 
+          </tr> 
+         </tbody> 
+        </table> 
+        <p class="dec_exchange2">단위<span class="bar">|</span><span class="txt">국제:달러/배럴, </span> 국내:원/리터 </p> 
+        <a href="/marketindex/oilMain.naver" class="btn_more" onclick="clickcr(this, 'oil.more', '', '', event);"><em class="btn_more4"><span class="blind">유가 더보기</span></em></a> 
+       </div> 
+       <div class="group2"> 
+        <h2 class="h_gold"><span>금 시세</span></h2> 
+        <table class="tbl_home"> 
+         <caption>
+          금 시세
+          <span>종류에 대한 현재가,전일대비로 구분되어 있습니다.</span>
+         </caption> 
+         <colgroup> 
+          <col /> 
+          <col width="58" /> 
+          <col width="65" /> 
+         </colgroup> 
+         <thead> 
+          <tr> 
+           <th scope="col">구분</th> 
+           <th scope="col">현재가</th> 
+           <th scope="col">전일대비</th> 
+          </tr> 
+         </thead> 
+         <tbody> 
+          <tr class="up bold"> 
+           <th scope="row"><a href="/marketindex/worldGoldDetail.naver?marketindexCd=CMDT_GC&amp;fdtc=2" onclick="clickcr(this, 'gol.list', 'CMDT_GC', '1', event);">국제금(10.21)</a></th> 
+           <td>1,656.30</td> 
+           <td><em class="bu_p bu_pup"><span class="blind">상승</span></em> 19.50</td> 
+          </tr> 
+          <tr class="up"> 
+           <th scope="row"><a href="/marketindex/goldDetail.naver" onclick="clickcr(this, 'gol.list', 'CMDT_GD', '2', event);"> 국내금(10.24)</a></th> 
+           <td>76,507.02</td> 
+           <td><em class="bu_p bu_pup"><span class="blind">상승</span></em> 1,259.28</td> 
+          </tr> 
+         </tbody> 
+        </table> 
+        <p class="dec_exchange2">단위<span class="bar">|</span><span class="txt">국제:달러/트로이온스, </span> 국내:원/g</p> 
+        <a href="/marketindex/goldMain.naver" class="btn_more" onclick="clickcr(this, 'gol.more', '', '', event);"><em class="btn_more4"><span class="blind">금 시세 더보기</span></em></a> 
+       </div> 
+       <div class="group3"> 
+        <h2 class="h_metal"><span>원자재</span></h2> 
+        <table class="tbl_home"> 
+         <caption>
+          원자재
+          <span>종류에 대한 현재가,전일대비로 구분되어 있습니다.</span>
+         </caption> 
+         <colgroup> 
+          <col /> 
+          <col width="50" /> 
+          <col width="52" /> 
+         </colgroup> 
+         <thead> 
+          <tr> 
+           <th scope="col">구분</th> 
+           <th scope="col">현재가</th> 
+           <th scope="col">전일대비</th> 
+          </tr> 
+         </thead> 
+         <tbody> 
+          <tr class="down bold"> 
+           <th scope="row"><a href="/marketindex/materialDetail.naver?marketindexCd=CMDT_CDY" onclick="clickcr(this, 'mat.list', 'CMDT_CDY', '1', event);">구리(10.21)</a></th> 
+           <td>7,545.00</td> 
+           <td><em class="bu_p bu_pdn"><span class="blind">하락</span></em> 40.50</td> 
+          </tr> 
+          <tr class="down"> 
+           <th scope="row"><a href="/marketindex/materialDetail.naver?marketindexCd=CMDT_PDY" onclick="clickcr(this, 'mat.list', 'CMDT_PDY', '2', event);">납(10.21)</a></th> 
+           <td>1,930.00</td> 
+           <td><em class="bu_p bu_pdn"><span class="blind">하락</span></em> 59.00</td> 
+          </tr> 
+          <tr class="down"> 
+           <th scope="row"><a href="/marketindex/materialDetail.naver?marketindexCd=CMDT_NG" onclick="clickcr(this, 'mat.list', 'CMDT_NG', '3', event);">천연가스(10.21)</a></th> 
+           <td>4.96</td> 
+           <td><em class="bu_p bu_pdn"><span class="blind">하락</span></em> 0.40</td> 
+          </tr> 
+          <tr class="up"> 
+           <th scope="row"><a href="/marketindex/materialDetail.naver?marketindexCd=CMDT_C" onclick="clickcr(this, 'mat.list', 'CMDT_C', '4', event);">옥수수(10.21)</a></th> 
+           <td>684.25</td> 
+           <td><em class="bu_p bu_pup"><span class="blind">상승</span></em> 0.25</td> 
+          </tr> 
+         </tbody> 
+        </table> 
+        <p class="dec_exchange2">단위<span class="bar">|</span><span class="txt">구리&middot;납:달러/톤 </span><br /><span class="txt">천연가스: 달러/MMBtu, 옥수수: 센트/부셸</span></p> 
+        <a href="/marketindex/materialMain.naver" class="btn_more" onclick="clickcr(this, 'mat.more', '', '', event);"><em class="btn_more4"><span class="blind">원자재 더보기</span></em></a> 
+       </div> 
+      </div> 
+     </div> 
+    </div> 
+    <div class="aside"> 
+     <div class="group_aside"> 
+      <div class="aside_area aside_stock"> 
+       <h3 class="h_stock"><span>해외 증시</span></h3> 
+       <table class="tbl_home"> 
+        <caption>
+         해외 증시
+         <span>종류에 대한 현재가,전일대비로 구분되어 있습니다.</span>
+        </caption> 
+        <colgroup> 
+         <col /> 
+         <col width="60" /> 
+         <col width="59" /> 
+        </colgroup> 
+        <thead> 
+         <tr> 
+          <th scope="col">구분</th> 
+          <th scope="col">현재가</th> 
+          <th scope="col">전일대비</th> 
+         </tr> 
+        </thead> 
+        <tbody> 
+         <tr class="up"> 
+          <th scope="row"><a href="/world/sise.naver?symbol=DJI@DJI&amp;fdtc=0" onclick="clickcr(this, 'wst.dow', '', '', event);">다우산업(10.24)</a></th> 
+          <td>31,335.29</td> 
+          <td><em class="bu_p bu_pup"><span class="blind">상승</span></em> 252.73</td> 
+         </tr> 
+         <tr class="down"> 
+          <th scope="row"><a href="/world/sise.naver?symbol=NAS@IXIC&amp;fdtc=0" onclick="clickcr(this, 'wst.nasdaq', '', '', event);"> 나스닥(10.24)</a></th> 
+          <td>10,793.08</td> 
+          <td><em class="bu_p bu_pdn"><span class="blind">하락</span></em> 66.64</td> 
+         </tr> 
+         <tr class="down"> 
+          <th scope="row"><a href="/world/sise.naver?symbol=HSI@HSCE&amp;fdtc=0" onclick="clickcr(this, 'wst.hsce', '', '', event);"> 홍콩H(10.24)</a></th> 
+          <td>5,114.48</td> 
+          <td><em class="bu_p bu_pdn"><span class="blind">하락</span></em> 402.96</td> 
+         </tr> 
+         <tr class="down"> 
+          <th scope="row"><a href="/world/sise.naver?symbol=SHS@000001&amp;fdtc=0" onclick="clickcr(this, 'wst.shs', '', '', event);"> 상해종합(10.24)</a></th> 
+          <td>2,977.55</td> 
+          <td><em class="bu_p bu_pdn"><span class="blind">하락</span></em> 61.37</td> 
+         </tr> 
+         <tr class="up"> 
+          <th scope="row"><a href="/world/sise.naver?symbol=NII@NI225&amp;fdtc=0" onclick="clickcr(this, 'wst.ni225', '', '', event);"> 니케이225(10.24)</a></th> 
+          <td>26,974.90</td> 
+          <td><em class="bu_p bu_pup"><span class="blind">상승</span></em> 84.32</td> 
+         </tr> 
+        </tbody> 
+       </table> 
+       <a href="/world/" class="btn_more" onclick="clickcr(this, 'wst.more', '', '', event);"><em class="btn_more4"><span class="blind">해외 증시 더보기</span></em></a> 
+      </div> 
+      <div class="ad"> 
+       <div id="addiv" name="addiv"> 
+        <h2 class="blind">광고</h2> 
+        <div id="_IframeBannerMain"> 
+         </div> 
+       </div> 
+      </div> 
+      <div class="aside_area aside_popular"> 
+       <h3 class="h_popular"><span>인기 검색 종목</span></h3> 
+       <table class="tbl_home"> 
+        <caption>
+         인기 검색 종목표
+         <span>종목명에 대한 현재가,전일대비로 구분되어 있습니다.</span>
+        </caption> 
+        <colgroup> 
+         <col /> 
+         <col width="60" /> 
+         <col width="65" /> 
+        </colgroup> 
+        <thead> 
+         <tr> 
+          <th scope="col">구분</th> 
+          <th scope="col">현재가</th> 
+          <th scope="col">전일대비</th> 
+         </tr> 
+        </thead> 
+        <tbody> 
+         <tr class="up"> 
+          <th scope="row"><em>1.</em><a href="/item/main.naver?code=005930" onclick="clickcr(this, 'boa.list', '005930', '1', event);">삼성전자</a></th> 
+          <td>57,500</td> 
+          <td> <span class="tah p11 red02"> 1,600 </span> </td> 
+         </tr> 
+         <tr class="down"> 
+          <th scope="row"><em>2.</em><a href="/item/main.naver?code=035720" onclick="clickcr(this, 'boa.list', '035720', '2', event);">카카오</a></th> 
+          <td>48,450</td> 
+          <td> <span class="tah p11 nv01"> 400 </span> </td> 
+         </tr> 
+         <tr class="up"> 
+          <th scope="row"><em>3.</em><a href="/item/main.naver?code=120115" onclick="clickcr(this, 'boa.list', '120115', '3', event);">코오롱인더우</a></th> 
+          <td>23,850</td> 
+          <td> <span class="tah p11 red02"> 50 </span> </td> 
+         </tr> 
+         <tr class="up"> 
+          <th scope="row"><em>4.</em><a href="/item/main.naver?code=009540" onclick="clickcr(this, 'boa.list', '009540', '4', event);">한국조선해양</a></th> 
+          <td>71,600</td> 
+          <td> <span class="tah p11 red02"> 100 </span> </td> 
+         </tr> 
+         <tr class="down"> 
+          <th scope="row"><em>5.</em><a href="/item/main.naver?code=161510" onclick="clickcr(this, 'boa.list', '161510', '5', event);">ARIRAN..</a></th> 
+          <td>10,855</td> 
+          <td> <span class="tah p11 nv01"> 65 </span> </td> 
+         </tr> 
+        </tbody> 
+       </table> 
+       <a href="/sise/lastsearch2.naver" class="btn_more" onclick="clickcr(this, 'boa.more', '', '', event);"><em class="btn_more4"><span class="blind">인기 검색 종목 더보기</span></em></a> 
+      </div> 
+      <div class="aside_area aside_notice"> 
+       <h3 class="h_notice"><span>공지사항</span></h3> 
+       <ul class="list_report"> 
+        <li><a href="https://finance.naver.com/notice.naver?noticeId=7471" onclick="clickcr(this, 'not.list', '', '', event)">[서울경찰청] 수익률 300%보장...</a></li> 
+       </ul> 
+       <a href="/notice.naver" class="btn_more" onclick="clickcr(this, 'not.more', '', '', event)"><em class="btn_more4"><span class="blind">공지사항 더보기</span></em></a> 
+      </div> 
+     </div> 
+    </div> 
+   </div> 
+   <hr /> 
+   <div id="footer"> 
+    <ul> 
+     <li class="first"> <a href="https://www.naver.com/rules/service.html" onclick="clickcr(this, 'fot.service', '', '', event);" target="_blank">이용약관</a> </li> 
+     <li> <a href="https://finance.naver.com/rules.naver" onclick="clickcr(this, 'fot.policy', '', '', event);" target="_blank">금융게시판 운영원칙</a> </li> 
+     <li> <a href="https://www.naver.com/rules/privacy.html" onclick="clickcr(this, 'fot.privacy', '', '', event);" target="_blank"><strong>개인정보처리방침</strong></a> </li> 
+     <li> <a href="https://www.naver.com/rules/disclaimer.html" onclick="clickcr(this, 'fot.limit', '', '', event);" target="_blank">책임의 한계와 법적고지</a> </li> 
+     <li> <a href="https://help.naver.com/service/5617/category/bookmark?lang=ko" onclick="clickcr(this, 'fot.help', '', '', event);" target="_blank">금융 고객센터</a> </li> 
+    </ul> 
+    <p class="desc">네이버(주)가 제공하는 금융 정보는 각 콘텐츠 제공업체<a href="javascript:;" onclick="togglePanelFooter('footerPanel0');" class="desc_help"></a>로부터 받는 투자 참고사항이며, 오류가 발생하거나 지연될 수 있습니다.<br />네이버(주)와 콘텐츠 제공업체는 제공된 정보에 의한 투자 결과에 법적인 책임을 지지 않습니다. 게시된 정보는 무단으로 배포할 수 없습니다.</p> 
+    <div id="footerPanel0" class="provider_layer" style="display:none" tabindex="0" onblur="hidePannel('footerPanel0')"> 
+     <strong class="provider_layer__tit">콘텐츠 제공업체</strong> 
+     <div class="provider_layer__txt"> 
+      <p><span>코스콤 : </span>실시간 주가정보 및 국내시세정보</p> 
+      <p><span>에프앤가이드 : </span>기업 및 재무정보</p> 
+      <p><span>KG제로인 : </span>해외 시세, 시장지표 및 펀드 정보</p> 
+      <p><span>한국예탁결제원 : </span>주주총회일 및 전자투표 정보</p> 
+      <p><span>인포스탁 : </span>국내 테마 정보</p> 
+     </div> 
+     <span class="arrow"></span> 
+    </div> 
+    <address> <a href="https://www.navercorp.com/" target="_blank" class="logo" onclick="clickcr(this, 'fot.nhn', '', '', event);"></a> <em>Copyright &copy;</em> <a href="https://www.navercorp.com/" target="_blank" onclick="clickcr(this, 'fot.nhn', '', '', event);">NAVER Corp.</a> <span>All Rights Reserved.</span> </address> 
+   </div> 
+   </div> 
+  </body>
+</html>

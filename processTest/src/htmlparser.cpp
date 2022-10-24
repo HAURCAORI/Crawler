@@ -306,12 +306,12 @@ void HTMLParser::HTMLCorrectError(std::string& str) {
             }
 
             std::string temp(iter_tag_begin, iter_tag_end);
-
+            
             if(isTextNode) {
                 //std::cout << "TextNode " << temp << std::endl;
             }
-
-            if(temp.at(0) == '/') {
+            if(temp.length() == 0) { continue; }
+            if(temp[0] == '/') {
                 //pop
                 temp = temp.substr(1);
                 
@@ -354,6 +354,7 @@ void HTMLParser::HTMLCorrectError(std::string& str) {
         } else if(!isTag && *it == '<') {
             isTag = true;
             iter_tag_begin = it + 1;
+            iter_tag_end  = it + 1;
         } else if(!isTag) {
             if(isTextNode) { continue; }
             if(isWord(*it)) {
