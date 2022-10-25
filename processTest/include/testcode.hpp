@@ -27,12 +27,12 @@ static bool writeFile(std::string path, const std::string& data) {
 
 
 static const std::vector<std::string> site_list = {
-    //{"https://www.naver.com/"},
+    {"https://www.naver.com/"},
     //{"https://news.naver.com/"},
-    {"https://news.naver.com/main/ranking/popularDay.naver"},
-    {"https://finance.naver.com/"},
-    {"https://www.google.com/"},
-    {"https://www.dcinside.com/"}
+    //{"https://news.naver.com/main/ranking/popularDay.naver"},
+    //{"https://finance.naver.com/"},
+    //{"https://www.google.com/"},
+    //{"https://www.dcinside.com/"}
 };
 
 class HTMLTest {

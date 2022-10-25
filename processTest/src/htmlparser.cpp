@@ -2,6 +2,18 @@
 #include <algorithm>
 #include <iostream>
 
+bool isAlphabet(char ch) {
+    return (ch>='a' && ch<='z') || (ch>='A' && ch<='Z');
+}
+
+bool isWord(char ch) {
+    return (ch>='a' && ch<='z') || (ch>='A' && ch<='Z') || (ch & 0x80);
+}
+
+bool isSpace(char ch) {
+    return (ch == ' ') || (ch == '\r') || (ch == '\n')|| (ch == '\t'); 
+}
+
 bool matchString(std::string::iterator iter_begin, std::string::iterator iter_end, const std::string& target) {
     bool match = true;
     auto it_target_tag = target.begin();
@@ -23,20 +35,14 @@ void leftEndSpace(std::string::iterator& it) {
 }
 
 void continueUntilChar(std::string::iterator& it) {
-    while(*it == ' ') { ++it; }
+    while(isSpace(*it)) { ++it; }
 }
 
 void removeSpace(std::string& str) {
     str.erase(std::remove(str.begin(), str.end(), ' '), str.end());
 }
 
-bool isAlphabet(char ch) {
-    return (ch>='a' && ch<='z') || (ch>='A' && ch<='Z');
-}
 
-bool isWord(char ch) {
-    return (ch>='a' && ch<='z') || (ch>='A' && ch<='Z') || (ch & 0x80);
-}
 
 std::string indent(int depth) {
     return std::string(std::max(depth-1,0), '\t');
@@ -86,10 +92,13 @@ HTMLTag HTMLParser::lastNodeTag() const {
             if(isAttributeSkip) { continue; }
         }
         if(*it == '>') {
-            if(*(it + 1) == '/') { continue; }
             isTag = true;
             iter_tag_end = it;
             iter_tag_middle = it;
+            if(*(it + 1) == '/') { 
+                ++iter_tag_end;
+                ++iter_tag_middle;
+            }
             ++depth;
         } else if(*it == ' ') {
             iter_tag_middle = it;
@@ -148,18 +157,6 @@ bool HTMLParser::success() const {
                 isValue = !isValue;
             }
         }
-/*
-
-        auto iter_t = tnode.attributes_begin();
-        for(auto attr : rattrs) {
-            if(iter_t == tnode.attributes_end()) { break; }
-            if(attr.substr(0, attr.find('=')) != iter_t->name() || attr.substr(attr.find('"') + 1, attr.length()-attr.find('"')-2) != iter_t->value()) {
-                attribute_check = false;
-                break;
-            }
-            ++iter_t;
-        }
-        */
     }
     return (tnode.name() == rnode.tag) && attribute_check;
 }
@@ -262,7 +259,7 @@ void HTMLParser::HTMLPreprocessing(std::string& str) {
                     isAttribute = false;
                 }
             }
-            else if(*it == ' ' &&  *(it + 1) != '=') {
+            else if(isSpace(*it) &&  *(it + 1) != '=') {
                 if(isAttribute && !isAttributeHasValue) {
                     it = str.insert(it, 1, '=') + 1;
                     it = str.insert(it, 2, '"') + 2;
@@ -392,7 +389,7 @@ void HTMLParser::HTMLCorrectError(std::string& str) {
             hasAttribute = false;
         } else if(isTag) {
             if(hasAttribute) { continue; }
-            if(*it == ' ' || *it == '\n') {
+            if(isSpace(*it)) { // *it == ' ' || *it == '\n'
                 hasAttribute = true;
                 iter_tag_end = it;
             }
