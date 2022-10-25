@@ -5,7 +5,8 @@
 namespace Crawler {
 enum AdapterOption {
   ADAPTER_OPT_NONE = 0,
-  ADAPTER_OPT_PATH
+  ADAPTER_OPT_PATH,
+  ADAPTER_OPT_GET_ORIGINAL
 };
 
 
@@ -23,9 +24,12 @@ public:
     virtual void out();
     virtual void setOption(AdapterOption option, const std::any& value);
     
+    bool isGetOriginal() { return mGetOriginal; }
+
     friend void swap(IOAdapter& first, IOAdapter& second) noexcept;
 protected:
     std::string* mData = nullptr;
+    bool mGetOriginal = false;
 };
 
 class IOAdapterConsole : public IOAdapter {

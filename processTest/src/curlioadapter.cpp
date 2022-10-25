@@ -28,7 +28,21 @@ void IOAdapter::out() {
     //std::cout << "IOAdapter" << std::endl;
 }
 
-void IOAdapter::setOption(AdapterOption option, const std::any& value) {}
+void IOAdapter::setOption(AdapterOption option, const std::any& value) {
+    switch (option)
+    {
+    case ADAPTER_OPT_GET_ORIGINAL: {
+            if(value.type() != typeid(std::remove_reference_t<bool>)) {
+                throw CURLErrorAdapterOption("Value type of 'ADAPTER_OPT_GET_ORIGINAL' should be bool");
+            }
+            mGetOriginal = std::any_cast<bool>(value);
+        }
+        break;
+    
+    default:
+        break;
+    }
+}
 
 void swap(IOAdapter& first, IOAdapter& second) noexcept {
     using std::swap;

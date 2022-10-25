@@ -73,6 +73,9 @@ HTMLParser::xmlNode HTMLParser::lastNode() const {
     while(node.last_child()) {
         node = node.last_child();
     }
+    if(node.type() == 3) {
+        node = node.parent();
+    }
     return node;
 }
 
@@ -143,7 +146,7 @@ void HTMLParser::HTMLPreprocessing(std::string& str) {
     bool isClosingTag = false; // SelfClosingTag 여부
     bool isEscape = false; // 내용을 삭제할 Tag 여부
     bool isSingle = false; // 단일 Tag 중 삭제할 Tag 여부
-    bool isAttribute = false; // Attribute에 해당할 경우 true
+    bool isAttribute = false; // A        //std::cout << doc->first_child().name() << std::endl;ttribute에 해당할 경우 true
     bool isAttributeSkip = false; // "" 내용 스킵
     bool isAttributeHasValue = false; // Tag에 = 기호가 있을 시 true 
     std::string::iterator iter_erase_begin;
