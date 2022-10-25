@@ -33,12 +33,16 @@ bool matchString(std::string::iterator iter_begin, std::string::iterator iter_en
     return match;
 }
 
-void rigntEndSpace(std::string::iterator& it) {
+void rightEndSpace(std::string::iterator& it) {
     while(*(it+1) == ' ' || *(it+1) == '\n') { ++it; }
 }
 
 void leftEndSpace(std::string::iterator& it) {
     while(*(it-1) == ' ' || *(it-1) == '\n' || *(it-1) == '\t') { --it; }
+}
+
+void continueUntilChar(std::string::iterator& it) {
+    while(*it == ' ') { ++it; }
 }
 
 bool isAlphabet(char ch) {
@@ -146,7 +150,7 @@ void HTMLParser::HTMLPreprocessing(std::string& str) {
     bool isClosingTag = false; // SelfClosingTag 여부
     bool isEscape = false; // 내용을 삭제할 Tag 여부
     bool isSingle = false; // 단일 Tag 중 삭제할 Tag 여부
-    bool isAttribute = false; // A        //std::cout << doc->first_child().name() << std::endl;ttribute에 해당할 경우 true
+    bool isAttribute = false; // Attribute에 해당할 경우 true
     bool isAttributeSkip = false; // "" 내용 스킵
     bool isAttributeHasValue = false; // Tag에 = 기호가 있을 시 true 
     std::string::iterator iter_erase_begin;
@@ -179,7 +183,7 @@ void HTMLParser::HTMLPreprocessing(std::string& str) {
                     break;
                 }
             }
-            rigntEndSpace(iter_erase_end); // 공백 영역 추가
+            rightEndSpace(iter_erase_end); // 공백 영역 추가
             it = str.erase(iter_erase_begin, iter_erase_end+1) - 1; // end에 + 1
             
             isTag = false;
@@ -196,7 +200,7 @@ void HTMLParser::HTMLPreprocessing(std::string& str) {
 
             iter_erase_end = it;
 
-            rigntEndSpace(iter_erase_end); // 공백 영역 추가
+            rightEndSpace(iter_erase_end); // 공백 영역 추가
             it = str.erase(iter_erase_begin, iter_erase_end+1) - 1;  // end에 + 1
             
             isTag = false;
@@ -212,24 +216,42 @@ void HTMLParser::HTMLPreprocessing(std::string& str) {
             }
 
             // Tag Attribute 체크
-            if(isAttribute == true && !isAttributeHasValue) {
+            if(isAttribute && !isAttributeHasValue) {
                 it = str.insert(it, 1, '=') + 1;
                 it = str.insert(it, 2, '"') + 2;
+            } else if(!isAttribute && isAttributeHasValue) {
+                it = str.insert(it, 1, '"') + 1;
+                isAttributeHasValue = false;
             }
             isAttribute = false;
             isAttributeSkip = false;
+            isAttributeHasValue = false;
         } else if(isTag) {
             // Tag Attribute 체크
 
-            if(*it == '=' || *(it + 1) == '=') {
+            if(*it == '=') {
+                if(!isAttribute && *(it - 1) == ' ') {
+                    it = str.insert(it, 3, 'z') + 3;
+                }
                 isAttributeHasValue = true;
-                isAttribute = false;
+
+                std::string::iterator iter_insert = it + 1;
+                continueUntilChar(iter_insert);
+                if(*(iter_insert) != '"') {
+                    it = str.insert(iter_insert, 1, '"') + 1;
+                    isAttribute = false;
+                }
             }
-            else if(*it == ' ') {
-                if(isAttribute == true && !isAttributeHasValue) {
+            else if(*it == ' ' &&  *(it + 1) != '=') {
+                if(isAttribute && !isAttributeHasValue) {
                     it = str.insert(it, 1, '=') + 1;
                     it = str.insert(it, 2, '"') + 2;
                     isAttribute = false;
+                    isAttributeHasValue = false;
+                }
+                else if(!isAttribute && isAttributeHasValue) {
+                    it = str.insert(it, 1, '"') + 1;
+                    isAttributeHasValue = false;
                 }
                 if(isAlphabet(*(it + 1))) {
                     isAttribute = true;
@@ -391,19 +413,143 @@ const std::vector<std::string> HTMLParser::SINGLE_ERASE_TAGS = {
 
 }
 /*
-self closing tag
-<area />
-<base />
-<br />
-<col />
-<embed />
-<hr />
-<img />
-<input />
-<link />
-<meta />
-<param />
-<source />
-<track />
-<wbr />
+@backup(2022.10.25.)
+void HTMLParser::HTMLPreprocessing(std::string& str) {
+    // HTML 전처리 함수
+    bool isTag = false; // Tag영역에 해당할 경우 true
+    bool isClosingTag = false; // SelfClosingTag 여부
+    bool isEscape = false; // 내용을 삭제할 Tag 여부
+    bool isSingle = false; // 단일 Tag 중 삭제할 Tag 여부
+    bool isAttribute = false; // A        //std::cout << doc->first_child().name() << std::endl;ttribute에 해당할 경우 true
+    bool isAttributeSkip = false; // "" 내용 스킵
+    bool isAttributeHasValue = false; // Tag에 = 기호가 있을 시 true 
+    std::string::iterator iter_erase_begin;
+    std::string::iterator iter_erase_end;
+
+    // 각 글자에 대해 처리
+    for(auto it = str.begin(); it != str.end(); ++it) {
+        if(isTag) {
+            if(*it == '"') { 
+                isAttributeSkip = !isAttributeSkip;
+            }
+            if(isAttributeSkip) { continue; }
+        }
+        if(isEscape){ // 내용 전체를 삭제할 Tag에 해당할 경우(script, style 등)
+            if(*it != '<') { continue; }
+            if(*(it + 1) != '/') { continue; }
+            
+            bool match = false;
+
+            for(auto&& escape_tag : ESCAPE_TAGS) {
+                if(matchString(it + 2, str.end(), escape_tag)) {
+                    match = true;
+                    break;
+                }
+            }
+            if(!match) { continue; }
+            
+            for(iter_erase_end = it; iter_erase_end != str.end(); ++iter_erase_end) {
+                if(*iter_erase_end == '>') {
+                    break;
+                }
+            }
+            rightEndSpace(iter_erase_end); // 공백 영역 추가
+            it = str.erase(iter_erase_begin, iter_erase_end+1) - 1; // end에 + 1
+            
+            isTag = false;
+            isEscape = false;
+        } else if(isSingle) { // Single Tag 중 삭제할 Tag에 해당할 경우
+            if(*it != '>') { continue; }
+
+            if(*(iter_erase_begin + 2) == '-') {
+                //<!--의 경우 -->로 끝나야 함
+                if(*(it - 1) != '-') {
+                    continue;
+                } 
+            }
+
+            iter_erase_end = it;
+
+            rightEndSpace(iter_erase_end); // 공백 영역 추가
+            it = str.erase(iter_erase_begin, iter_erase_end+1) - 1;  // end에 + 1
+            
+            isTag = false;
+            isSingle = false;
+        } else if(isTag && *it == '>') { // Tag를 벗어날 때
+            isTag = false;
+            // Closing Tag이면 closing character 추가
+            if(isClosingTag) {
+                if(*(it - 1) != '/') {
+                    it = str.insert(it,1,'/') + 1;
+                } 
+                isClosingTag = false;
+            }
+
+            // Tag Attribute 체크
+            if(isAttribute == true && !isAttributeHasValue) {
+                it = str.insert(it, 1, '=') + 1;
+                it = str.insert(it, 2, '"') + 2;
+            }
+            isAttribute = false;
+            isAttributeSkip = false;
+        } else if(isTag) {
+            // Tag Attribute 체크
+
+            if(*it == '=' || *(it + 1) == '=') {
+                isAttributeHasValue = true;
+                isAttribute = false;
+            }
+            else if(*it == ' ') {
+                if(isAttribute == true && !isAttributeHasValue) {
+                    it = str.insert(it, 1, '=') + 1;
+                    it = str.insert(it, 2, '"') + 2;
+                    isAttribute = false;
+                }
+                if(isAlphabet(*(it + 1))) {
+                    isAttribute = true;
+                    isAttributeHasValue = false;
+                }
+            }
+        } else if(!isTag && *it == '<') {
+            if(!isAlphabet(*(it + 1)) && *(it + 1) != '!' && *(it + 1) != '/'){
+                // 일반 텍스트 중 < 포함 여부 확인
+                str.replace(it,it+1,"&lt");
+            } else {
+                isTag = true;
+            }
+
+            // Single Tag 여부 확인
+            for(auto&& single_tag : SINGLE_ERASE_TAGS) {
+                if(matchString(it + 1, str.end(), single_tag)) {
+                    iter_erase_begin = it;
+                    isSingle = true;
+                    break;
+                }
+            }
+            if(isSingle) { continue; }
+
+            // Escape Tag 여부 확인
+            for(auto&& escape_tag : ESCAPE_TAGS) {
+                if(matchString(it + 1, str.end(), escape_tag)) {
+                    iter_erase_begin = it;
+                    isEscape = true;
+                    break;
+                }
+            }
+            if(isEscape) { continue; }
+
+            // Closing Tag 여부 확인
+            for(auto&& self_closing_tag : SELF_CLOSING_TAGS) {
+                if(matchString(it + 1, str.end(), self_closing_tag)) {
+                    isClosingTag = true;
+                    break;
+                }
+            }
+            if(isClosingTag) { continue; }
+            
+        } else if(!isTag && *it == '>') {
+            str.replace(it,it+1,"&gt");
+        }
+    }
+}
 */

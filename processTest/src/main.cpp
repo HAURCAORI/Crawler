@@ -65,7 +65,7 @@ int main() {
         obj.setAdapterOption(ADAPTER_OPT_PATH, path);
         obj.setAdapterOption(ADAPTER_OPT_GET_ORIGINAL, true);
         
-        auto res = obj.perform();
+        //auto res = obj.perform();
         
         CURLObject* memory;
         curl_easy_getinfo(obj, CURLINFO_PRIVATE, &memory);
@@ -80,13 +80,13 @@ int main() {
 
         HTMLParser parser(&test_set);
         auto doc = parser.getDocument();
-        std::cout << "success? = " << parser.success() << std::endl;
-        std::cout << parser.lastNode().name() << "/" << parser.lastNode().first_attribute().value() << std::endl;
+        //std::cout << "success? = " << parser.success() << std::endl;
+        //std::cout << parser.lastNode().name() << "/" << parser.lastNode().first_attribute().value() << std::endl;
         //auto tool = doc->select_node(R"(/html/body/div[2]/main)"); // container
-        printNode(*doc,5);
+        printNode(*doc,3);
         //auto ln = parser.lastNodeTag();
         
-        if(res == CURLE_OK)
+        //if(res == CURLE_OK)
             std::cout << "OK" << std::endl;
     } else {
         std::cout << "null" << std::endl;
