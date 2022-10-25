@@ -259,8 +259,17 @@ void HTMLParser::HTMLPreprocessing(std::string& str) {
                     isAttribute = false;
                 }
             }
-            else if(isSpace(*it) &&  *(it + 1) != '=') {
+            else if(isSpace(*it)) { // && *(it + 1) != '='
+                if(isAttribute) {
+                    std::string::iterator iter_erase = it;
+                    continueUntilChar(iter_erase);
+                    if(*(iter_erase) == '=') {
+                        it = str.erase(it + 1, iter_erase) - 1;
+                        continue;
+                    }
+                }
                 if(isAttribute && !isAttributeHasValue) {
+                    //Attribute이지만 값이 없는 경우 자동으로 값 설정
                     it = str.insert(it, 1, '=') + 1;
                     it = str.insert(it, 2, '"') + 2;
                     isAttribute = false;
@@ -271,6 +280,7 @@ void HTMLParser::HTMLPreprocessing(std::string& str) {
                     isAttributeHasValue = false;
                 }
                 if(isAlphabet(*(it + 1))) {
+                    //알파벳 만나면 Attribute 설정
                     isAttribute = true;
                     isAttributeHasValue = false;
                 }

@@ -59,7 +59,7 @@ int main() {
     HTMLTest test;
     test.execute();
     return 0; 
-    Crawler::CURLObject obj("https://www.naver.com/");
+    Crawler::CURLObject obj("https://www.dcinside.com/");
     if(obj) {
         std::string path = "./Output/original.html";
         obj.setAdapter<IOAdapterFile>();
