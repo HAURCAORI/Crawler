@@ -1,25 +1,6 @@
 #include "htmlparser.h"
-#include <stack>
+#include <algorithm>
 #include <iostream>
-
-std::vector<std::string> split(std::string s, std::string delimiter) {
-    size_t pos_start = 0, pos_end, delim_len = delimiter.length();
-    std::string token;
-    std::vector<std::string> res;
-
-    while ((pos_end = s.find (delimiter, pos_start)) != std::string::npos) {
-        if(pos_start == pos_end) {
-            pos_start = pos_end + delim_len;
-            continue;
-        }
-        token = s.substr (pos_start, pos_end - pos_start);
-        pos_start = pos_end + delim_len;
-        res.push_back (token);
-    }
-
-    res.push_back (s.substr (pos_start));
-    return res;
-}
 
 bool matchString(std::string::iterator iter_begin, std::string::iterator iter_end, const std::string& target) {
     bool match = true;
@@ -43,6 +24,10 @@ void leftEndSpace(std::string::iterator& it) {
 
 void continueUntilChar(std::string::iterator& it) {
     while(*it == ' ') { ++it; }
+}
+
+void removeSpace(std::string& str) {
+    str.erase(std::remove(str.begin(), str.end(), ' '), str.end());
 }
 
 bool isAlphabet(char ch) {
@@ -130,16 +115,40 @@ bool HTMLParser::success() const {
     HTMLTag rnode = lastNodeTag();
     bool attribute_check = true;
     if(tnode.first_attribute()) {
-        std::vector<std::string> rattrs = split(rnode.attribute, " ");
+        std::vector<std::string> rattrs;
         std::string::iterator iter_begin = rnode.attribute.begin();
-        std::string::iterator iter_mid;
+        std::string::iterator iter_end;
+        std::string temp;
+        bool isValue = false;
+
+        auto iter_t = tnode.attributes_begin();
         for(auto it = rnode.attribute.begin(); it != rnode.attribute.end(); ++it) {
-            if(*it == '=') {
-                iter_mid = it;
-                //iter_
+            if(!isValue && *it == '=') {
+                iter_end = it;
+                temp = std::string(iter_begin, iter_end);
+                removeSpace(temp);
+                if(temp != iter_t->name()) {
+                    attribute_check = false;
+                    break;
+                }
+                iter_begin = it;
+            } else if(*it == '"' || *it == '\'') {
+                if(!isValue) {
+                    iter_begin = it + 1;
+                } else {
+                    iter_end = it;
+                    temp = std::string(iter_begin, iter_end);
+                    if(temp != iter_t->value()) {
+                        attribute_check = false;
+                        break;
+                    }
+                    iter_begin = it + 1;
+                    ++iter_t;
+                }
+                isValue = !isValue;
             }
         }
-
+/*
 
         auto iter_t = tnode.attributes_begin();
         for(auto attr : rattrs) {
@@ -150,6 +159,7 @@ bool HTMLParser::success() const {
             }
             ++iter_t;
         }
+        */
     }
     return (tnode.name() == rnode.tag) && attribute_check;
 }
