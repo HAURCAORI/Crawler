@@ -58,14 +58,14 @@ int main() {
 
     HTMLTest test;
     //test.execute();
-    Crawler::CURLObject obj("https://www.google.com/");
+    Crawler::CURLObject obj("https://www.dcinside.com/");
     if(obj) {
         std::string path = "./Output/original.html";
         obj.setAdapter<IOAdapterFile>();
         obj.setAdapterOption(ADAPTER_OPT_PATH, path);
         obj.setAdapterOption(ADAPTER_OPT_GET_ORIGINAL, true);
         
-        //auto res = obj.perform();
+        auto res = obj.perform();
         
         CURLObject* memory;
         curl_easy_getinfo(obj, CURLINFO_PRIVATE, &memory);
@@ -80,10 +80,11 @@ int main() {
 
         HTMLParser parser(&test_set);
         auto doc = parser.getDocument();
-        //std::cout << "success? = " << parser.success() << std::endl;
-        //std::cout << parser.lastNode().name() << "/" << parser.lastNode().first_attribute().value() << std::endl;
+        std::cout << "=> success? : " << parser.success() << std::endl;
+        std::cout << parser.lastNode().name() << "/" << parser.lastNode().first_attribute().value() << std::endl;
+        std::cout << parser.lastNodeTag().tag << "/" << parser.lastNodeTag().attribute << std::endl;
         //auto tool = doc->select_node(R"(/html/body/div[2]/main)"); // container
-        printNode(*doc,3);
+        //printNode(*doc,3);
         //auto ln = parser.lastNodeTag();
         
         //if(res == CURLE_OK)

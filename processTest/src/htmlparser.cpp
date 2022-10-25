@@ -131,6 +131,16 @@ bool HTMLParser::success() const {
     bool attribute_check = true;
     if(tnode.first_attribute()) {
         std::vector<std::string> rattrs = split(rnode.attribute, " ");
+        std::string::iterator iter_begin = rnode.attribute.begin();
+        std::string::iterator iter_mid;
+        for(auto it = rnode.attribute.begin(); it != rnode.attribute.end(); ++it) {
+            if(*it == '=') {
+                iter_mid = it;
+                //iter_
+            }
+        }
+
+
         auto iter_t = tnode.attributes_begin();
         for(auto attr : rattrs) {
             if(iter_t == tnode.attributes_end()) { break; }
@@ -237,7 +247,7 @@ void HTMLParser::HTMLPreprocessing(std::string& str) {
 
                 std::string::iterator iter_insert = it + 1;
                 continueUntilChar(iter_insert);
-                if(*(iter_insert) != '"') {
+                if(*(iter_insert) != '"' && *(iter_insert) != '\'') {
                     it = str.insert(iter_insert, 1, '"') + 1;
                     isAttribute = false;
                 }
