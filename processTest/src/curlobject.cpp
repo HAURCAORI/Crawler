@@ -46,6 +46,10 @@ CURLcode CURLObject::perform() {
     if(!mAdapter) {
         setAdapter<IOAdapter>();
     }
+    if (mHeader != NULL) {
+        setOption(CURLOPT_HTTPHEADER, mHeader);
+    }
+
     CURLcode ret = curl_easy_perform(mHandle);
     if(ret == CURLE_OK) { performSuccess(); }
     return ret;
@@ -81,7 +85,6 @@ void CURLObject::setContentType(const MIME& type) {
 }
 
 void CURLObject::appendHeader(const std::string& str) {
-    printf("%s\r\n", str.c_str());
     mHeader = curl_slist_append(mHeader, str.c_str());
 }
 

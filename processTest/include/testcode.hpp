@@ -36,7 +36,8 @@ static const std::vector<std::string> site_list = {
     {"https://www.google.com/"},
     {"https://www.dcinside.com/"}
     */
-    {"https://securities.koreainvestment.com/tfcommon/jisu/jisuData.json"}
+    //{"https://securities.koreainvestment.com/tfcommon/jisu/jisuData.json"}
+    {"https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd"}
 
 };
 
@@ -62,7 +63,8 @@ public:
         obj.setAdapterOption(Crawler::ADAPTER_OPT_GET_ORIGINAL, true);
         
         obj.appendHeader("User-Agent: Mozilla/5.0");
-        obj.appendHeader(Crawler::MIME_APP_JSON);
+        
+        obj.appendHeader(Crawler::MIME_APP_URLENCODED);
 
         obj.setOption(CURLOPT_VERBOSE, 1L);
         obj.setOption(CURLOPT_FOLLOWLOCATION, 1L);
@@ -74,10 +76,10 @@ public:
         obj.setOption(CURLOPT_COOKIEFILE, "");
         obj.setOption(CURLOPT_POST, 1L);
         
-        std::string time = "cache=";
-        time += std::to_string(static_cast<long int>(std::time(nullptr))-100000);
-        std::cout << time << std::endl;
-        obj.setOption(CURLOPT_POSTFIELDS, time);
+        std::string data = "bld=dbms/MDC/MAIN/MDCMAIN00104&mktId=STK";
+        //time += std::to_string(static_cast<long int>(std::time(nullptr)));
+        obj.setOption(CURLOPT_POSTFIELDS, data.c_str());
+
         auto res = obj.perform();
         if(res != CURLE_OK) {
             return "[perfomr error]";
