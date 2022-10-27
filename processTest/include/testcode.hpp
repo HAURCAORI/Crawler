@@ -4,6 +4,8 @@
 #include <sstream>
 #include <vector>
 
+#include <ctime>
+
 #include "curlobject.h"
 
 static std::string readFile(std::string path) {
@@ -27,12 +29,15 @@ static bool writeFile(std::string path, const std::string& data) {
 
 
 static const std::vector<std::string> site_list = {
-    {"https://www.naver.com/"},
+   /* {"https://www.naver.com/"},
     {"https://news.naver.com/"},
     {"https://news.naver.com/main/ranking/popularDay.naver"},
     {"https://finance.naver.com/"},
     {"https://www.google.com/"},
     {"https://www.dcinside.com/"}
+    */
+    {"https://securities.koreainvestment.com/tfcommon/jisu/jisuData.json"}
+
 };
 
 class HTMLTest {
@@ -52,9 +57,27 @@ public:
         std::string path = "./Output/test";
         path += std::to_string(id);
         path += ".html";
-        //obj.setAdapter<Crawler::IOAdapterFile>();
-        //obj.setAdapterOption(Crawler::ADAPTER_OPT_PATH, path);
+        obj.setAdapter<Crawler::IOAdapterFile>();
+        obj.setAdapterOption(Crawler::ADAPTER_OPT_PATH, path);
+        obj.setAdapterOption(Crawler::ADAPTER_OPT_GET_ORIGINAL, true);
+        
+        obj.appendHeader("User-Agent: Mozilla/5.0");
+        obj.appendHeader(Crawler::MIME_APP_JSON);
 
+        obj.setOption(CURLOPT_VERBOSE, 1L);
+        obj.setOption(CURLOPT_FOLLOWLOCATION, 1L);
+        obj.setOption(CURLOPT_MAXREDIRS, 10L);
+        obj.setOption(CURLOPT_CONNECTTIMEOUT, 2L);
+        obj.setOption(CURLOPT_UNRESTRICTED_AUTH, 1L);
+        obj.setOption(CURLOPT_PROXYAUTH, CURLAUTH_ANY);
+        obj.setOption(CURLOPT_EXPECT_100_TIMEOUT_MS, 0L);
+        obj.setOption(CURLOPT_COOKIEFILE, "");
+        obj.setOption(CURLOPT_POST, 1L);
+        
+        std::string time = "cache=";
+        time += std::to_string(static_cast<long int>(std::time(nullptr))-100000);
+        std::cout << time << std::endl;
+        obj.setOption(CURLOPT_POSTFIELDS, time);
         auto res = obj.perform();
         if(res != CURLE_OK) {
             return "[perfomr error]";
@@ -69,7 +92,7 @@ public:
             return "[parsing error]";
         }
         
-         return "[success]";
+        return "[success]";
     }
     
 
