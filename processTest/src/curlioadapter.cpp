@@ -25,7 +25,7 @@ IOAdapter& IOAdapter::operator=(IOAdapter&& rhs) noexcept {
 void IOAdapter::set(std::string* data) { mData = data; }
 
 void IOAdapter::out() {
-    //std::cout << "IOAdapter" << std::endl;
+    preprocessing();
 }
 
 void IOAdapter::setOption(AdapterOption option, const std::any& value) {
@@ -49,12 +49,21 @@ void swap(IOAdapter& first, IOAdapter& second) noexcept {
     swap(first.mData,second.mData);
 }
 
+void IOAdapter::preprocessing() {
+    if(!(isGetOriginal())) {
+        HTMLParser::HTMLPreprocessing(*mData);
+        HTMLParser::HTMLCorrectError(*mData);
+    }
+}
+
 void IOAdapterConsole::out() {
+    preprocessing();
     std::cout << *mData << std::endl;
 }
 
 
 void IOAdapterFile::out() {
+    preprocessing();
     std::cout << mPath << std::endl;
     writeFile();
 }

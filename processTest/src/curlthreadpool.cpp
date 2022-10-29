@@ -51,8 +51,6 @@ void CURLThreadPool::WorkerThread() {
     //std::cout << "[" << std::hex <<  std::this_thread::get_id() << "]end" << std::endl;
     lock.unlock();
 
-    
-
     curlmulti.perform();
   }
 }

@@ -53,15 +53,11 @@ namespace Crawler {
 
 HTMLParser::HTMLParser() {}
 
-HTMLParser::HTMLParser(const std::string* xml) : mXml(xml) {
-    parse(xml->c_str());
+HTMLParser::HTMLParser(const std::string* xml){
+    set(xml);
 }
 
 HTMLParser::~HTMLParser() {}
-
-void HTMLParser::parse(const char* xml) {
-    doc.load_string(xml);
-}
 
 HTMLParser::xmlNode HTMLParser::lastNode() const {
     xmlNode node = doc;
@@ -117,6 +113,11 @@ HTMLTag HTMLParser::lastNodeTag() const {
         }
     }
     return { tag, depth, attribute };
+}
+
+void HTMLParser::set(const std::string* xml) {
+    mXml = xml;
+    parse(mXml->c_str());
 }
 
 bool HTMLParser::success() const {
@@ -436,6 +437,9 @@ const std::vector<std::string> HTMLParser::SINGLE_ERASE_TAGS = {
     "!doctype", "!DOCTYPE", "!--", "input" ,"meta", "img"
 };
 
+void HTMLParser::parse(const char* xml) {
+    doc.load_string(xml);
+}
 
 
 }

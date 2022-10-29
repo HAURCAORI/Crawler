@@ -3,6 +3,8 @@
 #include "curlobject.h"
 
 
+#include <iostream>
+
 namespace Crawler {
 
 // CURLObject Declaration
@@ -21,6 +23,7 @@ CURLObject::CURLObject(CURLObject&& src) noexcept : CURLObject() {
 }
 
 CURLObject::~CURLObject() noexcept {
+    std::cout << "a" << std::endl;
     if(mHandle) {
         curl_easy_cleanup(mHandle);
     }
@@ -126,12 +129,7 @@ void swap(CURLObject& first, CURLObject& second) noexcept {
 }
 
 void CURLObject::performSuccess() {
-    // After perform, modify HTML string data.
-    if(!(mAdapter->isGetOriginal())) {
-        HTMLParser::HTMLPreprocessing(mData);
-        HTMLParser::HTMLCorrectError(mData);
-    }
-    mAdapter->out();
+    //mAdapter->out();
 }
 
 // CURLMultiObject declaration
@@ -156,6 +154,7 @@ CURLMultiObject& CURLMultiObject::operator=(CURLMultiObject&& rhs) noexcept {
 
 void CURLMultiObject::addHandle(CURLObject&& obj) noexcept {
     CURLMcode ret = curl_multi_add_handle(mHandle, obj.getHandle());
+    std::cout << "ttt" << std::endl;
     if(ret == CURLM_OK) {
         mContainer.push_back(std::move(obj));
     }
@@ -164,7 +163,6 @@ void CURLMultiObject::addHandle(CURLObject&& obj) noexcept {
 
 void CURLMultiObject::perform() {
     isInterrupt = false;
-
     int isRunning = true;
     int msgs_left = 0;
     while(isRunning && !isInterrupt) {
@@ -176,7 +174,6 @@ void CURLMultiObject::perform() {
         while((m = curl_multi_info_read(mHandle, &msgs_left))) {
             if(m->msg == CURLMSG_DONE) {
                 CURL *handle = m->easy_handle;
-
                 CURLObject* obj;
                 curl_easy_getinfo(handle, CURLINFO_PRIVATE, &obj);
                 obj->performSuccess();

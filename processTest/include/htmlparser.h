@@ -23,12 +23,13 @@ public:
     HTMLParser& operator=(const HTMLParser& rhs) = default;
     HTMLParser& operator=(HTMLParser&& rhs) = default;
 
-    void parse(const char* xml);
+    
     xmlDocument* getDocument() { return &doc; }
 
     xmlNode lastNode() const;
     HTMLTag lastNodeTag() const;
 
+    void set(const std::string* xml);
     bool success() const;
 
     static void HTMLPreprocessing(std::string& str);
@@ -38,6 +39,7 @@ public:
     static const std::vector<std::string> ESCAPE_TAGS;
     static const std::vector<std::string> SINGLE_ERASE_TAGS;
 private:
+    void parse(const char* xml);
     const std::string* mXml;
     xmlDocument doc;
 };

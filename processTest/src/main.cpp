@@ -11,54 +11,32 @@
 #define BEGIN_CHRONO std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 #define END_CHRONO std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - begin).count() << "[ms]" << std::endl;
 
-
-void printNode(Crawler::HTMLParser::xmlNode target, size_t deep) {
-    std::cout << target.path() << " : " << target.first_attribute().value() << std::endl;
-    if(deep == 0) {
-        return;
-    }
-    deep--;
-    for (auto node = target.first_child(); node; node = node.next_sibling())
-    {
-        printNode(node, deep);
-    }
-}
-
 int main() {
     curl_global_init(CURL_GLOBAL_DEFAULT);
     
     using namespace Crawler;
 
-    
+    using namespace std::chrono_literals;
+    //std::this_thread::sleep_for(3s);
 
-    /* [HTMLPreprocessing Test Code]
-    std::string test_set = readFile("./Output/input.html");
-    HTMLParser::HTMLPreprocessing(test_set);
-    writeFile("./Output/test.html",test_set);
-    */
-
-    /*
-    BEGIN_CHRONO
-    for(int i = 0; i < 1; i++) {
-        auto tool = doc->select_node(R"(/html/body)");
-        std::cout << tool.node() << std::endl;
-    }
-    END_CHRONO
-    */
-
-   /*
     CURLThreadPool threads(5);
+    
     for(int i = 0; i < 1; i++) {
         Crawler::CURLObject obj("https://www.naver.com/");
-        obj.setAdapter(IOAdapter());
+        std::string path = "./Output/aaa" + std::to_string(i) + ".html";
+        obj.setAdapter<IOAdapterFile>();
+        obj.setAdapterOption(ADAPTER_OPT_PATH, path);
+
         threads.EnqueueCURL(std::move(obj));
     }
-    */
+    
+    
+    
 
-
-    HTMLTest test;
-    test.execute();
+    //HTMLTest test;
+    //test.execute();
     return 0; 
+    /*
     Crawler::CURLObject obj("https://www.dcinside.com/");
     if(obj) {
         std::string path = "./Output/original.html";
@@ -94,7 +72,7 @@ int main() {
     } else {
         std::cout << "null" << std::endl;
     }
-
+*/
 
 
     curl_global_cleanup();

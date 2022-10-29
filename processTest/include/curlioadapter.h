@@ -28,6 +28,8 @@ public:
 
     friend void swap(IOAdapter& first, IOAdapter& second) noexcept;
 protected:
+    void preprocessing();
+    HTMLParser mParser;
     std::string* mData = nullptr;
     bool mGetOriginal = false;
 };
