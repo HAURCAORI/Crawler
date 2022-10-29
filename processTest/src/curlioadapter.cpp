@@ -40,6 +40,7 @@ void IOAdapter::setOption(AdapterOption option, const std::any& value) {
         break;
     
     default:
+        throw CURLErrorAdapterOption("Set AdapterOption Fail.");
         break;
     }
 }
@@ -54,6 +55,7 @@ void IOAdapter::preprocessing() {
         HTMLParser::HTMLPreprocessing(*mData);
         HTMLParser::HTMLCorrectError(*mData);
     }
+    mParser.set(mData);
 }
 
 void IOAdapterConsole::out() {

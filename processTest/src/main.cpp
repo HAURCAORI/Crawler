@@ -21,12 +21,11 @@ int main() {
 
     CURLThreadPool threads(5);
     
-    for(int i = 0; i < 1; i++) {
+    for(int i = 0; i < 100; i++) {
         Crawler::CURLObject obj("https://www.naver.com/");
-        std::string path = "./Output/aaa" + std::to_string(i) + ".html";
-        obj.setAdapter<IOAdapterFile>();
-        obj.setAdapterOption(ADAPTER_OPT_PATH, path);
-
+        std::string path = "./Output/aaa1.html";
+        obj.setAdapter<IOAdapter>();
+        //obj.setAdapterOption(ADAPTER_OPT_PATH, path);
         threads.EnqueueCURL(std::move(obj));
     }
 
