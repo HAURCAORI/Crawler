@@ -88,9 +88,9 @@ public:
         Crawler::CURLObject* memory;
         curl_easy_getinfo(obj, CURLINFO_PRIVATE, &memory);
 
-        Crawler::HTMLParser parser(&memory->getData());
+        Crawler::HTMLParser parser(memory->getData());
         if(!parser.success()) {
-            writeFile(path,memory->getData());
+            writeFile(path,*memory->getData());
             return "[parsing error]";
         }
         

@@ -23,7 +23,7 @@ public:
 
     // CURL 동작 설정
     template<typename E>
-    void setOption(CURLoption option, E&& param) {
+    void setOption(CURLoption option, E&& param) noexcept {
         curl_easy_setopt(mHandle, option, param);
     }
     CURLcode perform();
@@ -40,7 +40,7 @@ public:
     template<typename E>
     void setAdapter() {
         if constexpr(std::is_base_of_v<IOAdapter,E>) {
-            mAdapter = std::make_unique<E>(E(&mData));
+            mAdapter = std::make_unique<E>(E(mData.get()));
         } else {
             throw CURLErrorAdapter("Adapter should be base of 'IOAdapter'.");
         }
@@ -51,7 +51,7 @@ public:
     inline CURL* getHandle() { return mHandle; }
     const CURL* getHandle() const { return mHandle; }
     const std::string& getURL() const { return mUrl; }
-    const std::string& getData() const { return mData; }
+    std::string* const getData() const { return mData.get(); }
     IOAdapter* const getAdapter() { return mAdapter.get(); }
 
     // event
@@ -63,9 +63,10 @@ public:
 private:
     bool isURLSet = false;
     std::string mUrl;
-    std::string mData;
     CURL* mHandle = nullptr;
     curl_slist* mHeader = nullptr;
+
+    std::unique_ptr<std::string> mData;
     std::unique_ptr<IOAdapter> mAdapter;
 
     void performSuccess();

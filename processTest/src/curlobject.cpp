@@ -3,27 +3,30 @@
 #include "curlobject.h"
 
 
-#include <iostream>
+//#include <iostream>
 
 namespace Crawler {
 
 // CURLObject Declaration
 
 CURLObject::CURLObject() : mHandle(curl_easy_init()) {
+    mData = std::make_unique<std::string>();
     defaultOption();
 }
 
 CURLObject::CURLObject(const std::string& url) : mHandle(curl_easy_init()){
+    mData = std::make_unique<std::string>();
     setURL(url);
     defaultOption();
 }
 
 CURLObject::CURLObject(CURLObject&& src) noexcept : CURLObject() {
     swap(*this, src);
+    //setOption(CURLOPT_WRITEDATA, &mData);
+    setOption(CURLOPT_PRIVATE, this);
 }
 
 CURLObject::~CURLObject() noexcept {
-    std::cout << "a" << std::endl;
     if(mHandle) {
         curl_easy_cleanup(mHandle);
     }
@@ -35,6 +38,8 @@ CURLObject::~CURLObject() noexcept {
 CURLObject& CURLObject::operator=(CURLObject&& rhs) noexcept {
     CURLObject temp(std::move(rhs));
     swap(*this, temp);
+    //setOption(CURLOPT_WRITEDATA, &mData);
+    setOption(CURLOPT_PRIVATE, this);
     return *this;
 }
 
@@ -63,13 +68,14 @@ void CURLObject::resetOption() noexcept {
 }
 
 void CURLObject::defaultOption() {
+    
     setOption(CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2TLS);
     if(isURLSet) {
         setOption(CURLOPT_URL, mUrl.c_str()); // URL 설정
     }
 
     setOption(CURLOPT_WRITEFUNCTION, CURLObject::write_callback);
-    setOption(CURLOPT_WRITEDATA, &mData);
+    setOption(CURLOPT_WRITEDATA, mData.get());
     setOption(CURLOPT_PRIVATE, this);
 
     setOption(CURLOPT_ACCEPT_ENCODING, "");
@@ -129,7 +135,7 @@ void swap(CURLObject& first, CURLObject& second) noexcept {
 }
 
 void CURLObject::performSuccess() {
-    //mAdapter->out();
+    mAdapter->out();
 }
 
 // CURLMultiObject declaration
@@ -153,10 +159,10 @@ CURLMultiObject& CURLMultiObject::operator=(CURLMultiObject&& rhs) noexcept {
 }
 
 void CURLMultiObject::addHandle(CURLObject&& obj) noexcept {
-    CURLMcode ret = curl_multi_add_handle(mHandle, obj.getHandle());
-    std::cout << "ttt" << std::endl;
-    if(ret == CURLM_OK) {
-        mContainer.push_back(std::move(obj));
+    mContainer.emplace_back(std::move(obj));
+    CURLMcode ret = curl_multi_add_handle(mHandle, mContainer.back().getHandle());
+    if(ret != CURLM_OK) {
+        mContainer.pop_back();
     }
     // 실패 시 동작 구현size_t header_callback(char *buffer, size_t size, size_t nitems, void *userdata);
 }
@@ -172,12 +178,15 @@ void CURLMultiObject::perform() {
 
         CURLMsg *m = NULL;
         while((m = curl_multi_info_read(mHandle, &msgs_left))) {
+            
             if(m->msg == CURLMSG_DONE) {
+                
                 CURL *handle = m->easy_handle;
+                
                 CURLObject* obj;
                 curl_easy_getinfo(handle, CURLINFO_PRIVATE, &obj);
-                obj->performSuccess();
 
+                obj->performSuccess();
                 curl_multi_remove_handle(mHandle, handle);
             }
         }

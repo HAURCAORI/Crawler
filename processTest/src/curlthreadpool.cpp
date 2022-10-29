@@ -36,7 +36,6 @@ void CURLThreadPool::WorkerThread() {
     if (stop_all && this->objs_.empty()) {
       return;
     }
-
     size_t count = 0;
     while(!objs_.empty() && count < max_objs_) {
       curlmulti.addHandle(std::move(objs_.front()));
@@ -50,7 +49,7 @@ void CURLThreadPool::WorkerThread() {
     }
     //std::cout << "[" << std::hex <<  std::this_thread::get_id() << "]end" << std::endl;
     lock.unlock();
-
+    
     curlmulti.perform();
   }
 }

@@ -17,7 +17,7 @@ int main() {
     using namespace Crawler;
 
     using namespace std::chrono_literals;
-    //std::this_thread::sleep_for(3s);
+    
 
     CURLThreadPool threads(5);
     
@@ -29,9 +29,6 @@ int main() {
 
         threads.EnqueueCURL(std::move(obj));
     }
-    
-    
-    
 
     //HTMLTest test;
     //test.execute();
