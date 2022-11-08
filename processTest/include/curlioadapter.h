@@ -1,19 +1,24 @@
-#pragma once
+#ifndef CURL_IO_ADAPTER_H
+#define CURL_IO_ADAPTER_H
 #include <any>
-#include "htmlparser.h"
+#include <memory>
+
+#define ADAPTER_OUT processing();
 
 namespace Crawler {
+
 enum AdapterOption {
   ADAPTER_OPT_NONE = 0,
   ADAPTER_OPT_PATH,
   ADAPTER_OPT_GET_ORIGINAL
 };
 
+class HTMLParser;
 
 class IOAdapter {
 public:
-    IOAdapter() = default;
-    IOAdapter(std::string* data) : mData(data) {}
+    IOAdapter();
+    IOAdapter(std::string* data);
     IOAdapter(const IOAdapter& src) = delete;
     IOAdapter(IOAdapter&& src) noexcept;
     virtual ~IOAdapter() noexcept;
@@ -28,8 +33,8 @@ public:
 
     friend void swap(IOAdapter& first, IOAdapter& second) noexcept;
 protected:
-    void preprocessing();
-    HTMLParser mParser;
+    void processing();
+    std::unique_ptr<HTMLParser> mParser;
     std::string* mData = nullptr;
     bool mGetOriginal = false;
 };
@@ -55,3 +60,5 @@ private:
 };
 
 }
+
+#endif

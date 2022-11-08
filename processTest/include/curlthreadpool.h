@@ -1,4 +1,6 @@
-#pragma once
+#ifndef CURL_THREAD_POOL_H
+#define CURL_THREAD_POOL_H
+
 #include <future>
 #include <mutex>
 #include <queue>
@@ -33,3 +35,5 @@ public:
   void WorkerThread();
 };
 }
+
+#endif

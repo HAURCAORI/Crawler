@@ -53,6 +53,12 @@
         "future": "cpp",
         "thread": "cpp",
         "any": "cpp",
-        "cstring": "cpp"
+        "cstring": "cpp",
+        "compare": "cpp",
+        "semaphore": "cpp",
+        "stop_token": "cpp",
+        "bit": "cpp",
+        "concepts": "cpp",
+        "numbers": "cpp"
     }
 }

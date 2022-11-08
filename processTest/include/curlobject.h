@@ -1,4 +1,6 @@
-#pragma once
+#ifndef CURL_OBJECT_H
+#define CURL_OBJECT_H
+
 #include <vector>
 #include <memory>
 #include <curl/curl.h>
@@ -6,6 +8,7 @@
 #include "curltype.h"
 #include "curlexceptions.h"
 #include "curlioadapter.h"
+
 
 namespace Crawler {
 
@@ -105,3 +108,5 @@ private:
 };
 
 }
+
+#endif

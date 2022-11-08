@@ -1,6 +1,8 @@
-#pragma once
+#ifndef HTML_PARSER_H
+#define HTML_PARSER_H
+
 #include <vector>
-#include "pugixml.hpp"
+#include "pugixml/pugixml.hpp"
 
 namespace Crawler {
 struct HTMLTag {
@@ -9,7 +11,8 @@ struct HTMLTag {
     std::string attribute = "";
 };
 
-class HTMLParser {
+
+class HTMLParser { 
 public:
     using xmlNode = pugi::xml_node;
     using xmlAttribute = pugi::xml_attribute;
@@ -44,3 +47,5 @@ private:
     xmlDocument doc;
 };
 }
+
+#endif

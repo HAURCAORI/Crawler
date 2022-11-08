@@ -1,4 +1,6 @@
-#pragma once
+#ifndef CURL_TYPE_H
+#define CURL_TYPE_H
+
 #include <string>
 #include <map>
 
@@ -65,3 +67,5 @@ static const std::map<HTMLHeader, std::string> HTMLHeaderString  = {
 };
 
 }
+
+#endif

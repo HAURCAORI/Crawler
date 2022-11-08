@@ -1,6 +1,6 @@
-#include "htmlparser.h"
 #include <algorithm>
 #include <iostream>
+#include "htmlparser.h"
 
 bool isAlphabet(char ch) {
     return (ch>='a' && ch<='z') || (ch>='A' && ch<='Z');

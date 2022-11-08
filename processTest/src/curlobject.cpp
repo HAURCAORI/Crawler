@@ -1,7 +1,6 @@
+#include "curlobject.h"
 #include <utility>
 #include <cstring>
-#include "curlobject.h"
-
 
 //#include <iostream>
 

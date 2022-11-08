@@ -3,6 +3,8 @@
 #include <curlthreadpool.h>
 #include <curlioadapter.h>
 
+#include <curlcrawler.h>
+
 #include "htmlparser.h"
 
 #include "testcode.hpp"
@@ -17,21 +19,29 @@ int main() {
     using namespace Crawler;
 
     using namespace std::chrono_literals;
-    
 
+
+    Crawler::CURLCrawler obj;
+    //obj.createListFile("./CrawlingLists.json", true);
+
+    obj.loadList();
+    //obj.addList("A","www.naver.com","/div/div/");
+    CrawlingObject temp = obj.at(1);
+    std::cout << temp.getURL();
+/*
     CURLThreadPool threads(5);
-    
-    for(int i = 0; i < 100; i++) {
+     
+    for(int i = 0; i < 1; i++) {
         Crawler::CURLObject obj("https://www.naver.com/");
         std::string path = "./Output/aaa1.html";
-        obj.setAdapter<IOAdapter>();
-        //obj.setAdapterOption(ADAPTER_OPT_PATH, path);
+        obj.setAdapter<IOAdapterFile>();
+        obj.setAdapterOption(ADAPTER_OPT_PATH, path);
         threads.EnqueueCURL(std::move(obj));
     }
-
+*/
     //HTMLTest test;
     //test.execute();
-    return 0; 
+    //return 0; 
     /*
     Crawler::CURLObject obj("https://www.dcinside.com/");
     if(obj) {

@@ -1,0 +1,82 @@
+{
+  "CrawlingList" : [
+    {
+      "URI" : {
+        "URL" : "https://www.naver.com/" #URL 주소 입력(필수)
+        "Method" : "GET" # [GET, POST] 설정(기본값 GET)
+        "Parameters" : "id=$0" #파라미터 입력(선택)
+        "Placeholders" : [ #파라미터의 $0~$9까지의 placeholder 지정(선택)
+          {1,2,3,4},
+          {"A","B","C"}
+        ]
+      },
+      "Headers" : [ #Header 지정(선언 필수)
+        "Host: www.naver.com",
+        "Referer: https://www.naver.com"
+      ],
+      "Output" : { #Output 지정(필수)
+        "Target" : "/html/body/div[2]/main", # XPath 형식으로 값을 받음(필수)
+        "Type" : "Value", # 값 형식 지정 [Value, String, Date, Bool] (선택)
+        "Adapter" : "File", # [File, Console, Database] Adapter 설정(필수)
+        "Options" : [
+          "Path" : "./output.txt",
+          ...
+        ]
+      },
+      "Schedule": { #실행 조건 설정(필수)
+        "Type" : "Time", # [Once, Time, Interval, Weekly]
+        "Value" : "3600" # value
+      },
+      "Info" : { # 실행 결과 및 통계(자동 생성)
+        "Success" : true,
+        "Timestamp" : "2022.01.01. 09:00",
+        "PerformCount" : 1,
+        "Details" : "Success"
+      }
+    },
+    {
+    
+    }
+  ] 
+}
+
+▷ CurlCrawler 요구사항
+1. 기능
+  i) Crawling List 파일 입출력
+  ii) Crawling List 추가, 삭제, 수정 연산 지원
+  iii) Placeholders 치환 기능 지원
+  iv) 특수 매크로 지원(ex. ?Date=$(Timestamp) => ?Date=328231)
+  
+2. 동작 방식
+  i) Crawling List가 담긴 json 파일을 불러옴(없을 시 자동 생성)
+  ii) Crawling List에 대한 유효성 검사 -> 유효한 객체는 계속 수행, 오류가 있는 객체는 Console 또는 Log파일로 출력
+  iii) 실행 조건 만족 여부 검사 -> 만족할 경우 계속 수행
+  iv) 주어진 규칙에 따라 Crawling 실시
+  v) 주어진 시간 동안 대기 후 ii) 실행
+
+3. 입력 파일 구조
+
+root[CrawlingList]
+└─┬─URI─┬─URL                  : URL 지정 (필수)
+  │     ├─Method               : Method 설정 [POST, GET] (기본값 : GET)
+  │     ├─Headers─...          : Header 지정(필수)
+  │     ├─Parameters           : Parameters 지정 (선택)
+  │     └─Placeholders─...     : Placeholder($0~$9) 지정 (선택) - 
+  │
+  ├─Output─┬─Target            : XPath 형식으로 Target 지정(필수)
+  │        ├─Placeholders─...  : Placeholder($0~$9) 지정 (선택)
+  │        ├─Type              : 저장할 값의 형식 지정 [Value, String, Date, Bool] (선택)
+  │        ├─Adapter           : Adapter 지정 [File, Console, SQL] (필수)
+  │        └─Options─┬─..      : Adapter Option 지정(필수)
+  │                  :
+  │ 
+  ├─Schedule─┬─Type            : Schedule 방식 지정 [Once, Time, Interval, Weekly, Daily] (필수)
+  │          └─Value           : Schedule에 따른 값 설정 (필수)
+  │
+  └─Info─┬─Valid               : 규칙 유효성 판단 결과
+         ├─Success             : Crawling 성공 여부
+         ├─Timestamp           : 가장 최근에 수행한 시간
+         ├─PerformCount        : 시행 횟수
+         └─Details             : 세부 내역
+
+4. 구현

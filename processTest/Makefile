@@ -8,7 +8,8 @@ LIB_PATH = ./webCrawler/lib
 #STATIC_LIBS = $(subst lib, -l,$(basename $(notdir $(wildcard $(LIB_PATH)/*/*.a))))
 #DYNAMIC_LIBS = $(notdir $(wildcard $(LIB_PATH)/*/*.so.*))
 LIBS = -L$(LIB_PATH)/curl -Wl,-R$(LIB_PATH)/curl -lcurl
-LIBS += -L$(LIB_PATH)/openssl -Wl,-R$(LIB_PATH)/openssl -lcrypto -lssl
+LIBS += -L$(LIB_PATH)/openssl -Wl,-R$(LIB_PATH)/openssl -lssl -lcrypto
+#LIBS += -L$(LIB_PATH)/openssl -Wl,-R$(LIB_PATH)/openssl -lssl -lcrypto
 LIBS += -L$(LIB_PATH)/zlib -Wl,-R$(LIB_PATH)/zlib -lz
 LIBS += -L$(LIB_PATH)/ldap -Wl,-R$(LIB_PATH)/ldap -llber -lldap
 

@@ -1,4 +1,6 @@
-#pragma once
+#ifndef CURL_EXCEPTIONS_H
+#define CURL_EXCEPTIONS_H
+
 #include <exception>
 #include <string>
 
@@ -38,3 +40,5 @@ public:
 };
 
 }
+
+#endif

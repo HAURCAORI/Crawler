@@ -3,14 +3,21 @@
 #include <fstream>
 #include "curlioadapter.h"
 #include "curlexceptions.h"
+#include "htmlparser.h"
 
 namespace Crawler {
-
 
 IOAdapter::IOAdapter(IOAdapter&& src) noexcept : IOAdapter(std::move(src.mData)) {
     swap(*this, src);
 }
 
+IOAdapter::IOAdapter() : mParser(std::make_unique<HTMLParser>()) {
+
+}
+
+IOAdapter::IOAdapter(std::string* data) : mParser(std::make_unique<HTMLParser>()), mData(data) {
+
+}
 
 IOAdapter::~IOAdapter() noexcept {
 
@@ -25,7 +32,7 @@ IOAdapter& IOAdapter::operator=(IOAdapter&& rhs) noexcept {
 void IOAdapter::set(std::string* data) { mData = data; }
 
 void IOAdapter::out() {
-    preprocessing();
+    processing();
 }
 
 void IOAdapter::setOption(AdapterOption option, const std::any& value) {
@@ -50,22 +57,25 @@ void swap(IOAdapter& first, IOAdapter& second) noexcept {
     swap(first.mData,second.mData);
 }
 
-void IOAdapter::preprocessing() {
+void IOAdapter::processing() {
+    if(!mData) {
+        throw CURLErrorAdapter("Adapter data is null.");
+    }
     if(!(isGetOriginal())) {
         HTMLParser::HTMLPreprocessing(*mData);
         HTMLParser::HTMLCorrectError(*mData);
     }
-    mParser.set(mData);
+    mParser->set(mData);
 }
 
 void IOAdapterConsole::out() {
-    preprocessing();
+    processing();
     std::cout << *mData << std::endl;
 }
 
 
 void IOAdapterFile::out() {
-    preprocessing();
+    processing();
     std::cout << mPath << std::endl;
     writeFile();
 }
