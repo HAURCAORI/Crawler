@@ -170,7 +170,11 @@ CURLMultiObject& CURLMultiObject::operator=(CURLMultiObject&& rhs) noexcept {
 
 void CURLMultiObject::addHandle(CURLObject&& obj) noexcept {
     obj.isSuccess = false; // 성공 여부 확인
+    try {
     obj.performValid();
+    } catch(CURLErrorURL& e) {
+        printf("%s\r\n",e.what());
+      }
     mContainer.emplace_back(std::move(obj));
     CURLMcode ret = curl_multi_add_handle(mHandle, mContainer.back().getHandle());
     if(ret != CURLM_OK) {
