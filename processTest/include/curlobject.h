@@ -11,6 +11,26 @@
 
 
 namespace Crawler {
+namespace Flags {
+enum CURLFlag : char {
+    none = 0x00,
+    valid = 0x01, // URL 설정 이상 없을 시 true
+    good = 0x02, // 설정 시 이상 없음
+    bad = 0x04, // 설정 시 이상
+    success = 0x08 // perform 성공
+};
+
+typedef char CURLFlags;
+
+inline CURLFlag operator|(CURLFlag lhs, CURLFlag rhs) {
+    return static_cast<CURLFlag>(static_cast<char>(lhs) | static_cast<char>(rhs));
+}
+
+inline CURLFlag operator&(CURLFlag lhs, CURLFlag rhs) {
+    return static_cast<CURLFlag>(static_cast<char>(lhs) & static_cast<char>(rhs));
+}
+}
+
 
 class CURLObject {
 public:
@@ -65,6 +85,8 @@ public:
     friend class CURLMultiObject;
 private:
     bool isURLSet = false;
+    bool isSuccess = false;
+    Flags::CURLFlags mFlag;
     std::string mUrl;
     CURL* mHandle = nullptr;
     curl_slist* mHeader = nullptr;
@@ -72,6 +94,7 @@ private:
     std::unique_ptr<std::string> mData;
     std::unique_ptr<IOAdapter> mAdapter;
 
+    void performValid();
     void performSuccess();
 };
  

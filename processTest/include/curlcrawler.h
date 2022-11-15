@@ -1,6 +1,7 @@
 #ifndef CURL_CRAWLER_H
 #define CURL_CRAWLER_H
 #include "curlobject.h"
+#include "curlthreadpool.h"
 #include <vector>
 #include <memory>
 #include <map>
@@ -23,22 +24,27 @@ class MemoryPoolAllocator;
 
 typedef rapidjson::GenericDocument<rapidjson::UTF8<char>,rapidjson::MemoryPoolAllocator<rapidjson::CrtAllocator>,rapidjson::CrtAllocator> Document;
 typedef rapidjson::GenericValue<rapidjson::UTF8<char>,rapidjson::MemoryPoolAllocator<rapidjson::CrtAllocator>> Value;
+typedef rapidjson::MemoryPoolAllocator<rapidjson::CrtAllocator> Allocation;
 }
 
 namespace Crawler {
 
 // Enum
-enum class Method { GET, POST };
+enum class Method { NONE, GET, POST };
 static const std::map<Method, std::string> strMethod = {{ Method::GET, "GET" }, { Method::POST, "POST" }};
-enum class OutputType { String, Value, Bool };
+enum class OutputType { NONE, String, Value, Bool };
 static const std::map<OutputType, std::string> strOutputType = {{ OutputType::String, "String" }, { OutputType::Value, "Value" }, { OutputType::Bool, "Bool" }};
-enum class Adapter { File, Console, SQL };
+enum class Adapter { NONE, File, Console, SQL };
 static const std::map<Adapter, std::string> strAdapter = {{ Adapter::File, "File" }, { Adapter::Console, "Console" }, { Adapter::SQL, "SQL" }};
-enum class ScheduleType { Once, Time, Interval, Weekly, Daily };
+enum class ScheduleType { NONE, Once, Time, Interval, Weekly, Daily };
 static const std::map<ScheduleType, std::string> strScheduleType = {{ ScheduleType::Once, "Once" }, { ScheduleType::Time, "Time" }, { ScheduleType::Interval, "Interval" }, { ScheduleType::Weekly, "Weekly" }, { ScheduleType::Daily, "Daily" }};
 
 
 typedef std::vector<std::string> Headers;
+typedef std::vector<std::pair<std::string, std::string>> Options;
+typedef std::pair<std::string, std::string> Option;
+typedef std::vector<std::vector<std::string>> Placeholders;
+typedef std::vector<std::string> Placeholder;
 
 // URI Struct
 struct URI {
@@ -57,11 +63,11 @@ struct URI {
 
 // Output Struct
 struct Output {
-    std::string target;
+    std::string target;  // via function
     std::vector<std::string> placeholders;
     OutputType type;
     Adapter adapter;
-    std::vector<std::pair<std::string, std::string>> options;
+    Options options;
     Output() : type(OutputType::String), adapter(Adapter::Console) {}
     Output(const std::string& dir, Adapter adap = Adapter::Console, OutputType outputType = OutputType::String) : target(dir), type(outputType), adapter(adap) {}
     void addPlaceholder(const std::string& value) { placeholders.push_back(value); }
@@ -71,7 +77,7 @@ struct Output {
 // Schedule Struct
 struct Schedule {
     ScheduleType type;
-    std::string value;
+    std::string value;  // via function
     Schedule() : type(ScheduleType::Once) {}
     Schedule(ScheduleType schedule) : type(schedule) {}
     Schedule(ScheduleType schedule, const std::string& val) : type(schedule), value(val) {}
@@ -87,18 +93,63 @@ struct Info {
 };
 
 class CrawlingObject {
+private:
+    rapidjson::Value& mCrawlingNode;
+    rapidjson::Allocation& alloc;
+    void enqueueObject(const std::string& url);
+
 public:
-    CrawlingObject(rapidjson::Value& value);
+    CrawlingObject(rapidjson::Value& value, rapidjson::Allocation& allocation);
     CrawlingObject(const CrawlingObject& src) = default;
     CrawlingObject(CrawlingObject&& src) = default;
     virtual ~CrawlingObject() noexcept;
     CrawlingObject& operator=(const CrawlingObject& src) = default;
     CrawlingObject& operator=(CrawlingObject&& SRC) = default;
 
+    // Process
+    void execute();
+
+    // URI
     std::string getURL() const;
-    
-private:
-    rapidjson::Value& mValue;
+    Method getMethod() const;
+    std::vector<std::string> getHeaders() const;
+    Options getURIOptions() const;
+    std::string getParameters() const;
+    Placeholders getURLPlaceholders() const;
+    void setURL(const std::string& url);
+    void setMethod(Method method);
+    void setHeaders(const Headers& headers);
+    void appendHeader(const std::string& header);
+    void setURIOptions(const Options& options);
+    void appendURIOption(const Option& option);
+    void setParameters(const std::string& parameters);
+    void setURLPlaceholders(const Placeholders& placeholders);
+
+    // OUTPUT
+    std::string getTarget() const;
+    OutputType getOutputType() const;
+    AdapterType getAdapter() const;
+    Options getOutputOptions() const;
+    Placeholders getOutputPlaceholders() const;
+    void setTarget(const std::string& target);
+    void setOutputType(OutputType outputtype);
+    void setAdapter(AdapterType adapter);
+    void setOutputOptions(const Options& options);
+    void appendOutputOption(const Option& option);
+    void setOutputPlaceholders(const Placeholders& placeholders);
+
+    // SCHEDULE
+    ScheduleType getScheduleType() const;
+    std::string getScheduleValue() const;
+    void setScheduleType(ScheduleType scheduletype);
+    void setScheduleValue(const std::string& value);
+
+    // INFO
+    bool isValid() const;
+    bool isSuccess() const;
+    int64_t getTimestamp() const;
+    int getPerformCount() const;
+    std::string getDetails() const;
 };
 
 /*

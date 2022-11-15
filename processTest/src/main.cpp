@@ -13,30 +13,37 @@
 #define BEGIN_CHRONO std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 #define END_CHRONO std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - begin).count() << "[ms]" << std::endl;
 
+
 int main() {
     curl_global_init(CURL_GLOBAL_DEFAULT);
-    
     using namespace Crawler;
-
     using namespace std::chrono_literals;
-
-
+    
     Crawler::CURLCrawler obj;
     //obj.createListFile("./CrawlingLists.json", true);
-
     obj.loadList();
-    //obj.addList("A","www.naver.com","/div/div/");
-    CrawlingObject temp = obj.at(1);
-    std::cout << temp.getURL();
-/*
-    CURLThreadPool threads(5);
-     
+    //obj.addList("A","https://www.naver.com/,","/div/div");
+    auto o = obj.at(0);
+    o.execute();
+    std::cout << "a";
+
+    //o.setURIOptions({{"a","b"}});
+    
+    //o.appendOption(std::make_pair<std::string,std::string>("b","2"));
+    //o.setURLPlaceholders({"ae:1","ec:2"});
+    //std::cout << o.getOptions().back().second << std::endl;
+    //CrawlingObjectTest::print(o);
+
+    //CURLThreadPool threads(5);
+     /*
     for(int i = 0; i < 1; i++) {
         Crawler::CURLObject obj("https://www.naver.com/");
         std::string path = "./Output/aaa1.html";
         obj.setAdapter<IOAdapterFile>();
         obj.setAdapterOption(ADAPTER_OPT_PATH, path);
-        threads.EnqueueCURL(std::move(obj));
+        obj.appendHeader("Referer: https://new.land.naver.com/complexes?ms=37.4122794,126.6246398,17&a=APT:JGC:ABYG&e=RETAIL");
+        obj.setOption(CURLOPT_VERBOSE, 1L);
+        CURLThreadPool::getInstance().EnqueueCURL(std::move(obj));
     }
 */
     //HTMLTest test;

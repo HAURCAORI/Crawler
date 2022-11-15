@@ -9,19 +9,546 @@
 #include <unistd.h>
 #include <chrono>
 #include <iostream>
+#include <algorithm>
+
+static std::string TrimAndLower(const std::string& str) {
+    if(str.length() == 0) { return ""; }
+    std::string ret(str);
+    unsigned int f,e;
+    f = ret.find_first_not_of("\t\r\n");
+    e = ret.find_last_not_of("\t\r\n");
+
+    if(f == std::string::npos) { return ""; }
+    ret = std::string(ret,f,e-f+1);
+    for (size_t a = 0; a < ret.size(); a++) {
+		if (int(ret[a]) < 97&&isalpha(ret[a])) {
+			ret[a] = ret[a] + 32;
+        }
+	}
+    return ret;
+}
+
+static std::string TrimAndUpper(const std::string& str) {
+    if(str.length() == 0) { return ""; }
+    std::string ret(str);
+    unsigned int f,e;
+    f = ret.find_first_not_of("\t\r\n");
+    e = ret.find_last_not_of("\t\r\n");
+
+    if(f == std::string::npos) { return ""; }
+    ret = std::string(ret,f,e-f+1);
+    for (size_t a = 0; a < ret.size(); a++) {
+		if (int(ret[a]) > 96&&isalpha(ret[a])) {
+			ret[a] = ret[a] - 32;
+        }
+	}
+    return ret;
+}
+
+static std::string ReplacePlaceholder(const std::string& original, size_t index, const std::string& str) {
+    if(original.empty()) { return std::string(); }
+    if(index > 9) { return original; }
+    std::string ret(original);
+    for(auto it = ret.begin(); it != ret.end(); ++it) {
+        if(*it == '$') {
+            if(!isdigit(*(it+1))) { continue; }
+            if((*(it+1) - '0') == (int) index) {
+                size_t pos = std::distance(ret.begin(), it);
+                ret = ret.replace(it, it+2, str);
+                it = ret.begin() + pos + str.size() - 1;
+            }
+        }
+    }
+    return ret;
+}
+
+static std::vector<std::string> ReplacePlaceholders(const std::string& original, const Crawler::Placeholders& plhs, size_t index = 0) {
+    if(plhs.empty()) { return std::vector<std::string>(1,original); }
+    if(index >= plhs.size()) { return std::vector<std::string>(1,original); }
+    std::vector<std::string> ret;
+    for(auto& el : plhs[index]) {
+        std::string rep = ReplacePlaceholder(original, index, el);
+        std::vector<std::string> temp = ReplacePlaceholders(rep, plhs, index+1);
+        ret.insert(ret.end(),std::make_move_iterator(temp.begin()), std::make_move_iterator(temp.end()));
+        if(rep == original) {
+            break;
+        }
+    }
+    return ret;
+}
 
 namespace Crawler {
 
-CrawlingObject::CrawlingObject(rapidjson::Value& value) : mValue(value) {}
+void CrawlingObject::enqueueObject(const std::string& url) {
+    // URI : URL, Method, Headers, Options 처리 / Parameters, Placeholders는 전처리 됨
+    // URL
+    if(url.empty()) { return; }
+    CURLObject obj(url);
+    if(!obj) { return; }
+
+    // Method
+    if(getMethod() == Method::POST) {
+        obj.setOption(CURLOPT_POST, 1L);
+    }
+
+    // Headers
+    for(auto& list : getHeaders()) {
+        if(list.find(':') != std::string::npos) {
+            obj.appendHeader(list);
+        }
+    }
+    
+    // Options
+    for(auto& list : getURIOptions()) {
+        auto it = StringMapCURLOption.find(TrimAndUpper(list.first));
+        if(it != StringMapCURLOption.end()) {
+            std::string value = list.second;
+            if(isdigit(value.front())) {
+                obj.setOption(it->second, std::atol(value.c_str()));
+            } else {
+                obj.setOption(it->second, value);
+            }
+        }
+    }
+    
+    // Output 처리
+    // Adapter
+    {
+        switch (getAdapter()) {
+        case AdapterType::IO_ADAPTER_CONSOLE:
+            obj.setAdapter<Crawler::IOAdapterConsole>();
+            break;
+        case AdapterType::IO_ADAPTER_FILE:
+            obj.setAdapter<Crawler::IOAdapterFile>();
+            break;
+        default:
+            // default :: IO_ADAPTER
+            obj.setAdapter<Crawler::IOAdapter>();
+            break;
+        }
+    }
+
+    // Options
+    for(auto& list : getOutputOptions()) {
+        auto it = StringMapAdapterOption.find(TrimAndUpper(list.first));
+        if(it != StringMapAdapterOption.end()) {
+            std::string value = list.second;
+            if(TrimAndLower(value) == "true") {
+                obj.setAdapterOption(it->second, true);
+            } else if(TrimAndLower(value) == "false") {
+                obj.setAdapterOption(it->second, false);
+            } else if(isdigit(value.front())) {
+                obj.setAdapterOption(it->second, std::atoi(value.c_str()));
+            } else {
+                obj.setAdapterOption(it->second, value);
+            }
+        }
+    }
+    
+    CURLThreadPool::getInstance().EnqueueCURL(std::move(obj));
+}
+
+CrawlingObject::CrawlingObject(rapidjson::Value& value, rapidjson::Allocation& allocation) : mCrawlingNode(value), alloc(allocation) {}
 
 CrawlingObject::~CrawlingObject() noexcept {}
 
-std::string CrawlingObject::getURL() const {
-    if(!mValue.HasMember("URI")) { return "null"; }
-    if(!mValue["URI"].HasMember("URL")) { return "null"; }
-    if(!mValue["URI"]["URL"].IsString()) { return "null"; }
-    return mValue["URI"]["URL"].GetString();
+// Process
+void CrawlingObject::execute() {
+    std::string url = getURL();
+    std::string parameters = getParameters();
+    if(!parameters.empty()) {
+        if(parameters.front() != '?') {
+            parameters.insert(0, "?");
+        }
+        url.append(parameters);
+    }
+
+    auto strs = ReplacePlaceholders(url, getURLPlaceholders());
+    for(auto& s : strs) {
+        enqueueObject(s);
+    }
 }
+
+// URI
+std::string CrawlingObject::getURL() const {
+    if(!mCrawlingNode.HasMember("URI")) { return std::string(); }
+    if(!mCrawlingNode["URI"].HasMember("URL")) { return std::string(); }
+    if(!mCrawlingNode["URI"]["URL"].IsString()) { return std::string(); }
+    return mCrawlingNode["URI"]["URL"].GetString();
+}
+
+Method CrawlingObject::getMethod() const {
+    if(!mCrawlingNode.HasMember("URI")) { return Method::NONE; }
+    if(!mCrawlingNode["URI"].HasMember("Method")) { return Method::NONE; }
+    if(!mCrawlingNode["URI"]["Method"].IsString()) { return Method::NONE; }
+    std::string value = TrimAndLower(mCrawlingNode["URI"]["Method"].GetString());
+    if(value == "get") {
+        return Method::GET;
+    } else if(value == "post") {
+        return Method::POST;
+    } else {
+        return Method::NONE;
+    }
+}
+
+std::vector<std::string> CrawlingObject::getHeaders() const {
+    std::vector<std::string> ret;
+    if(!mCrawlingNode.HasMember("URI")) { return ret; }
+    if(!mCrawlingNode["URI"].HasMember("Headers")) { return ret; }
+    if(!mCrawlingNode["URI"]["Headers"].IsArray()) { return ret; }
+    for(const auto& list : mCrawlingNode["URI"]["Headers"].GetArray()) {
+        if(!list.IsString()) { break; }
+        ret.push_back(list.GetString());        
+    }
+    return ret;
+}
+
+Options CrawlingObject::getURIOptions() const {
+    Options ret;
+    if(!mCrawlingNode.HasMember("URI")) { return ret; }
+    if(!mCrawlingNode["URI"].HasMember("Options")) { return ret; }
+    if(!mCrawlingNode["URI"]["Options"].IsArray()) { return ret; }
+    for(const auto& list : mCrawlingNode["URI"]["Options"].GetArray()) {
+        if(!list.IsObject()) { break; }
+        if(!list.MemberBegin()->name.IsString()) { break; }
+        if(!list.MemberBegin()->value.IsString()) { break; }
+        ret.push_back(std::make_pair<std::string,std::string>(list.MemberBegin()->name.GetString(), list.MemberBegin()->value.GetString()));        
+    }
+    return ret;
+}
+
+std::string CrawlingObject::getParameters() const {
+    if(!mCrawlingNode.HasMember("URI")) { return std::string(); }
+    if(!mCrawlingNode["URI"].HasMember("Parameters")) { return std::string(); }
+    if(!mCrawlingNode["URI"]["Parameters"].IsString()) { return std::string(); }
+    return mCrawlingNode["URI"]["Parameters"].GetString();
+}
+
+Placeholders CrawlingObject::getURLPlaceholders() const {
+    Placeholders ret;
+    if(!mCrawlingNode.HasMember("URI")) { return ret; }
+    if(!mCrawlingNode["URI"].HasMember("Placeholders")) { return ret; }
+    if(!mCrawlingNode["URI"]["Placeholders"].IsArray()) { return ret; }
+    for(const auto& list : mCrawlingNode["URI"]["Placeholders"].GetArray()) {
+        if(!list.IsArray()) { break; }
+        Placeholder item;
+        for(const auto& arr : list.GetArray()) {
+            if(!arr.IsString()) { break; }
+            item.push_back(arr.GetString());
+        }  
+        ret.push_back(item);
+    }
+    return ret;
+}
+
+void CrawlingObject::setURL(const std::string& url) {
+    if(!mCrawlingNode.HasMember("URI")) { return; }
+    if(!mCrawlingNode["URI"].HasMember("URL")) { return; }
+    mCrawlingNode["URI"]["URL"].SetString(url, alloc);
+}
+
+void CrawlingObject::setMethod(Method method) {
+    if(!mCrawlingNode.HasMember("URI")) { return; }
+    if(!mCrawlingNode["URI"].HasMember("Method")) { return; }
+    switch(method) {
+        case Method::GET: mCrawlingNode["URI"]["Method"].SetString("GET", alloc);
+        break;
+        case Method::POST: mCrawlingNode["URI"]["Method"].SetString("POST", alloc);
+        break;
+        default: mCrawlingNode["URI"]["Method"].SetString(std::string(), alloc);
+        break;
+    }
+}
+
+void CrawlingObject::setHeaders(const Headers& headers) {
+    if(!mCrawlingNode.HasMember("URI")) { return; }
+    if(!mCrawlingNode["URI"].HasMember("Headers")) { return; }
+    if(!mCrawlingNode["URI"]["Headers"].IsArray()) { return; }
+    mCrawlingNode["URI"]["Headers"].Clear();
+    for(auto& el : headers) {
+        mCrawlingNode["URI"]["Headers"].PushBack(rapidjson::Value(el, alloc).Move(), alloc);
+    }
+}
+
+void CrawlingObject::appendHeader(const std::string& header){
+    if(!mCrawlingNode.HasMember("URI")) { return; }
+    if(!mCrawlingNode["URI"].HasMember("Headers")) { return; }
+    if(!mCrawlingNode["URI"]["Headers"].IsArray()) { return; }
+    mCrawlingNode["URI"]["Headers"].PushBack(rapidjson::Value(header, alloc).Move(), alloc);
+}
+
+void CrawlingObject::setURIOptions(const Options& options) {
+    if(!mCrawlingNode.HasMember("URI")) { return; }
+    if(!mCrawlingNode["URI"].HasMember("Options")) { return; }
+    if(!mCrawlingNode["URI"]["Options"].IsArray()) { return; }
+    mCrawlingNode["URI"]["Options"].Clear();
+    for(auto& el : options) {
+        rapidjson::Value node(rapidjson::kObjectType);
+        node.AddMember(rapidjson::Value(el.first,alloc).Move(), rapidjson::Value(el.second,alloc).Move(), alloc);
+        mCrawlingNode["URI"]["Options"].PushBack(node.Move(), alloc);
+    }
+}
+
+void CrawlingObject::appendURIOption(const Option& option) {
+    if(!mCrawlingNode.HasMember("URI")) { return; }
+    if(!mCrawlingNode["URI"].HasMember("Options")) { return; }
+    if(!mCrawlingNode["URI"]["Options"].IsArray()) { return; }
+    rapidjson::Value node(rapidjson::kObjectType);
+    node.AddMember(rapidjson::Value(option.first,alloc).Move(), rapidjson::Value(option.second,alloc).Move(), alloc);
+    mCrawlingNode["URI"]["Options"].PushBack(node.Move(), alloc);
+}
+
+void CrawlingObject::setParameters(const std::string& parameters){
+    if(!mCrawlingNode.HasMember("URI")) { return; }
+    if(!mCrawlingNode["URI"].HasMember("Parameters")) { return; }
+    mCrawlingNode["URI"]["Parameters"].SetString(parameters, alloc);
+}
+
+void CrawlingObject::setURLPlaceholders(const Placeholders& placeholders) {
+    if(!mCrawlingNode.HasMember("URI")) { return; }
+    if(!mCrawlingNode["URI"].HasMember("Placeholders")) { return; }
+    if(!mCrawlingNode["URI"]["Placeholders"].IsArray()) { return; }
+    mCrawlingNode["URI"]["Placeholders"].Clear();
+    for(auto& el : placeholders) {
+        rapidjson::Value temp(rapidjson::kArrayType);
+        for(auto& arr : el) {
+            temp.PushBack(rapidjson::Value(arr, alloc).Move(),alloc);
+        }
+        mCrawlingNode["URI"]["Placeholders"].PushBack(temp.Move(), alloc);
+    }
+}
+
+// OUTPUT
+std::string CrawlingObject::getTarget() const {
+    if(!mCrawlingNode.HasMember("Output")) { return std::string(); }
+    if(!mCrawlingNode["Output"].HasMember("Target")) { return std::string(); }
+    if(!mCrawlingNode["Output"]["Target"].IsString()) { return std::string(); }
+    return mCrawlingNode["Output"]["Target"].GetString();
+}
+
+OutputType CrawlingObject::getOutputType() const {
+    if(!mCrawlingNode.HasMember("Output")) { return OutputType::NONE; }
+    if(!mCrawlingNode["Output"].HasMember("Type")) { return OutputType::NONE; }
+    if(!mCrawlingNode["Output"]["Type"].IsString()) { return OutputType::NONE; }
+    std::string value = TrimAndLower(mCrawlingNode["Output"]["Type"].GetString());
+    if(value == "string") {
+        return OutputType::String;
+    } else if(value == "value") {
+        return OutputType::Value;
+    } else if(value == "bool") {
+        return OutputType::Bool;
+    } else {
+        return OutputType::NONE;
+    }
+}
+
+AdapterType CrawlingObject::getAdapter() const {
+    if(!mCrawlingNode.HasMember("Output")) { return AdapterType::NONE; }
+    if(!mCrawlingNode["Output"].HasMember("Adapter")) { return AdapterType::NONE; }
+    if(!mCrawlingNode["Output"]["Adapter"].IsString()) { return AdapterType::NONE; }
+    std::string value = TrimAndUpper(mCrawlingNode["Output"]["Adapter"].GetString());
+    if(value == "IO_ADAPTER" ) {
+        return AdapterType::IO_ADAPTER;
+    } else if(value == "IO_ADAPTER_CONSOLE" ) {
+        return AdapterType::IO_ADAPTER_CONSOLE;
+    } else if(value == "IO_ADAPTER_FILE" ) {
+        return AdapterType::IO_ADAPTER_FILE;
+    } else {
+        return AdapterType::IO_ADAPTER;
+    }
+}
+
+Options CrawlingObject::getOutputOptions() const {
+    Options ret;
+    if(!mCrawlingNode.HasMember("Output")) { return ret; }
+    if(!mCrawlingNode["Output"].HasMember("Options")) { return ret; }
+    if(!mCrawlingNode["Output"]["Options"].IsArray()) { return ret; }
+    for(const auto& list : mCrawlingNode["Output"]["Options"].GetArray()) {
+        if(!list.IsObject()) { break; }
+        if(!list.MemberBegin()->name.IsString()) { break; }
+        if(!list.MemberBegin()->value.IsString()) { break; }
+        ret.push_back(std::make_pair<std::string,std::string>(list.MemberBegin()->name.GetString(), list.MemberBegin()->value.GetString()));        
+    }
+    return ret;
+}
+
+Placeholders CrawlingObject::getOutputPlaceholders() const {
+    Placeholders ret;
+    if(!mCrawlingNode.HasMember("Output")) { return ret; }
+    if(!mCrawlingNode["Output"].HasMember("Placeholders")) { return ret; }
+    if(!mCrawlingNode["Output"]["Placeholders"].IsArray()) { return ret; }
+    for(const auto& list : mCrawlingNode["Output"]["Placeholders"].GetArray()) {
+        if(!list.IsArray()) { break; }
+        Placeholder item;
+        for(const auto& arr : list.GetArray()) {
+            if(!arr.IsString()) { break; }
+            item.push_back(arr.GetString());
+        }  
+        ret.push_back(item);    
+    }
+    return ret;
+}
+
+void CrawlingObject::setTarget(const std::string& target) {
+    if(!mCrawlingNode.HasMember("Output")) { return; }
+    if(!mCrawlingNode["Output"].HasMember("Target")) { return; }
+    mCrawlingNode["Output"]["Target"].SetString(target, alloc);
+}
+
+void CrawlingObject::setOutputType(OutputType outputtype) {
+    if(!mCrawlingNode.HasMember("Output")) { return; }
+    if(!mCrawlingNode["Output"].HasMember("Type")) { return; }
+    switch(outputtype) {
+        case OutputType::String : mCrawlingNode["Output"]["Type"].SetString("String", alloc);
+        break;
+        case OutputType::Value : mCrawlingNode["Output"]["Type"].SetString("Value", alloc);
+        break;
+        case OutputType::Bool : mCrawlingNode["Output"]["Type"].SetString("Bool", alloc);
+        break;
+        default: mCrawlingNode["Output"]["Type"].SetString("NULL", alloc);
+        break;
+    }
+}
+
+void CrawlingObject::setAdapter(AdapterType adapter) {
+    if(!mCrawlingNode.HasMember("Output")) { return; }
+    if(!mCrawlingNode["Output"].HasMember("Adapter")) { return; }
+    switch(adapter) {
+        case AdapterType::IO_ADAPTER : mCrawlingNode["Output"]["Adapter"].SetString("IO_ADAPTER", alloc);
+        break;
+        case AdapterType::IO_ADAPTER_CONSOLE : mCrawlingNode["Output"]["Adapter"].SetString("IO_ADAPTER_CONSOLE", alloc);
+        break;
+        case AdapterType::IO_ADAPTER_FILE : mCrawlingNode["Output"]["Adapter"].SetString("IO_ADAPTER_FILE", alloc);
+        break;
+        default: mCrawlingNode["Output"]["Adapter"].SetString("NULL", alloc);
+        break;
+    }
+}
+
+void CrawlingObject::setOutputOptions(const Options& options) {
+    if(!mCrawlingNode.HasMember("Output")) { return; }
+    if(!mCrawlingNode["Output"].HasMember("Options")) { return; }
+    if(!mCrawlingNode["Output"]["Options"].IsArray()) { return; }
+    mCrawlingNode["Output"]["Options"].Clear();
+    for(auto& el : options) {
+        rapidjson::Value node(rapidjson::kObjectType);
+        node.AddMember(rapidjson::Value(el.first,alloc).Move(), rapidjson::Value(el.second,alloc).Move(), alloc);
+        mCrawlingNode["Output"]["Options"].PushBack(node.Move(), alloc);
+    }
+}
+
+void CrawlingObject::appendOutputOption(const Option& option) {
+    if(!mCrawlingNode.HasMember("Output")) { return; }
+    if(!mCrawlingNode["Output"].HasMember("Options")) { return; }
+    if(!mCrawlingNode["Output"]["Options"].IsArray()) { return; }
+    rapidjson::Value node(rapidjson::kObjectType);
+    node.AddMember(rapidjson::Value(option.first,alloc).Move(), rapidjson::Value(option.second,alloc).Move(), alloc);
+    mCrawlingNode["Output"]["Options"].PushBack(node.Move(), alloc);
+}
+
+void CrawlingObject::setOutputPlaceholders(const Placeholders& placeholders) {
+    if(!mCrawlingNode.HasMember("Output")) { return; }
+    if(!mCrawlingNode["Output"].HasMember("Placeholders")) { return; }
+    if(!mCrawlingNode["Output"]["Placeholders"].IsArray()) { return; }
+    mCrawlingNode["Output"]["Placeholders"].Clear();
+    for(auto& el : placeholders) {
+        rapidjson::Value temp(rapidjson::kArrayType);
+        for(auto& arr : el) {
+            temp.PushBack(rapidjson::Value(arr, alloc).Move(),alloc);
+        }
+        mCrawlingNode["URI"]["Placeholders"].PushBack(temp.Move(), alloc);
+    }
+}
+
+// SCHEDULE
+ScheduleType CrawlingObject::getScheduleType() const {
+    if(!mCrawlingNode.HasMember("Schedule")) { return ScheduleType::NONE; }
+    if(!mCrawlingNode["Schedule"].HasMember("Type")) { return ScheduleType::NONE; }
+    if(!mCrawlingNode["Schedule"]["Type"].IsString()) { return ScheduleType::NONE; }
+    std::string value = TrimAndLower(mCrawlingNode["Schedule"]["Type"].GetString());
+    if(value == "once") {
+        return ScheduleType::Once;
+    } else if(value == "time") {
+        return ScheduleType::Time;
+    } else if(value == "interval") {
+        return ScheduleType::Interval;
+    } else if(value == "weekly") {
+        return ScheduleType::Weekly;
+    } else if(value == "daily") {
+        return ScheduleType::Daily;
+    } else {
+        return ScheduleType::NONE;
+    }
+}
+
+std::string CrawlingObject::getScheduleValue() const {
+    if(!mCrawlingNode.HasMember("Schedule")) { return std::string(); }
+    if(!mCrawlingNode["Schedule"].HasMember("Value")) { return std::string(); }
+    if(!mCrawlingNode["Schedule"]["Value"].IsString()) { return std::string(); }
+    return mCrawlingNode["Schedule"]["Value"].GetString();
+}
+
+void CrawlingObject::setScheduleType(ScheduleType scheduletype) {
+    if(!mCrawlingNode.HasMember("Schedule")) { return; }
+    if(!mCrawlingNode["Schedule"].HasMember("Type")) { return; }
+    switch(scheduletype) {
+        case ScheduleType::Once: mCrawlingNode["Schedule"]["Type"].SetString("Once", alloc);
+        break;
+        case ScheduleType::Time : mCrawlingNode["Schedule"]["Type"].SetString("Time", alloc);
+        break;
+        case ScheduleType::Interval : mCrawlingNode["Schedule"]["Type"].SetString("Interval", alloc);
+        break;
+        case ScheduleType::Weekly : mCrawlingNode["Schedule"]["Type"].SetString("Weekly", alloc);
+        break;
+        case ScheduleType::Daily : mCrawlingNode["Schedule"]["Type"].SetString("Daily", alloc);
+        break;
+        default: mCrawlingNode["Schedule"]["Type"].SetString("NULL", alloc);
+        break;
+    }
+}
+
+void CrawlingObject::setScheduleValue(const std::string& value) {
+    if(!mCrawlingNode.HasMember("Schedule")) { return; }
+    if(!mCrawlingNode["Schedule"].HasMember("Value")) { return; }
+    mCrawlingNode["Schedule"]["Value"].SetString(value, alloc);
+}
+
+// INFO
+bool CrawlingObject::isValid() const {
+    if(!mCrawlingNode.HasMember("Info")) { return false; }
+    if(!mCrawlingNode["Info"].HasMember("Valid")) { return false; }
+    if(!mCrawlingNode["Info"]["Valid"].IsBool()) { return false; }
+    return mCrawlingNode["Info"]["Valid"].GetBool();
+}
+
+bool CrawlingObject::isSuccess() const {
+    if(!mCrawlingNode.HasMember("Info")) { return false; }
+    if(!mCrawlingNode["Info"].HasMember("Success")) { return false; }
+    if(!mCrawlingNode["Info"]["Success"].IsBool()) { return false; }
+    return mCrawlingNode["Info"]["Success"].GetBool();
+}
+
+int64_t CrawlingObject::getTimestamp() const {
+    if(!mCrawlingNode.HasMember("Info")) { return 0; }
+    if(!mCrawlingNode["Info"].HasMember("Timestamp")) { return 0; }
+    if(!mCrawlingNode["Info"]["Timestamp"].IsInt64()) { return 0; }
+    return mCrawlingNode["Info"]["Timestamp"].GetInt64();
+}
+
+int CrawlingObject::getPerformCount() const {
+    if(!mCrawlingNode.HasMember("Info")) { return 0; }
+    if(!mCrawlingNode["Info"].HasMember("PerformCount")) { return 0; }
+    if(!mCrawlingNode["Info"]["PerformCount"].IsInt()) { return 0; }
+    return mCrawlingNode["Info"]["PerformCount"].GetInt();
+}
+
+std::string CrawlingObject::getDetails() const {
+    if(!mCrawlingNode.HasMember("Info")) { return 0; }
+    if(!mCrawlingNode["Info"].HasMember("Details")) { return 0; }
+    if(!mCrawlingNode["Info"]["Details"].IsString()) { return 0; }
+    return mCrawlingNode["Info"]["Details"].GetString();
+}
+
 
 CURLCrawler::CURLCrawler() : mDoc(std::make_unique<rapidjson::Document>()) {
     
@@ -61,25 +588,28 @@ void CURLCrawler::addList(const std::string& id, const std::string& url, const s
 }
 
 CrawlingObject CURLCrawler::at(size_t index) {
+    if(!isLoaded) {
+        throw std::runtime_error("JSON file doesn't loaded.");
+    }
     if(index >= (*mDoc)[ROOT_NODE].Size()) { 
         throw std::out_of_range("CurlCrawler out of range.");
     }
-    return CrawlingObject((*mDoc)[ROOT_NODE].GetArray()[index]);
+    return CrawlingObject((*mDoc)[ROOT_NODE].GetArray()[index], mDoc->GetAllocator());
 }
 
 CrawlingObject CURLCrawler::at(const std::string& id) {
     if(!(*mDoc)[ROOT_NODE].HasMember(id)) { 
         throw std::out_of_range("CurlCrawler out of range.");
     }
-    return CrawlingObject((*mDoc)[ROOT_NODE][id]);
+    return CrawlingObject((*mDoc)[ROOT_NODE][id], mDoc->GetAllocator());
 }
 
 CrawlingObject CURLCrawler::operator[](size_t index) {
-    return CrawlingObject((*mDoc)[ROOT_NODE].GetArray()[index]);
+    return CrawlingObject((*mDoc)[ROOT_NODE].GetArray()[index], mDoc->GetAllocator());
 }
 
 CrawlingObject CURLCrawler::operator[](const std::string& id) {
-    return CrawlingObject((*mDoc)[ROOT_NODE][id]);
+    return CrawlingObject((*mDoc)[ROOT_NODE][id], mDoc->GetAllocator());
 }
 
 rapidjson::Value CURLCrawler::createListNode(const std::string& id, const URI& uri, const Output& output, const Schedule& schedule) {
@@ -103,6 +633,7 @@ rapidjson::Value CURLCrawler::createListNode(const std::string& id, const URI& u
         rapidjson::Value node_Placeholders(rapidjson::kArrayType);
         for(auto& el : uri.placeholders) { node_Placeholders.PushBack(rapidjson::Value(el, alloc).Move(), alloc); }
         node_URI.AddMember("Placeholders", node_Placeholders.Move(), alloc);
+        node_URI.AddMember("Options", rapidjson::Value(rapidjson::kArrayType), alloc);
         object.AddMember("URI", node_URI.Move(), alloc);
     }
 
@@ -176,7 +707,7 @@ void CURLCrawler::validCheck(rapidjson::Value& node) {
         }
     }
 
-    // 상위 노드 확인
+    // 상위 필수 노드 확인
     node["Info"]["Valid"].SetBool(false);
     if(!node.HasMember("ID") || !node.HasMember("URI") || !node.HasMember("Output") || !node.HasMember("Schedule")) {
         node["Info"]["Details"].SetString("Requires : 'ID', 'URI', 'Output', 'Schedule'\r\n");

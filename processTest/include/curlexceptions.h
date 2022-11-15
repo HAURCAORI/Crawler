@@ -19,22 +19,22 @@ private:
     std::string mMessage;
 };
 
-class CURLErrorURL : CURLError {
+class CURLErrorURL : public CURLError {
 public:
     CURLErrorURL(const std::string& message) : CURLError(message) {}
 };
 
-class CURLErrorAdapter : CURLError {
+class CURLErrorAdapter : public CURLError {
 public:
     CURLErrorAdapter(const std::string& message) : CURLError(message) {}
 };
 
-class CURLErrorAdapterOption : CURLError {
+class CURLErrorAdapterOption : public CURLError {
 public:
     CURLErrorAdapterOption(const std::string& message) : CURLError(message) {}
 };
 
-class CURLErrorAdapterOut : CURLError {
+class CURLErrorAdapterOut : public CURLError {
 public:
     CURLErrorAdapterOut(const std::string& message) : CURLError(message) {}
 };

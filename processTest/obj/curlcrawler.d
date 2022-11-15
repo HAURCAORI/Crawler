@@ -193,6 +193,22 @@ processTest/obj/curlcrawler.o: processTest/src/curlcrawler.cpp \
  /usr/include/c++/11/bits/stl_multimap.h \
  /usr/include/c++/11/bits/erase_if.h processTest/include/curlexceptions.h \
  processTest/include/curlioadapter.h /usr/include/c++/11/any \
+ processTest/include/curlthreadpool.h /usr/include/c++/11/future \
+ /usr/include/c++/11/mutex /usr/include/c++/11/chrono \
+ /usr/include/c++/11/ratio /usr/include/c++/11/limits \
+ /usr/include/c++/11/ctime /usr/include/c++/11/bits/parse_numbers.h \
+ /usr/include/c++/11/system_error \
+ /usr/include/x86_64-linux-gnu/c++/11/bits/error_constants.h \
+ /usr/include/c++/11/stdexcept /usr/include/c++/11/bits/std_mutex.h \
+ /usr/include/c++/11/bits/unique_lock.h \
+ /usr/include/c++/11/condition_variable /usr/include/c++/11/atomic \
+ /usr/include/c++/11/bits/atomic_futex.h \
+ /usr/include/c++/11/bits/std_function.h \
+ /usr/include/c++/11/bits/std_thread.h /usr/include/c++/11/queue \
+ /usr/include/c++/11/deque /usr/include/c++/11/bits/stl_deque.h \
+ /usr/include/c++/11/bits/deque.tcc /usr/include/c++/11/bits/stl_heap.h \
+ /usr/include/c++/11/bits/stl_queue.h /usr/include/c++/11/thread \
+ /usr/include/c++/11/bits/this_thread_sleep.h \
  processTest/include/rapidjson/document.h \
  processTest/include/rapidjson/reader.h \
  processTest/include/rapidjson/allocators.h \
@@ -203,7 +219,7 @@ processTest/obj/curlcrawler.o: processTest/src/curlcrawler.cpp \
  /usr/include/inttypes.h /usr/include/c++/11/cassert \
  /usr/include/assert.h processTest/include/rapidjson/internal/meta.h \
  processTest/include/rapidjson/internal/../rapidjson.h \
- /usr/include/c++/11/limits processTest/include/rapidjson/stream.h \
+ processTest/include/rapidjson/stream.h \
  processTest/include/rapidjson/encodings.h \
  processTest/include/rapidjson/encodedstream.h \
  processTest/include/rapidjson/memorystream.h \
@@ -228,9 +244,7 @@ processTest/obj/curlcrawler.o: processTest/src/curlcrawler.cpp \
  /usr/include/c++/11/streambuf /usr/include/c++/11/bits/ios_base.h \
  /usr/include/c++/11/bits/locale_classes.h \
  /usr/include/c++/11/bits/locale_classes.tcc \
- /usr/include/c++/11/system_error \
- /usr/include/x86_64-linux-gnu/c++/11/bits/error_constants.h \
- /usr/include/c++/11/stdexcept /usr/include/c++/11/bits/streambuf.tcc \
+ /usr/include/c++/11/bits/streambuf.tcc \
  processTest/include/rapidjson/istreamwrapper.h /usr/include/c++/11/ios \
  /usr/include/c++/11/bits/basic_ios.h \
  /usr/include/c++/11/bits/locale_facets.h /usr/include/c++/11/cwctype \
@@ -258,6 +272,13 @@ processTest/obj/curlcrawler.o: processTest/src/curlcrawler.cpp \
  /usr/include/x86_64-linux-gnu/bits/getopt_core.h \
  /usr/include/x86_64-linux-gnu/bits/unistd.h \
  /usr/include/x86_64-linux-gnu/bits/unistd_ext.h \
- /usr/include/linux/close_range.h /usr/include/c++/11/chrono \
- /usr/include/c++/11/ratio /usr/include/c++/11/ctime \
- /usr/include/c++/11/bits/parse_numbers.h /usr/include/c++/11/iostream
+ /usr/include/linux/close_range.h /usr/include/c++/11/iostream \
+ /usr/include/c++/11/algorithm /usr/include/c++/11/bits/stl_algo.h \
+ /usr/include/c++/11/bits/algorithmfwd.h \
+ /usr/include/c++/11/bits/uniform_int_dist.h \
+ /usr/include/c++/11/pstl/glue_algorithm_defs.h \
+ /usr/include/c++/11/functional /usr/include/c++/11/unordered_map \
+ /usr/include/c++/11/bits/hashtable.h \
+ /usr/include/c++/11/bits/hashtable_policy.h \
+ /usr/include/c++/11/bits/enable_special_members.h \
+ /usr/include/c++/11/bits/unordered_map.h

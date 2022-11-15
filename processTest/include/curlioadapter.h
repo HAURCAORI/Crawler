@@ -1,9 +1,11 @@
 #ifndef CURL_IO_ADAPTER_H
 #define CURL_IO_ADAPTER_H
 #include <any>
+#include <map>
 #include <memory>
 
 #define ADAPTER_OUT processing();
+#define StringMap(opt) { #opt, opt }
 
 namespace Crawler {
 
@@ -13,7 +15,21 @@ enum AdapterOption {
   ADAPTER_OPT_GET_ORIGINAL
 };
 
+static const std::map<std::string, AdapterOption> StringMapAdapterOption = {
+    StringMap(ADAPTER_OPT_NONE),
+    StringMap(ADAPTER_OPT_PATH),
+    StringMap(ADAPTER_OPT_GET_ORIGINAL)
+};
+
 class HTMLParser;
+
+// 수정 시 Curlcrawler.cpp getAdapter, setAdapter 수정
+enum class AdapterType {
+    NONE,
+    IO_ADAPTER,
+    IO_ADAPTER_CONSOLE,
+    IO_ADAPTER_FILE
+};
 
 class IOAdapter {
 public:

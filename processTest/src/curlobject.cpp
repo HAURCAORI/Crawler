@@ -5,7 +5,7 @@
 //#include <iostream>
 
 namespace Crawler {
-
+using CURLFlag = Flags::CURLFlag;
 // CURLObject Declaration
 
 CURLObject::CURLObject() : mHandle(curl_easy_init()) {
@@ -47,16 +47,7 @@ CURLObject::operator void*() const {
 }
 
 CURLcode CURLObject::perform() {
-    if(!isURLSet) {
-        throw CURLErrorURL("Empty URL.");
-    }
-    if(!mAdapter) {
-        setAdapter<IOAdapter>();
-    }
-    if (mHeader != NULL) {
-        setOption(CURLOPT_HTTPHEADER, mHeader);
-    }
-
+    performValid();
     CURLcode ret = curl_easy_perform(mHandle);
     if(ret == CURLE_OK) { performSuccess(); }
     return ret;
@@ -69,7 +60,7 @@ void CURLObject::resetOption() noexcept {
 void CURLObject::defaultOption() {
     
     setOption(CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2TLS);
-    if(isURLSet) {
+    if(mFlag & CURLFlag::valid) {
         setOption(CURLOPT_URL, mUrl.c_str()); // URL 설정
     }
 
@@ -83,6 +74,7 @@ void CURLObject::defaultOption() {
 }
 
 void CURLObject::setURL(const std::string& str) {
+    mFlag |= CURLFlag::valid;
     isURLSet = true;
     mUrl = str;
     setOption(CURLOPT_URL, mUrl.c_str());
@@ -94,6 +86,9 @@ void CURLObject::setContentType(const MIME& type) {
 
 void CURLObject::appendHeader(const std::string& str) {
     mHeader = curl_slist_append(mHeader, str.c_str());
+    if (mHeader != NULL) {
+        setOption(CURLOPT_HTTPHEADER, mHeader);
+    }
 }
 
 void CURLObject::appendHeader(const MIME& type) {
@@ -133,8 +128,24 @@ void swap(CURLObject& first, CURLObject& second) noexcept {
     swap(first.mAdapter, second.mAdapter);
 }
 
+void CURLObject::performValid() {
+    isSuccess = false;
+    if(!(mFlag & CURLFlag::valid)) {
+        throw CURLErrorURL("Empty URL.");
+    }
+    if(!mAdapter) {
+        setAdapter<IOAdapter>();
+    }
+}
+
 void CURLObject::performSuccess() {
-    mAdapter->out();
+    try {
+        mAdapter->out();
+        isSuccess = true;
+    } catch(CURLErrorAdapterOut& e) {
+        printf("%s\r\n",e.what());
+        isSuccess = false;
+    }
 }
 
 // CURLMultiObject declaration
@@ -158,6 +169,8 @@ CURLMultiObject& CURLMultiObject::operator=(CURLMultiObject&& rhs) noexcept {
 }
 
 void CURLMultiObject::addHandle(CURLObject&& obj) noexcept {
+    obj.isSuccess = false; // 성공 여부 확인
+    obj.performValid();
     mContainer.emplace_back(std::move(obj));
     CURLMcode ret = curl_multi_add_handle(mHandle, mContainer.back().getHandle());
     if(ret != CURLM_OK) {

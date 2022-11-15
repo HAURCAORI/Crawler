@@ -8,6 +8,7 @@
 #include <ctime>
 
 #include "curlobject.h"
+#include "curlcrawler.h"
 /*
 static std::string readFile(std::string path) {
     std::ifstream inFile(path);
@@ -74,13 +75,6 @@ public:
         //obj.appendHeader(Crawler::MIME_APP_URLENCODED);
 
         obj.setOption(CURLOPT_VERBOSE, 1L);
-        obj.setOption(CURLOPT_FOLLOWLOCATION, 1L);
-        obj.setOption(CURLOPT_MAXREDIRS, 10L);
-        obj.setOption(CURLOPT_CONNECTTIMEOUT, 2L);
-        obj.setOption(CURLOPT_UNRESTRICTED_AUTH, 1L);
-        obj.setOption(CURLOPT_PROXYAUTH, CURLAUTH_ANY);
-        obj.setOption(CURLOPT_EXPECT_100_TIMEOUT_MS, 0L);
-        obj.setOption(CURLOPT_COOKIEFILE, "");
 
 
         //obj.setOption(CURLOPT_POST, 1L);
@@ -107,5 +101,34 @@ public:
     
 
 private:
+
+};
+
+class CrawlingObjectTest {
+public:
+    CrawlingObjectTest();
+
+    static void print(Crawler::CrawlingObject temp)
+    {   
+        using namespace Crawler;
+        std::cout << "[URL]" << std::endl
+                  << temp.getURL() << std::endl;
+        if (temp.getMethod() == Method::POST || temp.getMethod() == Method::GET)
+        {
+            std::cout << "[Method] OK." << std::endl;
+        }
+        std::cout << "[Headers]" << std::endl;
+        for (auto t : temp.getHeaders())
+        {
+            std::cout << t << std::endl;
+        }
+        std::cout << "[Parameters]" << std::endl
+                  << temp.getParameters() << std::endl;
+        std::cout << "[Placeholders]" << std::endl;
+        for (auto t : temp.getURLPlaceholders())
+        {
+            //std::cout << t << std::endl;
+        }
+    }
 
 };

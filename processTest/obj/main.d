@@ -224,8 +224,8 @@ processTest/obj/main.o: processTest/src/main.cpp \
  /usr/include/c++/11/bits/stl_queue.h /usr/include/c++/11/thread \
  /usr/include/c++/11/bits/this_thread_sleep.h \
  processTest/include/curlioadapter.h processTest/include/curlcrawler.h \
- processTest/include/curlobject.h processTest/include/htmlparser.h \
- processTest/include/pugixml/pugixml.hpp \
+ processTest/include/curlobject.h processTest/include/curlthreadpool.h \
+ processTest/include/htmlparser.h processTest/include/pugixml/pugixml.hpp \
  processTest/include/pugixml/pugiconfig.hpp /usr/include/c++/11/iterator \
  /usr/include/c++/11/bits/stream_iterator.h \
  processTest/include/testcode.hpp /usr/include/c++/11/fstream \
@@ -233,4 +233,4 @@ processTest/obj/main.o: processTest/src/main.cpp \
  /usr/include/x86_64-linux-gnu/c++/11/bits/basic_file.h \
  /usr/include/x86_64-linux-gnu/c++/11/bits/c++io.h \
  /usr/include/c++/11/bits/fstream.tcc /usr/include/c++/11/sstream \
- /usr/include/c++/11/bits/sstream.tcc
+ /usr/include/c++/11/bits/sstream.tcc processTest/include/curlcrawler.h
