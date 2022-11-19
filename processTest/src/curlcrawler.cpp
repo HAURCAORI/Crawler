@@ -9,41 +9,8 @@
 #include <unistd.h>
 #include <chrono>
 #include <iostream>
-#include <algorithm>
 
-static std::string TrimAndLower(const std::string& str) {
-    if(str.length() == 0) { return ""; }
-    std::string ret(str);
-    unsigned int f,e;
-    f = ret.find_first_not_of("\t\r\n");
-    e = ret.find_last_not_of("\t\r\n");
-
-    if(f == std::string::npos) { return ""; }
-    ret = std::string(ret,f,e-f+1);
-    for (size_t a = 0; a < ret.size(); a++) {
-		if (int(ret[a]) < 97&&isalpha(ret[a])) {
-			ret[a] = ret[a] + 32;
-        }
-	}
-    return ret;
-}
-
-static std::string TrimAndUpper(const std::string& str) {
-    if(str.length() == 0) { return ""; }
-    std::string ret(str);
-    unsigned int f,e;
-    f = ret.find_first_not_of("\t\r\n");
-    e = ret.find_last_not_of("\t\r\n");
-
-    if(f == std::string::npos) { return ""; }
-    ret = std::string(ret,f,e-f+1);
-    for (size_t a = 0; a < ret.size(); a++) {
-		if (int(ret[a]) > 96&&isalpha(ret[a])) {
-			ret[a] = ret[a] - 32;
-        }
-	}
-    return ret;
-}
+#include "stringextension.h"
 
 static std::string ReplacePlaceholder(const std::string& original, size_t index, const std::string& str) {
     if(original.empty()) { return std::string(); }
@@ -83,12 +50,24 @@ void CrawlingObject::enqueueObject(const std::string& url) {
     // URI : URL, Method, Headers, Options 처리 / Parameters, Placeholders는 전처리 됨
     // URL
     if(url.empty()) { return; }
-    CURLObject obj(url);
+
+    // POST의 경우 url에서 parameters 분리 
+    std::string objectURL(url);
+    std::string postFields;
+    if(getMethod() == Method::POST) {
+        if(url.find('?') != std::string::npos) {
+            objectURL = url.substr(0, url.find('?'));
+            postFields = url.substr(url.find('?') + 1);
+        }
+    }
+
+    CURLObject obj(objectURL);
     if(!obj) { return; }
 
     // Method
     if(getMethod() == Method::POST) {
         obj.setOption(CURLOPT_POST, 1L);
+        obj.setOption(CURLOPT_POSTFIELDS, postFields.c_str());
     }
 
     // Headers
@@ -108,25 +87,27 @@ void CrawlingObject::enqueueObject(const std::string& url) {
             } else {
                 obj.setOption(it->second, value);
             }
+        } else {
+            fprintf(stderr, "Unknown option '%s'", list.first.c_str());
         }
     }
     
     // Output 처리
     // Adapter
-    {
-        switch (getAdapter()) {
-        case AdapterType::IO_ADAPTER_CONSOLE:
-            obj.setAdapter<Crawler::IOAdapterConsole>();
-            break;
-        case AdapterType::IO_ADAPTER_FILE:
-            obj.setAdapter<Crawler::IOAdapterFile>();
-            break;
-        default:
-            // default :: IO_ADAPTER
-            obj.setAdapter<Crawler::IOAdapter>();
-            break;
-        }
+
+    switch (getAdapter()) {
+    case AdapterType::IO_ADAPTER_CONSOLE:
+        obj.setAdapter<Crawler::IOAdapterConsole>();
+        break;
+    case AdapterType::IO_ADAPTER_FILE:
+        obj.setAdapter<Crawler::IOAdapterFile>();
+        break;
+    default:
+        // default :: IO_ADAPTER
+        obj.setAdapter<Crawler::IOAdapter>();
+        break;
     }
+
 
     // Options
     for(auto& list : getOutputOptions()) {
@@ -142,15 +123,53 @@ void CrawlingObject::enqueueObject(const std::string& url) {
             } else {
                 obj.setAdapterOption(it->second, value);
             }
+        } else {
+            fprintf(stderr, "Unknown adapter option '%s'", list.first.c_str());
         }
     }
-    
+
+    // Target with Placeholder
+    obj.setAdapterTarget(ReplacePlaceholders(getTarget(), getOutputPlaceholders()));
+
+
+    // future 객체를 통해 성공 여부 확인
+    auto task = std::packaged_task<void(bool)>([this](bool result) { success(result); });
+    mFuture = task.get_future();
+    obj.setCallback(std::move(task));
     CURLThreadPool::getInstance().EnqueueCURL(std::move(obj));
+}
+
+void CrawlingObject::success(bool result) {
+    // Info 업데이트(Success, Timestamp, PerformCount, Details)
+    if(!mCrawlingNode.HasMember("Info")) { return; }
+    if(!mCrawlingNode["Info"].HasMember("Success")) { return; }
+    if(!mCrawlingNode["Info"]["Success"].IsBool()) { return; }
+    if(!mCrawlingNode["Info"].HasMember("Timestamp")) { return; }
+    if(!mCrawlingNode["Info"]["Timestamp"].IsInt64()) { return; }
+    if(!mCrawlingNode["Info"].HasMember("PerformCount")) { return; }
+    if(!mCrawlingNode["Info"]["PerformCount"].IsInt()) { return; }
+    if(!mCrawlingNode["Info"].HasMember("Details")) { return; }
+    if(!mCrawlingNode["Info"]["Details"].IsString()) { return; }
+    
+    if(result) {
+        mCrawlingNode["Info"]["Success"].SetBool(true);
+        mCrawlingNode["Info"]["Details"].SetString("");
+    } else {
+        mCrawlingNode["Info"]["Success"].SetBool(false);
+        mCrawlingNode["Info"]["Details"].SetString("perform fail");
+    }
+
+    mCrawlingNode["Info"]["Timestamp"].SetInt64(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+    int count = mCrawlingNode["Info"]["PerformCount"].GetInt();
+    mCrawlingNode["Info"]["PerformCount"].SetInt(count + 1);
 }
 
 CrawlingObject::CrawlingObject(rapidjson::Value& value, rapidjson::Allocation& allocation) : mCrawlingNode(value), alloc(allocation) {}
 
-CrawlingObject::~CrawlingObject() noexcept {}
+CrawlingObject::~CrawlingObject() noexcept {
+    using namespace std::chrono_literals;
+    mFuture.wait_for(10s);
+}
 
 // Process
 void CrawlingObject::execute() {

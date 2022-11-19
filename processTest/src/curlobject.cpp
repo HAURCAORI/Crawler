@@ -55,12 +55,13 @@ CURLcode CURLObject::perform() {
 
 void CURLObject::resetOption() noexcept {
     curl_easy_reset(mHandle);
+    setDone();
 }
 
 void CURLObject::defaultOption() {
     
     setOption(CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2TLS);
-    if(mFlag & CURLFlag::valid) {
+    if(HasFlags(mFlags, CURLFlag::valid)) {
         setOption(CURLOPT_URL, mUrl.c_str()); // URL 설정
     }
 
@@ -74,10 +75,10 @@ void CURLObject::defaultOption() {
 }
 
 void CURLObject::setURL(const std::string& str) {
-    mFlag |= CURLFlag::valid;
-    isURLSet = true;
     mUrl = str;
     setOption(CURLOPT_URL, mUrl.c_str());
+    FlagsOn(mFlags, CURLFlag::valid);
+    setDone();
 }
 
 void CURLObject::setContentType(const MIME& type) {
@@ -89,6 +90,7 @@ void CURLObject::appendHeader(const std::string& str) {
     if (mHeader != NULL) {
         setOption(CURLOPT_HTTPHEADER, mHeader);
     }
+    setDone();
 }
 
 void CURLObject::appendHeader(const MIME& type) {
@@ -103,11 +105,40 @@ void CURLObject::appendHeader(HTMLHeader header, const std::string& arg) {
     }
 }
 
-void CURLObject::setAdapterOption(AdapterOption option, const std::any& value) {
+void CURLObject::setAdapterOption(AdapterOption option, std::any value) {
     if(!mAdapter) {
+        setFail();
         throw CURLErrorAdapter("Adapter should be initialized.");
     }
-    mAdapter->setOption(option, value);
+    if(value.type() == typeid(std::remove_reference_t<const char*>)) {
+        value = std::string(std::any_cast<const char*>(value));
+    }
+    try {
+        mAdapter->setOption(option, value);
+        setDone();
+    } catch(const CURLErrorAdapterOption& e) {
+        fprintf(stderr,"%s\r\n", e.what());
+        setFail();
+    }
+}
+
+void CURLObject::setAdapterTarget(const std::vector<std::string>& target) {
+    if(!mAdapter) {
+        setFail();
+        throw CURLErrorAdapter("Adapter should be initialized.");
+    }
+    mAdapter->setTarget(target);
+    setDone();
+}
+
+void CURLObject::setCallback(std::packaged_task<void(bool)>&& func) {
+    mCallback = std::move(func);
+}
+
+void CURLObject::callback(bool success) {
+    if(mCallback.valid()) {
+        mCallback(success);
+    }
 }
 
 size_t CURLObject::write_callback(char* data, size_t size, size_t nmemb, void* userdata) {
@@ -120,32 +151,51 @@ size_t CURLObject::write_callback(char* data, size_t size, size_t nmemb, void* u
 
 void swap(CURLObject& first, CURLObject& second) noexcept {
     using std::swap;
-    swap(first.isURLSet, second.isURLSet);
+    swap(first.mFlags, second.mFlags);
     swap(first.mUrl, second.mUrl);
     swap(first.mData, second.mData);
     swap(first.mHandle, second.mHandle);
     swap(first.mHeader, second.mHeader);
     swap(first.mAdapter, second.mAdapter);
+    swap(first.mCallback, second.mCallback);
+}
+
+void CURLObject::setDone() {
+    FlagsOn(mFlags, CURLFlag::good);
+}
+
+void CURLObject::setFail() {
+    FlagsOff(mFlags, CURLFlag::good);
 }
 
 void CURLObject::performValid() {
-    isSuccess = false;
-    if(!(mFlag & CURLFlag::valid)) {
+    FlagsOff(mFlags, CURLFlag::success);
+    if(!HasFlags(mFlags, CURLFlag::valid)) {
         throw CURLErrorURL("Empty URL.");
     }
     if(!mAdapter) {
         setAdapter<IOAdapter>();
+    }
+    if(!HasFlags(mFlags, CURLFlag::good)) {
+        throw CURLError("Setting error");
     }
 }
 
 void CURLObject::performSuccess() {
     try {
         mAdapter->out();
-        isSuccess = true;
+        FlagsOn(mFlags, CURLFlag::success);
+        callback(true);
     } catch(CURLErrorAdapterOut& e) {
         printf("%s\r\n",e.what());
-        isSuccess = false;
+        FlagsOff(mFlags, CURLFlag::success);
+        callback(false);
+    } catch(CURLErrorAdapter& e) {
+        printf("%s\r\n",e.what());
+        FlagsOff(mFlags, CURLFlag::success);
+        callback(false);
     }
+    
 }
 
 // CURLMultiObject declaration
@@ -169,16 +219,15 @@ CURLMultiObject& CURLMultiObject::operator=(CURLMultiObject&& rhs) noexcept {
 }
 
 void CURLMultiObject::addHandle(CURLObject&& obj) noexcept {
-    obj.isSuccess = false; // 성공 여부 확인
     try {
-    obj.performValid();
+        obj.performValid();
+        mContainer.emplace_back(std::move(obj));
+        CURLMcode ret = curl_multi_add_handle(mHandle, mContainer.back().getHandle());
+        if(ret != CURLM_OK) {
+            mContainer.pop_back();
+        }
     } catch(CURLErrorURL& e) {
         printf("%s\r\n",e.what());
-      }
-    mContainer.emplace_back(std::move(obj));
-    CURLMcode ret = curl_multi_add_handle(mHandle, mContainer.back().getHandle());
-    if(ret != CURLM_OK) {
-        mContainer.pop_back();
     }
     // 실패 시 동작 구현size_t header_callback(char *buffer, size_t size, size_t nitems, void *userdata);
 }

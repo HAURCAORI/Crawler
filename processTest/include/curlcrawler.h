@@ -6,6 +6,9 @@
 #include <memory>
 #include <map>
 
+
+#include <future>
+
 // Forward Declaration
 namespace rapidjson {
 template<typename CharType>
@@ -97,7 +100,8 @@ private:
     rapidjson::Value& mCrawlingNode;
     rapidjson::Allocation& alloc;
     void enqueueObject(const std::string& url);
-
+    void success(bool result);
+    std::future<void> mFuture;
 public:
     CrawlingObject(rapidjson::Value& value, rapidjson::Allocation& allocation);
     CrawlingObject(const CrawlingObject& src) = default;

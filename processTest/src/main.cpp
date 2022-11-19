@@ -13,19 +13,20 @@
 #define BEGIN_CHRONO std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 #define END_CHRONO std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - begin).count() << "[ms]" << std::endl;
 
-
 int main() {
     curl_global_init(CURL_GLOBAL_DEFAULT);
     using namespace Crawler;
     using namespace std::chrono_literals;
     
-    Crawler::CURLCrawler obj;
+
+
+    Crawler::CURLCrawler object;
     //obj.createListFile("./CrawlingLists.json", true);
-    obj.loadList();
+    object.loadList();
     //obj.addList("A","https://www.naver.com/,","/div/div");
-    auto o = obj.at(0);
+    auto o = object.at(1);
     o.execute();
-    std::cout << "a";
+    //std::this_thread::sleep_for(1s);
 
     //o.setURIOptions({{"a","b"}});
     
@@ -48,21 +49,19 @@ int main() {
 */
     //HTMLTest test;
     //test.execute();
-    //return 0; 
-    /*
-    Crawler::CURLObject obj("https://www.dcinside.com/");
+    return 0; 
+    
+    Crawler::CURLObject obj("https://www.naver.com/");
     if(obj) {
         std::string path = "./Output/original.html";
         obj.setAdapter<IOAdapterFile>();
         obj.setAdapterOption(ADAPTER_OPT_PATH, path);
-        obj.setAdapterOption(ADAPTER_OPT_GET_ORIGINAL, true);
-        
-        //auto res = obj.perform();
-        
-        CURLObject* memory;
-        curl_easy_getinfo(obj, CURLINFO_PRIVATE, &memory);
+        obj.setAdapterOption(ADAPTER_OPT_GET_ORIGINAL, false);
+        obj.setAdapterOption(ADAPTER_OPT_FORMAT, "[결과 : $@], ${%X}");
+        obj.setAdapterTarget({"/html/body/div[2]/div[2]/div[2]/div[1]/div[1]/ul[2]/li[1]/a", "/html/body/div[2]/div[2]/div[2]/div[1]/div[1]/ul[2]/li[2]/a"});
+        obj.perform();
 
-        
+        /*
         std::string test_set = readFile("./Output/original.html");
         //std::string test_set = readFile("./Output/input.html");
         HTMLParser::HTMLPreprocessing(test_set);
@@ -75,17 +74,17 @@ int main() {
         std::cout << parser.lastNode().name() << "/" << parser.lastNode().first_attribute().value() << std::endl;
         std::cout << parser.lastNodeTag().tag << "/" << parser.lastNodeTag().attribute << std::endl;
         std::cout << "=> success? : " << parser.success() << std::endl;
-        
+        */
+
         //auto tool = doc->select_node(R"(/html/body/div[2]/main)"); // container
         //printNode(*doc,3);
         //auto ln = parser.lastNodeTag();
         
-        //if(res == CURLE_OK)
-            std::cout << "OK" << std::endl;
+        std::cout << "OK" << std::endl;
     } else {
         std::cout << "null" << std::endl;
     }
-*/
+
 
 
     curl_global_cleanup();

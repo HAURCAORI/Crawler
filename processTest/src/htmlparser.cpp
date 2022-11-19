@@ -1,30 +1,14 @@
-#include <algorithm>
 #include <iostream>
+#include <sstream>
 #include "htmlparser.h"
+#include "stringextension.h"
+#include "curltype.h"
 
-bool isAlphabet(char ch) {
-    return (ch>='a' && ch<='z') || (ch>='A' && ch<='Z');
-}
+#include "pugixml/pugixml.hpp"
 
-bool isWord(char ch) {
-    return (ch>='a' && ch<='z') || (ch>='A' && ch<='Z') || (ch & 0x80);
-}
-
-bool isSpace(char ch) {
-    return (ch == ' ') || (ch == '\r') || (ch == '\n')|| (ch == '\t'); 
-}
-
-bool matchString(std::string::iterator iter_begin, std::string::iterator iter_end, const std::string& target) {
-    bool match = true;
-    auto it_target_tag = target.begin();
-    for (auto it_tag = iter_begin; it_target_tag != target.end() && it_tag != iter_end; ++it_tag, ++it_target_tag) {
-        if (*it_tag != *it_target_tag) {
-            match = false;
-            break;
-        }
-    }
-    return match;
-}
+#define RAPIDJSON_HAS_STDSTRING 1
+#include <rapidjson/document.h>
+#include <rapidjson/pointer.h>
 
 void rightEndSpace(std::string::iterator& it) {
     while(*(it+1) == ' ' || *(it+1) == '\n') { ++it; }
@@ -42,124 +26,214 @@ void removeSpace(std::string& str) {
     str.erase(std::remove(str.begin(), str.end(), ' '), str.end());
 }
 
-
-
 std::string indent(int depth) {
     return std::string(std::max(depth-1,0), '\t');
 }
 
+std::string popStringLine(std::string& str) {
+    if(str.empty()) { return std::string(); }
+    for(auto it = str.begin(); it != str.end(); ++it) {
+        if(*it == '\n') {
+            std::string temp = std::string(str.begin(), it);
+            str.erase(str.begin(), it + 1);
+            return temp;
+        }
+    }
+    std::string temp(str);
+    str.erase(str.begin(), str.end());
+    return temp;
+}
+
+void stringAppendDelimiter(std::string& str, const std::string& append, const std::string& delimiter = ",") {
+    if(str.empty()) {
+        str += append;
+    } else {
+        str += delimiter;
+        str += append;
+    }
+}
 
 namespace Crawler {
 
-HTMLParser::HTMLParser() {}
+HTTPResponse::HTTPResponse(const std::string& line) {
+    if(line.empty()) { return; }
+    size_t pos_start = 0, pos_end;
+    pos_end = line.find(' ', pos_start);
 
-HTMLParser::HTMLParser(const std::string* xml){
-    set(xml);
+    if(pos_end != std::string::npos) {
+        protocol = line.substr(pos_start, pos_end - pos_start);
+        pos_start = pos_end + 1;
+    }
+
+    std::string code, status;
+    pos_end = line.find(' ', pos_start);
+    if(pos_end != std::string::npos) {
+        code = line.substr(pos_start, pos_end - pos_start);
+        status = line.substr(pos_end + 1);
+        statusCode = std::make_pair(atoi(code.c_str()), status);
+    }
+}
+
+bool HTTPResponse::findHeader(const std::string header) {
+    return headers.find(TrimAndLower(header)) != headers.end();
+}
+
+std::string HTTPResponse::getValue(const std::string& key) {
+    std::string target = TrimAndLower(key);
+    return (headers.find(target) != headers.end()) ? headers.find(target)->second : std::string();
+}
+
+ParseType HTTPResponse::getParseType() {
+    std::string value = getValue("content-type");
+    MIME mime;
+    if(value.empty()) {
+        return ParseType::NONE;
+    }
+    
+    if(value.find(';') != std::string::npos) {
+        mime = MIME(value.substr(0, value.find(';')));
+    } else if(value.find(' ') != std::string::npos) {
+        mime = MIME(value.substr(0, value.find(' ')));
+    } else {
+        mime = MIME(value);
+    }
+
+    if(mime == MIME_TEXT_HTML || mime == MIME_TEXT_XML) {
+        return ParseType::XML;
+    } else if(mime == MIME_APP_JSON) {
+        return ParseType::JSON;
+    } else {
+        return ParseType::XML;
+    }
+}
+
+void HTTPResponse::addHeader(const std::string& str) {
+    if(str.find(':') == std::string::npos) {
+        fprintf(stderr,"HTTP Response error");
+        return;
+    }
+    addHeader(str.substr(0,str.find(":")), str.substr(str.find(":") + 1));
+}
+
+void HTTPResponse::addHeader(const std::string& key, const std::string& value) {
+    headers.insert(std::pair<std::string, std::string>(TrimAndLower(key), leftTrim(value)));
+}
+
+HTMLParser::HTMLParser() : mDocXML(std::make_unique<xmlDocument>()), mDocJSON(std::make_unique<rapidjson::Document>()) {}
+
+HTMLParser::HTMLParser(std::string* data) : mDocXML(std::make_unique<xmlDocument>()), mDocJSON(std::make_unique<rapidjson::Document>()) {
+    set(data);
 }
 
 HTMLParser::~HTMLParser() {}
 
-HTMLParser::xmlNode HTMLParser::lastNode() const {
-    xmlNode node = doc;
-    while(node.last_child()) {
-        node = node.last_child();
-    }
-    if(node.type() == 3) {
-        node = node.parent();
-    }
-    return node;
-}
-
-HTMLTag HTMLParser::lastNodeTag() const {
-    bool isTag = false;
-    bool isAttributeSkip = false;
-    std::string::const_reverse_iterator iter_tag_begin;
-    std::string::const_reverse_iterator iter_tag_middle;
-    std::string::const_reverse_iterator iter_tag_end;
-
-    std::string tag;
-    std::string attribute = "";
-    int depth = -1;
-    for(auto it = mXml->crbegin(); it != mXml->crend(); ++it) {
-        if(isTag) {
-            if(*it == '"') { 
-                isAttributeSkip = !isAttributeSkip;
+std::vector<std::string> HTMLParser::parseData(const std::vector<std::string>& target) {
+    std::vector<std::string> ret;
+    switch (mType)
+    {
+    case ParseType::XML:
+    {
+        for(auto& str : target) {  
+            try {
+                pugi::xpath_node select = mDocXML->select_node(str.c_str());
+                ret.push_back(select.node().child_value());
+            } catch(const pugi::xpath_exception& e) {
+                fprintf(stderr, "Select Failed. : %s", e.what());
             }
-            if(isAttributeSkip) { continue; }
-        }
-        if(*it == '>') {
-            isTag = true;
-            iter_tag_end = it;
-            iter_tag_middle = it;
-            if(*(it + 1) == '/') { 
-                ++iter_tag_end;
-                ++iter_tag_middle;
-            }
-            ++depth;
-        } else if(*it == ' ') {
-            iter_tag_middle = it;
-        } else if(isTag && *it == '<') {
-            isTag = false;
-            isAttributeSkip = false;
-            if(*(it - 1) == '/') { continue; }
-            iter_tag_begin = it;
-
-            tag = std::string(iter_tag_begin.base(), iter_tag_middle.base() - 1);
-            if(iter_tag_middle != iter_tag_end) {
-                attribute = std::string(iter_tag_middle.base(), iter_tag_end.base() - 1);
-            }
-            --depth;
-            break;
         }
     }
-    return { tag, depth, attribute };
+    break;
+    case ParseType::JSON :
+    {
+        for(auto str : target) {
+            ret = parseJSON(str);
+        }
+    }
+    break;
+    default:
+    
+    break;
+    }
+    return ret;
 }
 
-void HTMLParser::set(const std::string* xml) {
-    mXml = xml;
-    parse(mXml->c_str());
+void HTMLParser::set(std::string* data, const ParserOptions& parserOpts) {
+    mData = data;
+    mOptions = parserOpts;
+    extractHeader(*mData);
+    if(mOptions.defaultParseType.empty()) {
+        mType = mResponse.getParseType();
+    } else {
+        std::string type = TrimAndLower(mOptions.defaultParseType);
+        if(type == "json") {
+            mType = ParseType::JSON;
+        } else if(type == "xml" || type == "html") {
+            mType = ParseType::XML;
+        } else {
+            mType = ParseType::XML;
+        }
+    }
+
+    if(!mOptions.getOriginal && mType == ParseType::XML) {
+        HTMLPreprocessing(*mData);
+        HTMLCorrectError(*mData);
+    }
+    parse(mData->c_str());
 }
 
 bool HTMLParser::success() const {
-    xmlNode tnode = lastNode();
-    HTMLTag rnode = lastNodeTag();
-    bool attribute_check = true;
-    if(tnode.first_attribute()) {
-        std::vector<std::string> rattrs;
-        std::string::iterator iter_begin = rnode.attribute.begin();
-        std::string::iterator iter_end;
-        std::string temp;
-        bool isValue = false;
+    switch(mType) {
+    case ParseType::XML : {
+        xmlNode tnode = lastNode();
+        HTMLTag rnode = lastNodeTag();
+        bool attribute_check = true;
+        if(tnode.first_attribute()) {
+            std::vector<std::string> rattrs;
+            std::string::iterator iter_begin = rnode.attribute.begin();
+            std::string::iterator iter_end;
+            std::string temp;
+            bool isValue = false;
 
-        auto iter_t = tnode.attributes_begin();
-        for(auto it = rnode.attribute.begin(); it != rnode.attribute.end(); ++it) {
-            if(!isValue && *it == '=') {
-                iter_end = it;
-                temp = std::string(iter_begin, iter_end);
-                removeSpace(temp);
-                if(temp != iter_t->name()) {
-                    attribute_check = false;
-                    break;
-                }
-                iter_begin = it;
-            } else if(*it == '"' || *it == '\'') {
-                if(!isValue) {
-                    iter_begin = it + 1;
-                } else {
+            auto iter_t = tnode.attributes_begin();
+            for(auto it = rnode.attribute.begin(); it != rnode.attribute.end(); ++it) {
+                if(!isValue && *it == '=') {
                     iter_end = it;
                     temp = std::string(iter_begin, iter_end);
-                    if(temp != iter_t->value()) {
+                    removeSpace(temp);
+                    if(temp != iter_t->name()) {
                         attribute_check = false;
                         break;
                     }
-                    iter_begin = it + 1;
-                    ++iter_t;
+                    iter_begin = it;
+                } else if(*it == '"' || *it == '\'') {
+                    if(!isValue) {
+                        iter_begin = it + 1;
+                    } else {
+                        iter_end = it;
+                        temp = std::string(iter_begin, iter_end);
+                        if(temp != iter_t->value()) {
+                            attribute_check = false;
+                            break;
+                        }
+                        iter_begin = it + 1;
+                        ++iter_t;
+                    }
+                    isValue = !isValue;
                 }
-                isValue = !isValue;
             }
         }
+        return (tnode.name() == rnode.tag) && attribute_check;
     }
-    return (tnode.name() == rnode.tag) && attribute_check;
+    break;
+    case ParseType::JSON : {
+        return !mDocJSON->HasParseError();
+    }
+
+    default:
+        return false;
+    break;
+    }
+    
 }
 
 void HTMLParser::HTMLPreprocessing(std::string& str) {
@@ -437,10 +511,154 @@ const std::vector<std::string> HTMLParser::SINGLE_ERASE_TAGS = {
     "!doctype", "!DOCTYPE", "!--", "input" ,"meta", "img"
 };
 
-void HTMLParser::parse(const char* xml) {
-    doc.load_string(xml);
+HTMLParser::xmlNode HTMLParser::lastNode() const {
+    xmlNode node = *mDocXML;
+    while(node.last_child()) {
+        node = node.last_child();
+    }
+    if(node.type() == 3) {
+        node = node.parent();
+    }
+    return node;
 }
 
+HTMLTag HTMLParser::lastNodeTag() const {
+    bool isTag = false;
+    bool isAttributeSkip = false;
+    std::string::const_reverse_iterator iter_tag_begin;
+    std::string::const_reverse_iterator iter_tag_middle;
+    std::string::const_reverse_iterator iter_tag_end;
+
+    std::string tag;
+    std::string attribute = "";
+    int depth = -1;
+    for(auto it = mData->crbegin(); it != mData->crend(); ++it) {
+        if(isTag) {
+            if(*it == '"') { 
+                isAttributeSkip = !isAttributeSkip;
+            }
+            if(isAttributeSkip) { continue; }
+        }
+        if(*it == '>') {
+            isTag = true;
+            iter_tag_end = it;
+            iter_tag_middle = it;
+            if(*(it + 1) == '/') { 
+                ++iter_tag_end;
+                ++iter_tag_middle;
+            }
+            ++depth;
+        } else if(*it == ' ') {
+            iter_tag_middle = it;
+        } else if(isTag && *it == '<') {
+            isTag = false;
+            isAttributeSkip = false;
+            if(*(it - 1) == '/') { continue; }
+            iter_tag_begin = it;
+
+            tag = std::string(iter_tag_begin.base(), iter_tag_middle.base() - 1);
+            if(iter_tag_middle != iter_tag_end) {
+                attribute = std::string(iter_tag_middle.base(), iter_tag_end.base() - 1);
+            }
+            --depth;
+            break;
+        }
+    }
+    return { tag, depth, attribute };
+}
+
+void HTMLParser::extractHeader(std::string& str) {
+    std::string line;
+    if(std::string(str,0,4) != "HTTP") {
+        return;
+    }
+
+    line = popStringLine(str);
+    mResponse = HTTPResponse(line);
+
+    while(!isEmpty(line = popStringLine(str))) {
+        mResponse.addHeader(line);
+    }
+}
+
+void HTMLParser::parse(const char* data) {
+    switch (mType)
+    {
+    case ParseType::XML :
+        mDocXML->load_string(data);
+        break;
+    case ParseType::JSON :
+        mDocJSON->Parse(data);
+        break;
+    default:
+        mDocXML->load_string(data);
+        break;
+    }
+    
+}
+
+std::vector<std::string> HTMLParser::parseJSON(const std::string& target) {
+    std::vector<std::string> ret;
+    if(target.empty()) {
+        return std::vector<std::string>();
+    }
+
+    for(auto it = target.begin(); it != target.end(); ++it) {
+        if(*it == '/' && *(it+1) == '*') {
+            std::string targetPrefix(target.begin(), it);
+            rapidjson::Pointer p(targetPrefix);
+            if(!p.IsValid()) {
+                fprintf(stderr, "Invalid target string\r\n");
+                return std::vector<std::string>();
+            }
+            rapidjson::Value* val = p.Get(*mDocJSON);
+            if(val == nullptr) {
+                fprintf(stderr, "Value does not exist\r\n");
+                return std::vector<std::string>();
+            }
+            if(!val->IsArray()) {
+                fprintf(stderr, "Asterisk(*) part must be array type.\r\n");
+                return std::vector<std::string>();
+            }
+            for (rapidjson::SizeType i = 0; i < val->Size(); i++) {
+                std::string targetSuffix(it, target.end());
+                targetSuffix.replace(1,1,std::to_string(i));
+                std::vector<std::string> temp = parseJSON(targetPrefix + targetSuffix);
+                ret.insert(ret.end(), temp.begin(), temp.end());
+            }
+            return ret;
+        }
+    }
+
+    rapidjson::Pointer p(target);
+    if(!p.IsValid()) {
+        fprintf(stderr, "Invalid target string");
+        return std::vector<std::string>();
+    }
+    rapidjson::Value* val = p.Get(*mDocJSON);
+    if(val == nullptr) {
+        fprintf(stderr, "Value does not exist\r\n");
+        return std::vector<std::string>();
+    }
+
+    if(val->IsString()) {
+        ret.push_back(val->GetString());
+    }
+    else if(val->IsArray()) {
+        std::string temp;
+        for(auto& el : val->GetArray()) {
+            if(el.IsString()) {
+                stringAppendDelimiter(temp, el.GetString(), mOptions.arrayDelimiter);
+            } else if(el.IsInt()) {
+                stringAppendDelimiter(temp, std::to_string(el.GetInt()), mOptions.arrayDelimiter);
+            } else {
+                fprintf(stderr, "Invalid array element type\r\n");
+            }
+        }
+        ret.push_back(temp);
+    }
+    return ret;
+}
 
 }
 /*
@@ -451,7 +669,7 @@ void HTMLParser::HTMLPreprocessing(std::string& str) {
     bool isClosingTag = false; // SelfClosingTag 여부
     bool isEscape = false; // 내용을 삭제할 Tag 여부
     bool isSingle = false; // 단일 Tag 중 삭제할 Tag 여부
-    bool isAttribute = false; // A        //std::cout << doc->first_child().name() << std::endl;ttribute에 해당할 경우 true
+    bool isAttribute = false; // A        //std::cout << mDocXML->first_child().name() << std::endl;ttribute에 해당할 경우 true
     bool isAttributeSkip = false; // "" 내용 스킵
     bool isAttributeHasValue = false; // Tag에 = 기호가 있을 시 true 
     std::string::iterator iter_erase_begin;

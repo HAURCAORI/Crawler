@@ -12,8 +12,12 @@ namespace Crawler {
 struct MIME {
     std::string type;
     std::string subtype;
+    MIME() = default;
+    MIME(const std::string& mime);
     MIME(const std::string& type, const std::string& subtype) : type(type), subtype(subtype) {}
     inline std::string get() const { return type + "/" + subtype; }
+
+    bool operator==(const MIME& rhs);
 };
 
 // MIME presets

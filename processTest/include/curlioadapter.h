@@ -2,6 +2,7 @@
 #define CURL_IO_ADAPTER_H
 #include <any>
 #include <map>
+#include <vector>
 #include <memory>
 
 #define ADAPTER_OUT processing();
@@ -9,16 +10,26 @@
 
 namespace Crawler {
 
+struct ParserOptions;
+
 enum AdapterOption {
   ADAPTER_OPT_NONE = 0,
   ADAPTER_OPT_PATH,
-  ADAPTER_OPT_GET_ORIGINAL
+  ADAPTER_OPT_GET_ORIGINAL,
+  ADAPTER_OPT_FORMAT,
+  ADAPTER_OPT_FILE_TRUNC,
+  ADAPTER_OPT_PARSE_TYPE,
+  ADAPTER_OPT_ARRAY_DELIMITER
 };
 
 static const std::map<std::string, AdapterOption> StringMapAdapterOption = {
     StringMap(ADAPTER_OPT_NONE),
     StringMap(ADAPTER_OPT_PATH),
-    StringMap(ADAPTER_OPT_GET_ORIGINAL)
+    StringMap(ADAPTER_OPT_GET_ORIGINAL),
+    StringMap(ADAPTER_OPT_FORMAT),
+    StringMap(ADAPTER_OPT_FILE_TRUNC),
+    StringMap(ADAPTER_OPT_PARSE_TYPE),
+    StringMap(ADAPTER_OPT_ARRAY_DELIMITER)
 };
 
 class HTMLParser;
@@ -44,15 +55,17 @@ public:
     void set(std::string* data);
     virtual void out();
     virtual void setOption(AdapterOption option, const std::any& value);
-    
-    bool isGetOriginal() { return mGetOriginal; }
+    virtual void setTarget(const std::vector<std::string>& target);
 
     friend void swap(IOAdapter& first, IOAdapter& second) noexcept;
 protected:
-    void processing();
+    std::vector<std::string> processing();
     std::unique_ptr<HTMLParser> mParser;
+    std::unique_ptr<ParserOptions> mParserOptions;
     std::string* mData = nullptr;
-    bool mGetOriginal = false;
+
+    std::vector<std::string> mTarget; // 값을 가져올 대상 지정
+    std::string mFormat; // 출력 형식 지정, 공백 및 $0 ~ $9 없을 시 순서대로 출력
 };
 
 class IOAdapterConsole : public IOAdapter {
@@ -71,8 +84,10 @@ public:
     virtual void out() override;
     virtual void setOption(AdapterOption option, const std::any& value) override;
 private:
-    void writeFile();
+    void writeFile(const std::string& data);
+    void writeFile(const std::vector<std::string>& data);
     std::string mPath;
+    bool mTrunc = false;
 };
 
 }

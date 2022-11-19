@@ -9,26 +9,23 @@
 #include "curlexceptions.h"
 #include "curlioadapter.h"
 
+#include <functional>
+#include <future>
+
+#define HasFlags(m,f) ((m & f) == f)
+#define FlagsOn(m, f) (m |= f)
+#define FlagsOff(m, f) (m &= ~f)
 
 namespace Crawler {
 namespace Flags {
 enum CURLFlag : char {
     none = 0x00,
     valid = 0x01, // URL 설정 이상 없을 시 true
-    good = 0x02, // 설정 시 이상 없음
-    bad = 0x04, // 설정 시 이상
-    success = 0x08 // perform 성공
+    good = 0x02, // 설정 시 이상 여부
+    success = 0x04 // perform 성공
 };
 
 typedef char CURLFlags;
-
-inline CURLFlag operator|(CURLFlag lhs, CURLFlag rhs) {
-    return static_cast<CURLFlag>(static_cast<char>(lhs) | static_cast<char>(rhs));
-}
-
-inline CURLFlag operator&(CURLFlag lhs, CURLFlag rhs) {
-    return static_cast<CURLFlag>(static_cast<char>(lhs) & static_cast<char>(rhs));
-}
 }
 
 
@@ -64,12 +61,17 @@ public:
     void setAdapter() {
         if constexpr(std::is_base_of_v<IOAdapter,E>) {
             mAdapter = std::make_unique<E>(E(mData.get()));
+            setDone();
         } else {
+            setFail();
             throw CURLErrorAdapter("Adapter should be base of 'IOAdapter'.");
         }
     }
 
-    void setAdapterOption(AdapterOption option, const std::any& value);
+    void setAdapterOption(AdapterOption option, std::any value);
+    void setAdapterTarget(const std::vector<std::string>& target);
+    void setCallback(std::packaged_task<void(bool)>&& func);
+    void callback(bool success);
 
     inline CURL* getHandle() { return mHandle; }
     const CURL* getHandle() const { return mHandle; }
@@ -84,16 +86,17 @@ public:
     friend void swap(CURLObject& first, CURLObject& second) noexcept;
     friend class CURLMultiObject;
 private:
-    bool isURLSet = false;
-    bool isSuccess = false;
-    Flags::CURLFlags mFlag;
+    Flags::CURLFlags mFlags = 0x00;
     std::string mUrl;
     CURL* mHandle = nullptr;
     curl_slist* mHeader = nullptr;
 
     std::unique_ptr<std::string> mData;
     std::unique_ptr<IOAdapter> mAdapter;
+    std::packaged_task<void(bool)> mCallback;
 
+    void setDone();
+    void setFail();
     void performValid();
     void performSuccess();
 };

@@ -2,15 +2,73 @@
 #define HTML_PARSER_H
 
 #include <vector>
-#include "pugixml/pugixml.hpp"
+#include <memory>
+#include <map>
+
+// Forward Declaration(rapidjson)
+namespace rapidjson {
+template<typename CharType>
+struct UTF8;
+
+template <typename Encoding, typename Allocator>
+class GenericValue;
+
+template <typename Encoding, typename Allocator, typename StackAllocator>
+class GenericDocument;
+
+class CrtAllocator;
+
+template <typename BaseAllocator>
+class MemoryPoolAllocator;
+
+typedef rapidjson::GenericDocument<rapidjson::UTF8<char>,rapidjson::MemoryPoolAllocator<rapidjson::CrtAllocator>,rapidjson::CrtAllocator> Document;
+typedef rapidjson::GenericValue<rapidjson::UTF8<char>,rapidjson::MemoryPoolAllocator<rapidjson::CrtAllocator>> Value;
+typedef rapidjson::MemoryPoolAllocator<rapidjson::CrtAllocator> Allocation;
+}
+
+// Forward Declaration(pugixml)
+namespace pugi {
+    class xml_node;
+    class xml_attribute;
+    class xml_document;
+}
+
+
 
 namespace Crawler {
+
+enum class ParseType {
+    NONE,
+    XML,
+    JSON
+};
+
 struct HTMLTag {
     std::string tag;
     int depth;
     std::string attribute = "";
 };
 
+struct ParserOptions {
+    std::string defaultParseType;
+    std::string arrayDelimiter = ",";
+    bool getOriginal = false;
+};
+
+struct HTTPResponse {
+    std::string protocol;
+    std::pair<int, std::string> statusCode;
+    std::map<std::string, std::string> headers;
+    HTTPResponse() = default;
+    HTTPResponse(const std::string& line); // 'HTTP/1.X 200 OK' 형태의 데이터를 받음
+
+    bool findHeader(const std::string header);
+    std::string getValue(const std::string& key);
+    ParseType getParseType();
+    void addHeader(const std::string& str);
+    void addHeader(const std::string& key, const std::string& value);
+    
+};
 
 class HTMLParser { 
 public:
@@ -19,7 +77,7 @@ public:
     using xmlDocument = pugi::xml_document;
 
     HTMLParser();
-    HTMLParser(const std::string* xml);
+    HTMLParser(std::string* data);
     HTMLParser(const HTMLParser& src) = default;
     HTMLParser(HTMLParser&& src) = default;
     virtual ~HTMLParser() noexcept;
@@ -27,12 +85,11 @@ public:
     HTMLParser& operator=(HTMLParser&& rhs) = default;
 
     
-    xmlDocument* getDocument() { return &doc; }
+    //xmlDocument* getDocument() { return &mDocXML; }
 
-    xmlNode lastNode() const;
-    HTMLTag lastNodeTag() const;
+    std::vector<std::string> parseData(const std::vector<std::string>& target);
 
-    void set(const std::string* xml);
+    void set(std::string* data, const ParserOptions& parserOpts = ParserOptions());
     bool success() const;
 
     static void HTMLPreprocessing(std::string& str);
@@ -42,9 +99,19 @@ public:
     static const std::vector<std::string> ESCAPE_TAGS;
     static const std::vector<std::string> SINGLE_ERASE_TAGS;
 private:
-    void parse(const char* xml);
-    const std::string* mXml;
-    xmlDocument doc;
+    xmlNode lastNode() const;
+    HTMLTag lastNodeTag() const;
+    void extractHeader(std::string& str);
+    void parse(const char* data);
+    std::vector<std::string> parseJSON(const std::string& target);
+
+    HTTPResponse mResponse;
+    std::string* mData;
+    ParseType mType;
+    ParserOptions mOptions;
+
+    std::unique_ptr<xmlDocument> mDocXML;
+    std::unique_ptr<rapidjson::Document> mDocJSON;
 };
 }
 
