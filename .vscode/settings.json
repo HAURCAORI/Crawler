@@ -59,6 +59,8 @@
         "stop_token": "cpp",
         "bit": "cpp",
         "concepts": "cpp",
-        "numbers": "cpp"
+        "numbers": "cpp",
+        "bitset": "cpp",
+        "regex": "cpp"
     }
 }

@@ -2,6 +2,8 @@
 #include <iostream>
 #include <fstream>
 
+#include <algorithm>
+
 // time format
 #include <stdio.h>
 #include <time.h>
@@ -106,11 +108,48 @@ std::vector<std::string> IOAdapter::processing() {
         throw CURLErrorAdapterOut("Parser fails.");
     }
     
-    auto data = mParser->parseData(mTarget);
+    std::vector<std::vector<ParseData>> data = mParser->parseData(mTarget);
     if(mFormat.empty()) {
-        return data;
-    }
+        std::vector<std::pair<std::vector<ParseData>::iterator, std::vector<ParseData>::iterator>> iters;
 
+        for(auto it = data.begin(); it != data.end(); ++it) {
+            iters.push_back(std::make_pair<std::vector<ParseData>::iterator, std::vector<ParseData>::iterator>(it->begin(), it->end()));
+        }
+
+        int currentIndex = 0;
+        
+        while(true) {
+            bool valid = false;
+            for(auto& placepair : iters) {
+                if(placepair.first != placepair.second) {
+                    valid |= true;
+                }
+                while(true) {
+                    if(placepair.first == placepair.second) {
+                        break;
+                    }
+                    auto& pd = *placepair.first;
+                    if(pd.empty()) {
+                        ++placepair.first;
+                    } else if(pd.index <= currentIndex) {
+                        std::cout << pd.text << std::endl;
+                        ++placepair.first;
+                    } else {
+                        break;
+                    }
+                }
+            }
+            if(!valid) {
+                break;
+            }
+            std::cout << "------" << std::endl;
+            ++currentIndex;
+        }
+
+
+        return ret;
+    }
+/*
     // std::vector<std::string> 데이터를 format 형식으로 변환
     bool formatted = false;
     bool brace = false;
@@ -160,6 +199,7 @@ std::vector<std::string> IOAdapter::processing() {
             format = mFormat;
         }
     }
+    
     if(formatted) {
         return std::vector<std::string>(1,format);
     } else {
@@ -169,6 +209,8 @@ std::vector<std::string> IOAdapter::processing() {
             return ret;
         }
     }
+    */
+   return ret;
 }
 
 void IOAdapterConsole::out() {

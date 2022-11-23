@@ -5,6 +5,18 @@
 #include <memory>
 #include <map>
 
+/*
+// is_vector typetrait
+template<typename T, typename _ = void>
+struct is_vector : std::false_type {};
+
+template<typename T>
+struct is_vector<T, typename std::enable_if<std::is_same<T, std::vector<typename T::value_type, typename T::allocator_type>>::value>::type> : std::true_type {};
+
+template<class T>
+inline constexpr bool is_vector_v = is_vector<T>::value;
+*/
+
 // Forward Declaration(rapidjson)
 namespace rapidjson {
 template<typename CharType>
@@ -32,8 +44,6 @@ namespace pugi {
     class xml_attribute;
     class xml_document;
 }
-
-
 
 namespace Crawler {
 
@@ -70,6 +80,15 @@ struct HTTPResponse {
     
 };
 
+struct ParseData {
+    int depth;
+    int index;
+    std::string text;
+    ParseData();
+    ParseData(const std::string& text, int depth = 0, int index = 0);
+    bool empty();
+};
+
 class HTMLParser { 
 public:
     using xmlNode = pugi::xml_node;
@@ -87,7 +106,7 @@ public:
     
     //xmlDocument* getDocument() { return &mDocXML; }
 
-    std::vector<std::string> parseData(const std::vector<std::string>& target);
+    std::vector<std::vector<ParseData>> parseData(const std::vector<std::string>& target);
 
     void set(std::string* data, const ParserOptions& parserOpts = ParserOptions());
     bool success() const;
@@ -103,7 +122,8 @@ private:
     HTMLTag lastNodeTag() const;
     void extractHeader(std::string& str);
     void parse(const char* data);
-    std::vector<std::string> parseJSON(const std::string& target);
+    std::vector<ParseData> parseJSON(const std::string& target, int depth = 1, int index = 0);
+    std::vector<ParseData> parseXML(const std::string& target, int depth = 1, int index = 0);
 
     HTTPResponse mResponse;
     std::string* mData;

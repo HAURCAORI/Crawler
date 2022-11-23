@@ -119,6 +119,18 @@ void HTTPResponse::addHeader(const std::string& key, const std::string& value) {
     headers.insert(std::pair<std::string, std::string>(TrimAndLower(key), leftTrim(value)));
 }
 
+// struct ParseData
+ParseData::ParseData() : depth(0), index(0) {}
+
+ParseData::ParseData(const std::string& Text, int Depth, int Index) : depth(Depth), index(Index), text(Text) {}
+
+bool ParseData::empty() {
+    return depth == 0;
+}
+
+
+// class HTMLParser
+
 HTMLParser::HTMLParser() : mDocXML(std::make_unique<xmlDocument>()), mDocJSON(std::make_unique<rapidjson::Document>()) {}
 
 HTMLParser::HTMLParser(std::string* data) : mDocXML(std::make_unique<xmlDocument>()), mDocJSON(std::make_unique<rapidjson::Document>()) {
@@ -127,26 +139,27 @@ HTMLParser::HTMLParser(std::string* data) : mDocXML(std::make_unique<xmlDocument
 
 HTMLParser::~HTMLParser() {}
 
-std::vector<std::string> HTMLParser::parseData(const std::vector<std::string>& target) {
-    std::vector<std::string> ret;
+std::vector<std::vector<ParseData>> HTMLParser::parseData(const std::vector<std::string>& target) {
+    // target은 각각의 placeholder에 대한 target path를 나타냄
+    std::vector<std::vector<ParseData>> ret;
     switch (mType)
     {
     case ParseType::XML:
     {
         for(auto& str : target) {  
-            try {
-                pugi::xpath_node select = mDocXML->select_node(str.c_str());
-                ret.push_back(select.node().child_value());
-            } catch(const pugi::xpath_exception& e) {
-                fprintf(stderr, "Select Failed. : %s", e.what());
-            }
+            ret.push_back(parseXML(str));
         }
     }
     break;
     case ParseType::JSON :
     {
-        for(auto str : target) {
-            ret = parseJSON(str);
+        for(auto& str : target) {
+            ret.push_back(parseJSON(str));
+            /*
+            for(auto& pd : parseJSON(str)) {
+                std::cout << pd.depth << "|" << pd.index << "|" << pd.text << std::endl;
+            }
+            */
         }
     }
     break;
@@ -597,10 +610,10 @@ void HTMLParser::parse(const char* data) {
     
 }
 
-std::vector<std::string> HTMLParser::parseJSON(const std::string& target) {
-    std::vector<std::string> ret;
+std::vector<ParseData> HTMLParser::parseJSON(const std::string& target, int depth, int index) {
+    std::vector<ParseData> ret;
     if(target.empty()) {
-        return std::vector<std::string>();
+        return ret;
     }
 
     for(auto it = target.begin(); it != target.end(); ++it) {
@@ -609,21 +622,21 @@ std::vector<std::string> HTMLParser::parseJSON(const std::string& target) {
             rapidjson::Pointer p(targetPrefix);
             if(!p.IsValid()) {
                 fprintf(stderr, "Invalid target string\r\n");
-                return std::vector<std::string>();
+                return ret;
             }
             rapidjson::Value* val = p.Get(*mDocJSON);
             if(val == nullptr) {
                 fprintf(stderr, "Value does not exist\r\n");
-                return std::vector<std::string>();
+                return ret;
             }
             if(!val->IsArray()) {
                 fprintf(stderr, "Asterisk(*) part must be array type.\r\n");
-                return std::vector<std::string>();
+                return ret;
             }
             for (rapidjson::SizeType i = 0; i < val->Size(); i++) {
                 std::string targetSuffix(it, target.end());
                 targetSuffix.replace(1,1,std::to_string(i));
-                std::vector<std::string> temp = parseJSON(targetPrefix + targetSuffix);
+                std::vector<ParseData> temp = parseJSON(targetPrefix + targetSuffix, depth + 1, i);
                 ret.insert(ret.end(), temp.begin(), temp.end());
             }
             return ret;
@@ -633,29 +646,40 @@ std::vector<std::string> HTMLParser::parseJSON(const std::string& target) {
     rapidjson::Pointer p(target);
     if(!p.IsValid()) {
         fprintf(stderr, "Invalid target string");
-        return std::vector<std::string>();
+        return ret;
     }
     rapidjson::Value* val = p.Get(*mDocJSON);
     if(val == nullptr) {
         fprintf(stderr, "Value does not exist\r\n");
-        return std::vector<std::string>();
+        return ret;
     }
 
     if(val->IsString()) {
-        ret.push_back(val->GetString());
+        ret.push_back(ParseData(val->GetString(), depth, index));
     }
     else if(val->IsArray()) {
-        std::string temp;
         for(auto& el : val->GetArray()) {
             if(el.IsString()) {
-                stringAppendDelimiter(temp, el.GetString(), mOptions.arrayDelimiter);
+                ret.push_back(ParseData(el.GetString(), depth + 1, index));
             } else if(el.IsInt()) {
-                stringAppendDelimiter(temp, std::to_string(el.GetInt()), mOptions.arrayDelimiter);
-            } else {
+                ret.push_back(ParseData(std::to_string(el.GetInt()), depth + 1, index));
+            }  else {
                 fprintf(stderr, "Invalid array element type\r\n");
             }
         }
-        ret.push_back(temp);
+        ret.push_back(ParseData());
+       
+    }
+    return ret;
+}
+
+std::vector<ParseData> HTMLParser::parseXML(const std::string& target, int depth, int index) {
+    std::vector<ParseData> ret;
+    try {
+        pugi::xpath_node select = mDocXML->select_node(target.c_str());
+        ret.push_back(ParseData(select.node().child_value(), depth, index));
+    } catch(const pugi::xpath_exception& e) {
+        fprintf(stderr, "Select Failed. : %s", e.what());
     }
     return ret;
 }

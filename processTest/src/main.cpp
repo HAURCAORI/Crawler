@@ -17,7 +17,6 @@ int main() {
     curl_global_init(CURL_GLOBAL_DEFAULT);
     using namespace Crawler;
     using namespace std::chrono_literals;
-    
 
     Crawler::CURLCrawler object;
     //obj.createListFile("./CrawlingLists.json", true);
