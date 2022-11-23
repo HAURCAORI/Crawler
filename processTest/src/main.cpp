@@ -19,7 +19,6 @@ int main() {
     using namespace std::chrono_literals;
     
 
-
     Crawler::CURLCrawler object;
     //obj.createListFile("./CrawlingLists.json", true);
     object.loadList();
