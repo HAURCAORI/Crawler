@@ -1,0 +1,3 @@
+/typename
+/articleList/*/tagList
+/articleList/*/articleNo

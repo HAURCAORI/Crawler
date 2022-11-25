@@ -122,7 +122,7 @@ void HTTPResponse::addHeader(const std::string& key, const std::string& value) {
 // struct ParseData
 ParseData::ParseData() : depth(0), index(0) {}
 
-ParseData::ParseData(const std::string& Text, int Depth, int Index) : depth(Depth), index(Index), text(Text) {}
+ParseData::ParseData(const std::string& Text, int Place, int Depth, int Index) : place(Place), depth(Depth), index(Index), text(Text) {}
 
 bool ParseData::empty() {
     return depth == 0;
@@ -146,20 +146,15 @@ std::vector<std::vector<ParseData>> HTMLParser::parseData(const std::vector<std:
     {
     case ParseType::XML:
     {
-        for(auto& str : target) {  
-            ret.push_back(parseXML(str));
+        for(int i = 0; i < (int) target.size(); ++i) {
+            ret.push_back(parseXML(target[i], i));
         }
     }
     break;
     case ParseType::JSON :
     {
-        for(auto& str : target) {
-            //ret.push_back(parseJSON(str));
-            
-            for(auto& pd : parseJSON(str)) {
-                std::cout << pd.depth << "|" << pd.index << "|" << pd.text << std::endl;
-            }
-            
+        for(int i = 0; i < (int) target.size(); ++i) {
+            ret.push_back(parseJSON(target[i], i));
         }
     }
     break;
@@ -610,7 +605,7 @@ void HTMLParser::parse(const char* data) {
     
 }
 
-std::vector<ParseData> HTMLParser::parseJSON(const std::string& target, int depth, int index) {
+std::vector<ParseData> HTMLParser::parseJSON(const std::string& target, int place, int depth, int index) {
     std::vector<ParseData> ret;
     if(target.empty()) {
         return ret;
@@ -636,7 +631,7 @@ std::vector<ParseData> HTMLParser::parseJSON(const std::string& target, int dept
             for (rapidjson::SizeType i = 0; i < val->Size(); i++) {
                 std::string targetSuffix(it, target.end());
                 targetSuffix.replace(1,1,std::to_string(i));
-                std::vector<ParseData> temp = parseJSON(targetPrefix + targetSuffix, depth + 1, i);
+                std::vector<ParseData> temp = parseJSON(targetPrefix + targetSuffix, place, depth + 1, i);
                 ret.insert(ret.end(), temp.begin(), temp.end());
             }
             return ret;
@@ -655,14 +650,14 @@ std::vector<ParseData> HTMLParser::parseJSON(const std::string& target, int dept
     }
 
     if(val->IsString()) {
-        ret.push_back(ParseData(val->GetString(), depth, index));
+        ret.push_back(ParseData(val->GetString(), place, depth, index));
     }
     else if(val->IsArray()) {
         for(auto& el : val->GetArray()) {
             if(el.IsString()) {
-                ret.push_back(ParseData(el.GetString(), depth, index));
+                ret.push_back(ParseData(el.GetString(), place, depth, index));
             } else if(el.IsInt()) {
-                ret.push_back(ParseData(std::to_string(el.GetInt()), depth, index));
+                ret.push_back(ParseData(std::to_string(el.GetInt()), place, depth, index));
             }  else {
                 fprintf(stderr, "Invalid array element type\r\n");
             }
@@ -671,11 +666,11 @@ std::vector<ParseData> HTMLParser::parseJSON(const std::string& target, int dept
     return ret;
 }
 
-std::vector<ParseData> HTMLParser::parseXML(const std::string& target, int depth, int index) {
+std::vector<ParseData> HTMLParser::parseXML(const std::string& target, int place, int depth, int index) {
     std::vector<ParseData> ret;
     try {
         pugi::xpath_node select = mDocXML->select_node(target.c_str());
-        ret.push_back(ParseData(select.node().child_value(), depth, index));
+        ret.push_back(ParseData(select.node().child_value(), place, depth, index));
     } catch(const pugi::xpath_exception& e) {
         fprintf(stderr, "Select Failed. : %s", e.what());
     }

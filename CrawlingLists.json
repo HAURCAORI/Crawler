@@ -1,1 +1,180 @@
-{"CrawlingList":[{"ID":"A","URI":{"URL":"https://datalab.naver.com/shoppingInsight/getKeywordRank.naver","Method":"POST","Headers":["path: /shoppingInsight/getKeywordRank.naver?timeUnit=date&cid=50000000","authority: datalab.naver.com","origin: https://datalab.naver.com","referer: https://datalab.naver.com/","user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36"],"Parameters":"?timeUnit=date&cid=50000001","Placeholders":[],"Options":[{"CURLOPT_VERBOSE":"0"},{"CURLOPT_HEADER":"1"}]},"Output":{"Target":"/html/body/div[2]/div[2]/div[2]/div[1]/div[1]/ul[2]/li[$0]/a","Placeholders":[["1","2","3"]],"Type":"String","Adapter":"IO_ADAPTER_FILE","Options":[{"ADAPTER_OPT_PATH":"./Output/estate.json"},{"ADAPTER_OPT_GET_ORIGINAL":"true"},{"ADAPTER_OPT_FORMAT":"[${%X}]$@"},{"ADAPTER_OPT_FILE_TRUNC":"false"}]},"Schedule":{"Type":"Once","Value":""},"Info":{"Valid":true,"Success":true,"Timestamp":1668693344414,"PerformCount":49,"Details":""}},{"ID":"A","URI":{"URL":"https://new.land.naver.com/api/articles/complex/107829?realEstateType=APT%3AABYG%3AJGC&tradeType=A1&tag=%3A%3A%3A%3A%3A%3A%3A%3A&rentPriceMin=0&rentPriceMax=900000000&priceMin=0&priceMax=900000000&areaMin=0&areaMax=900000000&oldBuildYears&recentlyBuildYears&minHouseHoldCount&maxHouseHoldCount&showArticle=false&sameAddressGroup=false&minMaintenanceCost&maxMaintenanceCost&priceType=RETAIL&directions=&page=2&complexNo=107829&buildingNos=&areaNos=&type=list&order=prc","Method":"GET","Headers":["authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IlJFQUxFU1RBVEUiLCJpYXQiOjE2Njg2NzM2MzcsImV4cCI6MTY2ODY4NDQzN30.CSd-BXXT-YT8uq3uTovYjvYbIWi4Q-fvGcy1R_hMBT8","Referer: https://new.land.naver.com/complexes/107829?ms=37.3759462,126.6569662,16&a=APT:ABYG:JGC&e=RETAIL"],"Parameters":"","Placeholders":[],"Options":[{"CURLOPT_VERBOSE":"0"},{"CURLOPT_HEADER":"1"}]},"Output":{"Target":"/articleList/*/$0","Placeholders":[["tagList","articleNo"]],"Type":"String","Adapter":"IO_ADAPTER_FILE","Options":[{"ADAPTER_OPT_PATH":"./Output/estate.json"},{"ADAPTER_OPT_GET_ORIGINAL":"false"},{"ADAPTER_OPT_FORMAT":""},{"ADAPTER_OPT_FILE_TRUNC":"true"},{"ADAPTER_OPT_PARSE_TYPE":""},{"ADAPTER_OPT_ARRAY_DELIMITER":"/"}]},"Schedule":{"Type":"Once","Value":""},"Info":{"Valid":true,"Success":true,"Timestamp":1669377180944,"PerformCount":156,"Details":""}},{"ID":"B","URI":{"URL":"https://www.naver.com/","Method":"GET","Headers":[],"Parameters":"","Placeholders":[],"Options":[{"CURLOPT_VERBOSE":"0"}]},"Output":{"Target":"/html/body/div[2]/div[2]/div[2]/div[1]/div[1]/ul[2]/li[$0]/a","Placeholders":[["1","2","3"]],"Type":"String","Adapter":"IO_ADAPTER_FILE","Options":[{"ADAPTER_OPT_PATH":"./Output/crawling.html"},{"ADAPTER_OPT_GET_ORIGINAL":"false"},{"ADAPTER_OPT_FORMAT":"[${%X}]$@"},{"ADAPTER_OPT_FILE_TRUNC":"false"}]},"Schedule":{"Type":"Once","Value":""},"Info":{"Valid":true,"Success":true,"Timestamp":1668673617441,"PerformCount":27,"Details":""}}]}
+`{
+    "CrawlingList": [
+        {
+            "ID": "A",
+            "URI": {
+                "URL": "https://datalab.naver.com/shoppingInsight/getKeywordRank.naver",
+                "Method": "POST",
+                "Headers": [
+                    "path: /shoppingInsight/getKeywordRank.naver?timeUnit=date&cid=50000000",
+                    "authority: datalab.naver.com",
+                    "origin: https://datalab.naver.com",
+                    "referer: https://datalab.naver.com/",
+                    "user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36"
+                ],
+                "Parameters": "?timeUnit=date&cid=50000001",
+                "Placeholders": [],
+                "Options": [
+                    {
+                        "CURLOPT_VERBOSE": "0"
+                    },
+                    {
+                        "CURLOPT_HEADER": "1"
+                    }
+                ]
+            },
+            "Output": {
+                "Target": "/html/body/div[2]/div[2]/div[2]/div[1]/div[1]/ul[2]/li[$0]/a",
+                "Placeholders": [
+                    [
+                        "1",
+                        "2",
+                        "3"
+                    ]
+                ],
+                "Type": "String",
+                "Adapter": "IO_ADAPTER_FILE",
+                "Options": [
+                    {
+                        "ADAPTER_OPT_PATH": "./Output/estate.json"
+                    },
+                    {
+                        "ADAPTER_OPT_GET_ORIGINAL": "true"
+                    },
+                    {
+                        "ADAPTER_OPT_FORMAT": "[${%X}]$@"
+                    },
+                    {
+                        "ADAPTER_OPT_FILE_TRUNC": "false"
+                    }
+                ]
+            },
+            "Schedule": {
+                "Type": "Once",
+                "Value": ""
+            },
+            "Info": {
+                "Valid": true,
+                "Success": true,
+                "Timestamp": 1668693344414,
+                "PerformCount": 49,
+                "Details": ""
+            }
+        },
+        {
+            "ID": "A",
+            "URI": {
+                "URL": "https://new.land.naver.com/api/articles/complex/107829?realEstateType=APT%3AABYG%3AJGC&tradeType=A1&tag=%3A%3A%3A%3A%3A%3A%3A%3A&rentPriceMin=0&rentPriceMax=900000000&priceMin=0&priceMax=900000000&areaMin=0&areaMax=900000000&oldBuildYears&recentlyBuildYears&minHouseHoldCount&maxHouseHoldCount&showArticle=false&sameAddressGroup=false&minMaintenanceCost&maxMaintenanceCost&priceType=RETAIL&directions=&page=2&complexNo=107829&buildingNos=&areaNos=&type=list&order=prc",
+                "Method": "GET",
+                "Headers": [
+                    "authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IlJFQUxFU1RBVEUiLCJpYXQiOjE2Njg2NzM2MzcsImV4cCI6MTY2ODY4NDQzN30.CSd-BXXT-YT8uq3uTovYjvYbIWi4Q-fvGcy1R_hMBT8",
+                    "Referer: https://new.land.naver.com/complexes/107829?ms=37.3759462,126.6569662,16&a=APT:ABYG:JGC&e=RETAIL"
+                ],
+                "Parameters": "",
+                "Placeholders": [],
+                "Options": [
+                    {
+                        "CURLOPT_VERBOSE": "0"
+                    },
+                    {
+                        "CURLOPT_HEADER": "1"
+                    }
+                ]
+            },
+            "Output": {
+                "Target": "/articleList/*/$0",
+                "Placeholders": [
+                    [
+                        "tagList",
+                        "articleNo"
+                    ]
+                ],
+                "Type": "String",
+                "Adapter": "IO_ADAPTER_FILE",
+                "Options": [
+                    {
+                        "ADAPTER_OPT_PATH": "./Output/estate.json"
+                    },
+                    {
+                        "ADAPTER_OPT_GET_ORIGINAL": "false"
+                    },
+                    {
+                        "ADAPTER_OPT_FORMAT": ""
+                    },
+                    {
+                        "ADAPTER_OPT_FILE_TRUNC": "true"
+                    },
+                    {
+                        "ADAPTER_OPT_PARSE_TYPE": ""
+                    },
+                    {
+                        "ADAPTER_OPT_ARRAY_DELIMITER": "/"
+                    }
+                ]
+            },
+            "Schedule": {
+                "Type": "Once",
+                "Value": ""
+            },
+            "Info": {
+                "Valid": true,
+                "Success": true,
+                "Timestamp": 1669377180944,
+                "PerformCount": 156,
+                "Details": ""
+            }
+        },
+        {
+            "ID": "B",
+            "URI": {
+                "URL": "https://www.naver.com/",
+                "Method": "GET",
+                "Headers": [],
+                "Parameters": "",
+                "Placeholders": [],
+                "Options": [
+                    {
+                        "CURLOPT_VERBOSE": "0"
+                    }
+                ]
+            },
+            "Output": {
+                "Target": "/html/body/div[2]/div[2]/div[2]/div[1]/div[1]/ul[2]/li[$0]/a",
+                "Placeholders": [
+                    [
+                        "1",
+                        "2",
+                        "3"
+                    ]
+                ],
+                "Type": "String",
+                "Adapter": "IO_ADAPTER_FILE",
+                "Options": [
+                    {
+                        "ADAPTER_OPT_PATH": "./Output/crawling.html"
+                    },
+                    {
+                        "ADAPTER_OPT_GET_ORIGINAL": "false"
+                    },
+                    {
+                        "ADAPTER_OPT_FORMAT": "[${%X}]$@"
+                    },
+                    {
+                        "ADAPTER_OPT_FILE_TRUNC": "false"
+                    }
+                ]
+            },
+            "Schedule": {
+                "Type": "Once",
+                "Value": ""
+            },
+            "Info": {
+                "Valid": true,
+                "Success": true,
+                "Timestamp": 1668673617441,
+                "PerformCount": 27,
+                "Details": ""
+            }
+        }
+    ]
+}`

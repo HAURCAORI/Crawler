@@ -136,20 +136,70 @@ public:
 
 class ParsingTest {
 public:
-    ParsingTest();
+    ParsingTest() {}
 
     void excute() {
         Crawler::HTMLParser mParser;
-        std::string data = readFile("./Input/test.json");
-        std::string target = readFile("./Input/target.text");
-        
+        std::string data = readFile("./Input/parse.json");
+        std::string target = readFile("./Input/target.txt");
+        std::vector<std::string> targets = split(target,"\n");
         Crawler::ParserOptions mOptions;
         mOptions.defaultParseType = "json";
         mParser.set(&data, mOptions);
+        
         if(!mParser.success()) {
             throw Crawler::CURLErrorAdapterOut("Parser fails.");
         }
-        //std::vector<std::vector<Crawler::ParseData>> result = mParser.parseData(target);
+        
+        std::vector<std::vector<Crawler::ParseData>> result = mParser.parseData(targets);
+        processing(result);
+        /*
+        for(auto& r : result) {
+            for(auto& pd : r) {
+                std::cout << pd.place << "|" << pd.depth << "|" << pd.index << "|" << pd.text << std::endl;
+            }
+        }
+        */
+
     }
 
+    void processing(std::vector<std::vector<Crawler::ParseData>> &data) {
+        std::vector<std::pair<std::vector<Crawler::ParseData>::iterator, std::vector<Crawler::ParseData>::iterator>> iters;
+
+        for (auto it = data.begin(); it != data.end(); ++it) {
+            iters.push_back(std::make_pair<std::vector<Crawler::ParseData>::iterator, std::vector<Crawler::ParseData>::iterator>(it->begin(), it->end()));
+        }
+
+        int currentIndex = 0;
+
+        while (true)
+        {
+            bool valid = false;
+            for (auto& placepair : iters) {
+                if (placepair.first != placepair.second) {
+                    valid |= true;
+                }
+                while (true)
+                {
+                    if (placepair.first == placepair.second) {
+                        break;
+                    }
+                    auto& pd = *placepair.first;
+                    auto& pd_next = *(placepair.first+1);
+                    if (pd.index <= currentIndex) {
+                        std::cout << pd.text << std::endl;
+                        
+                        ++placepair.first;
+                    } else {
+                        break;
+                    }
+                }
+            }
+            if (!valid) {
+                break;
+            }
+            std::cout << "------" << std::endl;
+            ++currentIndex;
+        }
+    }
 };
