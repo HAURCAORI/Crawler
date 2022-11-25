@@ -154,12 +154,12 @@ std::vector<std::vector<ParseData>> HTMLParser::parseData(const std::vector<std:
     case ParseType::JSON :
     {
         for(auto& str : target) {
-            ret.push_back(parseJSON(str));
-            /*
+            //ret.push_back(parseJSON(str));
+            
             for(auto& pd : parseJSON(str)) {
                 std::cout << pd.depth << "|" << pd.index << "|" << pd.text << std::endl;
             }
-            */
+            
         }
     }
     break;
@@ -660,15 +660,13 @@ std::vector<ParseData> HTMLParser::parseJSON(const std::string& target, int dept
     else if(val->IsArray()) {
         for(auto& el : val->GetArray()) {
             if(el.IsString()) {
-                ret.push_back(ParseData(el.GetString(), depth + 1, index));
+                ret.push_back(ParseData(el.GetString(), depth, index));
             } else if(el.IsInt()) {
-                ret.push_back(ParseData(std::to_string(el.GetInt()), depth + 1, index));
+                ret.push_back(ParseData(std::to_string(el.GetInt()), depth, index));
             }  else {
                 fprintf(stderr, "Invalid array element type\r\n");
             }
-        }
-        ret.push_back(ParseData());
-       
+        } 
     }
     return ret;
 }

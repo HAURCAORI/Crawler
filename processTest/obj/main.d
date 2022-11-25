@@ -210,4 +210,5 @@ processTest/obj/main.o: processTest/src/main.cpp \
  /usr/include/x86_64-linux-gnu/c++/7/bits/basic_file.h \
  /usr/include/x86_64-linux-gnu/c++/7/bits/c++io.h \
  /usr/include/c++/7/bits/fstream.tcc /usr/include/c++/7/sstream \
- /usr/include/c++/7/bits/sstream.tcc processTest/include/curlcrawler.h
+ /usr/include/c++/7/bits/sstream.tcc processTest/include/curlcrawler.h \
+ processTest/include/stringextension.h /usr/include/c++/7/algorithm

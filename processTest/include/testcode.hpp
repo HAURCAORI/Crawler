@@ -9,8 +9,9 @@
 
 #include "curlobject.h"
 #include "curlcrawler.h"
-/*
-static std::string readFile(std::string path) {
+#include "stringextension.h"
+
+inline std::string readFile(std::string path) {
     std::ifstream inFile(path);
     if(!inFile.good()) {
         return "";
@@ -19,9 +20,9 @@ static std::string readFile(std::string path) {
     buffer << inFile.rdbuf();
     return buffer.str();
 }
-*/
 
-static bool writeFile(std::string path, const std::string& data) {
+
+inline bool writeFile(std::string path, const std::string& data) {
     std::ofstream outFile(path, std::ios_base::trunc);
     if(!outFile.good()) {
         return false;
@@ -129,6 +130,26 @@ public:
         {
             //std::cout << t << std::endl;
         }
+    }
+
+};
+
+class ParsingTest {
+public:
+    ParsingTest();
+
+    void excute() {
+        Crawler::HTMLParser mParser;
+        std::string data = readFile("./Input/test.json");
+        std::string target = readFile("./Input/target.text");
+        
+        Crawler::ParserOptions mOptions;
+        mOptions.defaultParseType = "json";
+        mParser.set(&data, mOptions);
+        if(!mParser.success()) {
+            throw Crawler::CURLErrorAdapterOut("Parser fails.");
+        }
+        //std::vector<std::vector<Crawler::ParseData>> result = mParser.parseData(target);
     }
 
 };

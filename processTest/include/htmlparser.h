@@ -60,7 +60,7 @@ struct HTMLTag {
 };
 
 struct ParserOptions {
-    std::string defaultParseType;
+    std::string defaultParseType = ""; // 기본값 지정하기
     std::string arrayDelimiter = ",";
     bool getOriginal = false;
 };
