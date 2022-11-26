@@ -263,7 +263,7 @@ public:
                 }
             }
 
-            std::cout << formatting(temp) << std::endl;
+            //std::cout << formatting(temp) << std::endl;
 
             if (!valid) {
                 break;
