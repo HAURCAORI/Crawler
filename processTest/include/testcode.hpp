@@ -153,6 +153,7 @@ public:
         
         std::vector<std::vector<Crawler::ParseData>> result = mParser.parseData(targets);
         processing(result);
+        
         /*
         for(auto& r : result) {
             for(auto& pd : r) {
@@ -229,7 +230,7 @@ public:
         }
 
         int currentIndex = 0;
-        int maxDepth = -1;
+        //int maxDepth = -1;
         while (true)
         {
             std::vector<Crawler::ParseData> temp;
@@ -239,10 +240,10 @@ public:
                 while (true)
                 {
                     if(placepair.first != placepair.second) {
-                        maxDepth = std::max(placepair.first->depth, maxDepth);
+                        //maxDepth = std::max(placepair.first->depth, maxDepth);
                         if (placepair.first->index == currentIndex) {
                             temp.push_back(*placepair.first);
-                            std::cout << placepair.first->text << std::endl;
+                            //std::cout << placepair.first->text << std::endl;
                             ++placepair.first;
                             if(placepair.first == placepair.second) {
                                 break;
@@ -251,9 +252,13 @@ public:
                             break;
                         }
                     } else {
-                        if((placepair.first-1)->depth < maxDepth) {
+                        //if((placepair.first-1)->depth < maxDepth) {
+                        if((placepair.first-1)->index == 0) {
                             temp.push_back(*(placepair.first-1));
-                            std::cout << "prev :" << (placepair.first - 1)->text << std::endl;
+                            //std::cout << "prev :" << (placepair.first - 1)->text << std::endl;
+                        } else {
+                            temp.push_back(Crawler::ParseData());
+                            //std::cout << "prev :null" << std::endl;
                         }
                         break;
                     }
@@ -263,8 +268,8 @@ public:
                 }
             }
 
-            //std::cout << formatting(temp) << std::endl;
-            std::cout << "-----" << std::endl;
+            std::cout << formatting(temp) << std::endl;
+            //std::cout << "-----" << std::endl;
             if (!valid) {
                 break;
             }
