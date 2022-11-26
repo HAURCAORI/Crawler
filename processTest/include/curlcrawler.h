@@ -183,9 +183,8 @@ public:
     CrawlingObject at(const std::string& id);
     CrawlingObject operator[](size_t index);
     CrawlingObject operator[](const std::string& id);
-    
-    
 
+    void setSaveChange(bool value);
 private:
     rapidjson::Value createListNode(const std::string& id, const URI& uri, const Output& output, const Schedule& schedule); // Json List 생성
     rapidjson::Value createInfoNode(); // Json List 생성
@@ -195,6 +194,7 @@ private:
     bool loadListFile();
 
     bool isLoaded = false;
+    bool isSaveChanges = true;
     int mCount = 0;
     std::unique_ptr<rapidjson::Document> mDoc;
     std::string mListFilePath;

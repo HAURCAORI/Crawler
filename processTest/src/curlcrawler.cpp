@@ -631,6 +631,10 @@ CrawlingObject CURLCrawler::operator[](const std::string& id) {
     return CrawlingObject((*mDoc)[ROOT_NODE][id], mDoc->GetAllocator());
 }
 
+void CURLCrawler::setSaveChange(bool value) {
+    isSaveChanges = value;
+}
+
 rapidjson::Value CURLCrawler::createListNode(const std::string& id, const URI& uri, const Output& output, const Schedule& schedule) {
     auto& alloc = mDoc->GetAllocator();
     rapidjson::Value object(rapidjson::kObjectType);
@@ -752,6 +756,7 @@ void CURLCrawler::validCheck(rapidjson::Value& node) {
 
 bool CURLCrawler::saveListFile() noexcept{
     if(!isLoaded) { return true; }
+    if(!isSaveChanges) { return false; }
     std::ofstream ofs(mListFilePath);
     rapidjson::OStreamWrapper osw(ofs);
     rapidjson::Writer<rapidjson::OStreamWrapper> writer(osw);

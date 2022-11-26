@@ -168,4 +168,5 @@ processTest/obj/curlioadapter.o: processTest/src/curlioadapter.cpp \
  /usr/include/c++/7/bits/atomic_base.h \
  /usr/include/c++/7/bits/atomic_lockfree_defines.h \
  /usr/include/c++/7/backward/auto_ptr.h \
- processTest/include/curlexceptions.h processTest/include/htmlparser.h
+ processTest/include/curlexceptions.h processTest/include/htmlparser.h \
+ processTest/include/stringextension.h

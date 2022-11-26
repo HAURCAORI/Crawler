@@ -33,6 +33,7 @@ static const std::map<std::string, AdapterOption> StringMapAdapterOption = {
 };
 
 class HTMLParser;
+struct ParseData;
 
 // 수정 시 Curlcrawler.cpp getAdapter, setAdapter 수정
 enum class AdapterType {
@@ -66,6 +67,8 @@ protected:
 
     std::vector<std::string> mTarget; // 값을 가져올 대상 지정
     std::string mFormat; // 출력 형식 지정, 공백 및 $0 ~ $9 없을 시 순서대로 출력
+private:
+    std::string formatting(const std::vector<ParseData>& data);
 };
 
 class IOAdapterConsole : public IOAdapter {

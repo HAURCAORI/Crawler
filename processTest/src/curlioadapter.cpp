@@ -11,6 +11,7 @@
 #include "curlioadapter.h"
 #include "curlexceptions.h"
 #include "htmlparser.h"
+#include "stringextension.h"
 
 using namespace std::string_literals;
 
@@ -109,44 +110,55 @@ std::vector<std::string> IOAdapter::processing() {
     }
     
     std::vector<std::vector<ParseData>> data = mParser->parseData(mTarget);
-    if(mFormat.empty()) {
-        std::vector<std::pair<std::vector<ParseData>::iterator, std::vector<ParseData>::iterator>> iters;
+    std::vector<std::pair<std::vector<Crawler::ParseData>::iterator, std::vector<Crawler::ParseData>::iterator>> iters_pairs;
 
-        for(auto it = data.begin(); it != data.end(); ++it) {
-            iters.push_back(std::make_pair<std::vector<ParseData>::iterator, std::vector<ParseData>::iterator>(it->begin(), it->end()));
-        }
+    for (auto it = data.begin(); it != data.end(); ++it) {
+        iters_pairs.push_back(std::make_pair<std::vector<Crawler::ParseData>::iterator, std::vector<Crawler::ParseData>::iterator>(it->begin(), it->end()));
+    }
 
-        int currentIndex = 0;        
-        while(true) {
-            bool valid = false;
-            for(auto& placepair : iters) {
+    int currentIndex = 0;
+    //int maxDepth = -1;
+    while (true) {
+        std::vector<Crawler::ParseData> temp;
+        bool valid = false;
+        for (size_t i = 0; i < iters_pairs.size(); ++i) {
+            auto& placepair = iters_pairs[i];
+            while (true) {
                 if(placepair.first != placepair.second) {
-                    valid |= true;
-                }
-                while(true) {
-                    if(placepair.first == placepair.second) {
-                        break;
-                    }
-                    auto& pd = *placepair.first;
-                    if(pd.empty()) {
+                    //maxDepth = std::max(placepair.first->depth, maxDepth);
+                    if (placepair.first->index == currentIndex) {
+                        temp.push_back(*placepair.first);
+                        //std::cout << placepair.first->text << std::endl;
                         ++placepair.first;
-                    } else if(pd.index <= currentIndex) {
-                        std::cout << pd.text << std::endl;
-                        ++placepair.first;
+                        if(placepair.first == placepair.second) {
+                            break;
+                        }
                     } else {
                         break;
                     }
+                } else {
+                    //if((placepair.first-1)->depth < maxDepth) {
+                    if((placepair.first-1)->index == 0) {
+                        temp.push_back(*(placepair.first-1));
+                        //std::cout << "prev :" << (placepair.first - 1)->text << std::endl;
+                    } else {
+                        temp.push_back(Crawler::ParseData());
+                        //std::cout << "prev :null" << std::endl;
+                    }
+                    break;
                 }
             }
-            if(!valid) {
-                break;
+            if(placepair.first != placepair.second) {
+                valid |= true;
             }
-            std::cout << "------" << std::endl;
-            ++currentIndex;
         }
 
-
-        return ret;
+        std::cout << formatting(temp) << std::endl;
+        std::cout << "-----" << std::endl;
+        if (!valid) {
+            break;
+        }
+        ++currentIndex;
     }
 
 /*
@@ -212,6 +224,68 @@ std::vector<std::string> IOAdapter::processing() {
     */
    return ret;
 }
+
+std::string IOAdapter::formatting(const std::vector<ParseData> &data){
+    bool brace = false;
+    std::string::iterator iter_start;
+    std::string format = mFormat;
+    if(format.empty()) {
+        format = "$@";
+    }
+    for (auto it = format.begin(); it != format.end(); ++it) {
+        if (*it == '$') {
+            if (brace) { continue; }
+            if (*(it + 1) == '@') {
+                size_t pos = std::distance(format.begin(), it);
+                std::string replaceString;
+                for (auto iter_data = data.begin(); iter_data != data.end(); ++iter_data) {
+                    stringAppendDelimiter(replaceString, iter_data->text, mParserOptions->arrayDelimiter);
+                }
+
+                format = format.replace(it, it + 2, replaceString);
+                it = format.begin() + pos + replaceString.size() - 1;
+            } else if (isdigit(*(it + 1))) {
+                int index = (*(it + 1) - '0');
+                size_t pos = std::distance(format.begin(), it);
+                std::string replaceString;
+                for (auto iter_data = data.begin(); iter_data != data.end(); ++iter_data) {
+                    if (iter_data->place == index) {
+                        stringAppendDelimiter(replaceString, iter_data->text, mParserOptions->arrayDelimiter);
+                    }
+                }
+                if (replaceString.empty()) {
+                    replaceString = mParserOptions->nullValue;
+                }
+                format = format.replace(it, it + 2, replaceString);
+                it = format.begin() + pos + replaceString.size() - 1;
+            } else if (*(it + 1) == '{') {
+                brace = true;
+                iter_start = it + 2;
+            }
+        } else if (brace && *it == '}') {
+            // 중괄호 표현 => strftime 함수를 이용
+            std::string temp(iter_start, it);
+
+            time_t rawtime;
+            struct tm *timeinfo;
+            char buffer[256];
+
+            time(&rawtime);
+            timeinfo = localtime(&rawtime);
+
+            if (strftime(buffer, 256, temp.c_str(), timeinfo)) {
+                std::string timeString(buffer);
+                size_t pos = std::distance(format.begin(), iter_start - 2);
+                format = format.replace(iter_start - 2, it + 1, timeString);
+                it = format.begin() + pos + timeString.size() - 1;
+            }
+            brace = false;
+        }
+    }
+    return format;
+}
+
+// Adaptor Console
 
 void IOAdapterConsole::out() {
     try {

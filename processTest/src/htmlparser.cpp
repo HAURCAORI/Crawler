@@ -153,6 +153,7 @@ std::vector<std::vector<ParseData>> HTMLParser::parseData(const std::vector<std:
     
     break;
     }
+
     return ret;
 }
 

@@ -18,14 +18,16 @@ int main() {
     using namespace Crawler;
     using namespace std::chrono_literals;
 
-    ParsingTest parsingtest;
-    parsingtest.excute();
-    //Crawler::CURLCrawler object;
+    //ParsingTest parsingtest;
+    //parsingtest.excute();
+
+    Crawler::CURLCrawler object;
+    object.setSaveChange(false);
     //obj.createListFile("./CrawlingLists.json", true);
-    //object.loadList();
+    object.loadList();
     //obj.addList("A","https://www.naver.com/,","/div/div");
-    //auto o = object.at(1);
-    //o.execute();
+    auto o = object.at(1);
+    o.execute();
     //std::this_thread::sleep_for(1s);
 
     //o.setURIOptions({{"a","b"}});
