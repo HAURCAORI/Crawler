@@ -242,7 +242,7 @@ public:
                         maxDepth = std::max(placepair.first->depth, maxDepth);
                         if (placepair.first->index == currentIndex) {
                             temp.push_back(*placepair.first);
-                            //std::cout << placepair.first->text << std::endl;
+                            std::cout << placepair.first->text << std::endl;
                             ++placepair.first;
                             if(placepair.first == placepair.second) {
                                 break;
@@ -253,7 +253,7 @@ public:
                     } else {
                         if((placepair.first-1)->depth < maxDepth) {
                             temp.push_back(*(placepair.first-1));
-                            //std::cout << "prev :" << (placepair.first - 1)->text << std::endl;
+                            std::cout << "prev :" << (placepair.first - 1)->text << std::endl;
                         }
                         break;
                     }
@@ -264,7 +264,7 @@ public:
             }
 
             //std::cout << formatting(temp) << std::endl;
-
+            std::cout << "-----" << std::endl;
             if (!valid) {
                 break;
             }
