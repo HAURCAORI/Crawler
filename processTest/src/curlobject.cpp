@@ -71,7 +71,7 @@ void CURLObject::defaultOption() {
 
     setOption(CURLOPT_ACCEPT_ENCODING, "");
 
-    //setOption(CURLOPT_VERBOSE, 1L);
+    setOption(CURLOPT_HEADER, 1L);
 }
 
 void CURLObject::setURL(const std::string& str) {

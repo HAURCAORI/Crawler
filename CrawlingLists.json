@@ -62,7 +62,7 @@
             }
         },
         {
-            "ID": "A",
+            "ID": "B",
             "URI": {
                 "URL": "https://new.land.naver.com/api/articles/complex/107829?realEstateType=APT%3AABYG%3AJGC&tradeType=A1&tag=%3A%3A%3A%3A%3A%3A%3A%3A&rentPriceMin=0&rentPriceMax=900000000&priceMin=0&priceMax=900000000&areaMin=0&areaMax=900000000&oldBuildYears&recentlyBuildYears&minHouseHoldCount&maxHouseHoldCount&showArticle=false&sameAddressGroup=false&minMaintenanceCost&maxMaintenanceCost&priceType=RETAIL&directions=&page=2&complexNo=107829&buildingNos=&areaNos=&type=list&order=prc",
                 "Method": "GET",
@@ -82,11 +82,13 @@
                 ]
             },
             "Output": {
-                "Target": "/articleList/*/$0",
+                "Target": "/$0",
                 "Placeholders": [
                     [
-                        "tagList",
-                        "articleNo"
+                        "articleList/*/articleName",
+                        "articleList/*/articleNo",
+                        "articleList/*/tagList",
+                        "mapExposedCount"
                     ]
                 ],
                 "Type": "String",
@@ -99,7 +101,7 @@
                         "ADAPTER_OPT_GET_ORIGINAL": "false"
                     },
                     {
-                        "ADAPTER_OPT_FORMAT": ""
+                        "ADAPTER_OPT_FORMAT": "[${%X}] $3 | $0($1) => $2"
                     },
                     {
                         "ADAPTER_OPT_FILE_TRUNC": "true"
@@ -125,7 +127,7 @@
             }
         },
         {
-            "ID": "B",
+            "ID": "C",
             "URI": {
                 "URL": "https://www.naver.com/",
                 "Method": "GET",
@@ -160,7 +162,7 @@
                         "ADAPTER_OPT_FORMAT": "[${%X}]$@"
                     },
                     {
-                        "ADAPTER_OPT_FILE_TRUNC": "false"
+                        "ADAPTER_OPT_FILE_TRUNC": "true"
                     }
                 ]
             },

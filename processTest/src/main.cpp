@@ -26,7 +26,7 @@ int main() {
     //obj.createListFile("./CrawlingLists.json", true);
     object.loadList();
     //obj.addList("A","https://www.naver.com/,","/div/div");
-    auto o = object.at(1);
+    auto o = object.at(2);
     o.execute();
     //std::this_thread::sleep_for(1s);
 

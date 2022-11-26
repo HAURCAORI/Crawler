@@ -108,7 +108,6 @@ std::vector<std::string> IOAdapter::processing() {
     if(!mParser->success()) {
         throw CURLErrorAdapterOut("Parser fails.");
     }
-    
     std::vector<std::vector<ParseData>> data = mParser->parseData(mTarget);
     std::vector<std::pair<std::vector<Crawler::ParseData>::iterator, std::vector<Crawler::ParseData>::iterator>> iters_pairs;
 
@@ -153,75 +152,14 @@ std::vector<std::string> IOAdapter::processing() {
             }
         }
 
-        std::cout << formatting(temp) << std::endl;
-        std::cout << "-----" << std::endl;
+        ret.push_back(formatting(temp));
+        //std::cout << "-----" << std::endl;
         if (!valid) {
             break;
         }
         ++currentIndex;
     }
 
-/*
-    // std::vector<std::string> 데이터를 format 형식으로 변환
-    bool formatted = false;
-    bool brace = false;
-    std::string::iterator iter_start;
-    std::string format = mFormat;
-    for(size_t index = 0; index < data.size(); ++index) {
-        for(auto it = format.begin(); it != format.end(); ++it) {
-            if(*it == '$') {
-                if(brace) { continue; }
-                if(*(it + 1) == '@') {
-                    size_t pos = std::distance(format.begin(), it);
-                    format = format.replace(it, it + 2, data[index]);
-                    it = format.begin() + pos + data[index].size() - 1;
-                } else if(isdigit(*(it + 1))) {
-                    formatted = true;
-                    if((*(it + 1) - '0') == (int)index) {
-                        size_t pos = std::distance(format.begin(), it);
-                        format = format.replace(it, it + 2, data[index]);
-                        it = format.begin() + pos + data[index].size() - 1;
-                    }
-                } else if(*(it + 1) == '{') {
-                    brace = true;
-                    iter_start = it+2;
-                }
-            } else if(brace && *it == '}') {
-                // 중괄호 표현 => strftime 함수를 이용
-                std::string temp(iter_start, it);
-
-                time_t rawtime;
-                struct tm* timeinfo;
-                char buffer[256];
-                
-                time(&rawtime);
-                timeinfo = localtime(&rawtime);
-
-                if(strftime(buffer, 256, temp.c_str(), timeinfo)) {
-                    std::string timeString(buffer);
-                    size_t pos = std::distance(format.begin(), iter_start-2);
-                    format = format.replace(iter_start-2, it + 1, timeString);
-                    it = format.begin() + pos + timeString.size() - 1;
-                }
-                brace = false;
-            }
-        } 
-        if(formatted == false) {
-            ret.push_back(format);
-            format = mFormat;
-        }
-    }
-    
-    if(formatted) {
-        return std::vector<std::string>(1,format);
-    } else {
-        if(ret.empty()) {
-            return data;
-        } else {
-            return ret;
-        }
-    }
-    */
    return ret;
 }
 

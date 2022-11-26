@@ -645,8 +645,9 @@ std::vector<ParseData> HTMLParser::parseJSON(const std::string& target, int plac
 
     if(val->IsString()) {
         ret.push_back(ParseData(val->GetString(), place, depth, index));
-    }
-    else if(val->IsArray()) {
+    } else if(val->IsInt()) {
+        ret.push_back(ParseData(std::to_string(val->GetInt()), place, depth, index));
+    } else if(val->IsArray()) {
         for(auto& el : val->GetArray()) {
             if(el.IsString()) {
                 ret.push_back(ParseData(el.GetString(), place, depth, index));
@@ -656,6 +657,8 @@ std::vector<ParseData> HTMLParser::parseJSON(const std::string& target, int plac
                 fprintf(stderr, "Invalid array element type\r\n");
             }
         } 
+    } else {
+        fprintf(stderr, "Unknown Json type\r\n");
     }
     return ret;
 }
