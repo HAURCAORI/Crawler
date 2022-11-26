@@ -158,31 +158,91 @@ public:
             for(auto& pd : r) {
                 std::cout << pd.place << "|" << pd.depth << "|" << pd.index << "|" << pd.text << std::endl;
             }
+            std::cout << "-----" << std::endl;
         }
         */
+        
 
     }
 
+    std::string formatting(const std::vector<Crawler::ParseData> &data) {
+        bool brace = false;
+        std::string::iterator iter_start;
+        std::string format = "$@ |$0 | $1 | $2 | $3";
+        for(auto it = format.begin(); it != format.end(); ++it) {
+            if(*it == '$') {
+                if(brace) { continue; }
+                if(*(it + 1) == '@') {
+                    size_t pos = std::distance(format.begin(), it);
+                    std::string replaceString;
+                    for(auto iter_data = data.begin(); iter_data != data.end(); ++iter_data) {
+                        stringAppendDelimiter(replaceString, iter_data->text, ",");
+                    } 
+                    
+                    format = format.replace(it, it + 2, replaceString);
+                    it = format.begin() + pos + replaceString.size() - 1;
+                } else if(isdigit(*(it + 1))) {
+                    int index = (*(it + 1) - '0');
+                    size_t pos = std::distance(format.begin(), it);
+                    std::string replaceString;
+                    for(auto iter_data = data.begin(); iter_data != data.end(); ++iter_data) {
+                        if(iter_data->place == index){
+                            stringAppendDelimiter(replaceString, iter_data->text, ",");
+                        }
+                    } 
+                    if(replaceString.empty()) {
+                        replaceString = "null";
+                    }
+                    format = format.replace(it, it + 2, replaceString);
+                    it = format.begin() + pos + replaceString.size() - 1;
+                } else if(*(it + 1) == '{') {
+                    brace = true;
+                    iter_start = it+2;
+                }
+            } else if(brace && *it == '}') {
+                // 중괄호 표현 => strftime 함수를 이용
+                std::string temp(iter_start, it);
+
+                time_t rawtime;
+                struct tm* timeinfo;
+                char buffer[256];
+            
+                time(&rawtime);
+                timeinfo = localtime(&rawtime);
+
+                if(strftime(buffer, 256, temp.c_str(), timeinfo)) {
+                    std::string timeString(buffer);
+                    size_t pos = std::distance(format.begin(), iter_start-2);
+                    format = format.replace(iter_start-2, it + 1, timeString);                        it = format.begin() + pos + timeString.size() - 1;
+                }
+                brace = false;
+            }
+        } 
+        return format;
+    }
+
     void processing(std::vector<std::vector<Crawler::ParseData>> &data) {
-        std::vector<std::pair<std::vector<Crawler::ParseData>::iterator, std::vector<Crawler::ParseData>::iterator>> iters;
+        std::vector<std::pair<std::vector<Crawler::ParseData>::iterator, std::vector<Crawler::ParseData>::iterator>> iters_pairs;
 
         for (auto it = data.begin(); it != data.end(); ++it) {
-            iters.push_back(std::make_pair<std::vector<Crawler::ParseData>::iterator, std::vector<Crawler::ParseData>::iterator>(it->begin(), it->end()));
+            iters_pairs.push_back(std::make_pair<std::vector<Crawler::ParseData>::iterator, std::vector<Crawler::ParseData>::iterator>(it->begin(), it->end()));
         }
 
         int currentIndex = 0;
         int maxDepth = -1;
         while (true)
         {
+            std::vector<Crawler::ParseData> temp;
             bool valid = false;
-            for (auto& placepair : iters) {
+            for (size_t i = 0; i < iters_pairs.size(); ++i) {
+                auto& placepair = iters_pairs[i];
                 while (true)
                 {
                     if(placepair.first != placepair.second) {
-                        auto& pd = *placepair.first;
-                        maxDepth = std::max(pd.depth, maxDepth);
-                        if (pd.index == currentIndex) {
-                            std::cout << pd.text << std::endl;
+                        maxDepth = std::max(placepair.first->depth, maxDepth);
+                        if (placepair.first->index == currentIndex) {
+                            temp.push_back(*placepair.first);
+                            //std::cout << placepair.first->text << std::endl;
                             ++placepair.first;
                             if(placepair.first == placepair.second) {
                                 break;
@@ -192,7 +252,8 @@ public:
                         }
                     } else {
                         if((placepair.first-1)->depth < maxDepth) {
-                            std::cout << "prev :" << (placepair.first - 1)->text << std::endl;
+                            temp.push_back(*(placepair.first-1));
+                            //std::cout << "prev :" << (placepair.first - 1)->text << std::endl;
                         }
                         break;
                     }
@@ -202,10 +263,11 @@ public:
                 }
             }
 
+            std::cout << formatting(temp) << std::endl;
+
             if (!valid) {
                 break;
             }
-            std::cout << "------" << std::endl;
             ++currentIndex;
         }
     }

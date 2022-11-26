@@ -44,15 +44,6 @@ std::string popStringLine(std::string& str) {
     return temp;
 }
 
-void stringAppendDelimiter(std::string& str, const std::string& append, const std::string& delimiter = ",") {
-    if(str.empty()) {
-        str += append;
-    } else {
-        str += delimiter;
-        str += append;
-    }
-}
-
 namespace Crawler {
 
 HTTPResponse::HTTPResponse(const std::string& line) {
@@ -679,6 +670,61 @@ std::vector<ParseData> HTMLParser::parseXML(const std::string& target, int place
     }
     return ret;
 }
+
+/*
+std::vector<std::vector<ParseData>> HTMLParser::parseGrouping(const std::vector<std::vector<ParseData>>& data) {
+    std::vector<std::vector<ParseData>> ret;
+    std::vector<std::pair<std::vector<Crawler::ParseData>::const_iterator, std::vector<Crawler::ParseData>::const_iterator>> iters_pairs;
+
+    for (auto it = data.begin(); it != data.end(); ++it) {
+        ret.push_back(std::vector<ParseData>());
+        iters_pairs.push_back(std::make_pair<std::vector<Crawler::ParseData>::const_iterator, std::vector<Crawler::ParseData>::const_iterator>(it->begin(), it->end()));
+    }
+
+    int currentIndex = 0;
+    int maxDepth = -1;
+    while (true)
+    {
+        std::vector<std::string> temp;
+        bool valid = false;
+        for (size_t i = 0; i < iters_pairs.size(); ++i) {
+            auto& placepair = iters_pairs[i];
+            while (true)
+            {
+                if(placepair.first != placepair.second) {
+                    maxDepth = std::max(placepair.first->depth, maxDepth);
+                    if (placepair.first->index == currentIndex) {
+                        ret[i].push_back(*placepair.first);
+                        //std::cout << placepair.first->text << std::endl;
+                        ++placepair.first;
+                        if(placepair.first == placepair.second) {
+                            break;
+                        }
+                    } else {
+                        break;
+                    }
+                } else {
+                    if((placepair.first-1)->depth < maxDepth) {
+                        ret[i].push_back(*(placepair.first-1));
+                        //std::cout << "prev :" << (placepair.first - 1)->text << std::endl;
+                    }
+                    break;
+                }
+            }
+            if(placepair.first != placepair.second) {
+                valid |= true;
+            }
+        }
+
+        if (!valid) {
+            break;
+        }
+        //std::cout << "------" << std::endl;
+        ++currentIndex;
+    }
+    return ret;
+}
+*/
 
 }
 /*

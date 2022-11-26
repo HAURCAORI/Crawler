@@ -101,4 +101,13 @@ static inline std::string TrimAndUpper(const std::string& str) noexcept {
     return ret;
 }
 
+static inline void stringAppendDelimiter(std::string& str, const std::string& append, const std::string& delimiter = ",") {
+    if(str.empty()) {
+        str += append;
+    } else {
+        str += delimiter;
+        str += append;
+    }
+}
+
 #endif

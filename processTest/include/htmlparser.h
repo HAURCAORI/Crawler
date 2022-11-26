@@ -125,6 +125,7 @@ private:
     void parse(const char* data);
     std::vector<ParseData> parseJSON(const std::string& target, int place, int index = 0);
     std::vector<ParseData> parseXML(const std::string& target, int place, int index = 0);
+    std::vector<std::vector<ParseData>> parseGrouping(const std::vector<std::vector<ParseData>>& data);
 
     HTTPResponse mResponse;
     std::string* mData;

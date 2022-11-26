@@ -116,8 +116,7 @@ std::vector<std::string> IOAdapter::processing() {
             iters.push_back(std::make_pair<std::vector<ParseData>::iterator, std::vector<ParseData>::iterator>(it->begin(), it->end()));
         }
 
-        int currentIndex = 0;
-        
+        int currentIndex = 0;        
         while(true) {
             bool valid = false;
             for(auto& placepair : iters) {
@@ -149,6 +148,7 @@ std::vector<std::string> IOAdapter::processing() {
 
         return ret;
     }
+
 /*
     // std::vector<std::string> 데이터를 format 형식으로 변환
     bool formatted = false;
