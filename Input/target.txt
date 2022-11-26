@@ -1,3 +1,4 @@
-/typename
 /articleList/*/tagList
 /articleList/*/articleNo
+/sample/list/*
+/typename

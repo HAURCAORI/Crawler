@@ -605,7 +605,7 @@ void HTMLParser::parse(const char* data) {
     
 }
 
-std::vector<ParseData> HTMLParser::parseJSON(const std::string& target, int place, int depth, int index) {
+std::vector<ParseData> HTMLParser::parseJSON(const std::string& target, int place, int index) {
     std::vector<ParseData> ret;
     if(target.empty()) {
         return ret;
@@ -631,7 +631,7 @@ std::vector<ParseData> HTMLParser::parseJSON(const std::string& target, int plac
             for (rapidjson::SizeType i = 0; i < val->Size(); i++) {
                 std::string targetSuffix(it, target.end());
                 targetSuffix.replace(1,1,std::to_string(i));
-                std::vector<ParseData> temp = parseJSON(targetPrefix + targetSuffix, place, depth + 1, i);
+                std::vector<ParseData> temp = parseJSON(targetPrefix + targetSuffix, place, i);
                 ret.insert(ret.end(), temp.begin(), temp.end());
             }
             return ret;
@@ -648,6 +648,8 @@ std::vector<ParseData> HTMLParser::parseJSON(const std::string& target, int plac
         fprintf(stderr, "Value does not exist\r\n");
         return ret;
     }
+
+    int depth = std::count_if(target.begin(), target.end(), [](char c){ return (c == '/') ? true : false; });
 
     if(val->IsString()) {
         ret.push_back(ParseData(val->GetString(), place, depth, index));
@@ -666,8 +668,9 @@ std::vector<ParseData> HTMLParser::parseJSON(const std::string& target, int plac
     return ret;
 }
 
-std::vector<ParseData> HTMLParser::parseXML(const std::string& target, int place, int depth, int index) {
+std::vector<ParseData> HTMLParser::parseXML(const std::string& target, int place, int index) {
     std::vector<ParseData> ret;
+    int depth = 1;
     try {
         pugi::xpath_node select = mDocXML->select_node(target.c_str());
         ret.push_back(ParseData(select.node().child_value(), place, depth, index));

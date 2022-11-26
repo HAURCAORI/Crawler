@@ -171,30 +171,37 @@ public:
         }
 
         int currentIndex = 0;
-
+        int maxDepth = -1;
         while (true)
         {
             bool valid = false;
             for (auto& placepair : iters) {
-                if (placepair.first != placepair.second) {
-                    valid |= true;
-                }
                 while (true)
                 {
-                    if (placepair.first == placepair.second) {
-                        break;
-                    }
-                    auto& pd = *placepair.first;
-                    auto& pd_next = *(placepair.first+1);
-                    if (pd.index <= currentIndex) {
-                        std::cout << pd.text << std::endl;
-                        
-                        ++placepair.first;
+                    if(placepair.first != placepair.second) {
+                        auto& pd = *placepair.first;
+                        maxDepth = std::max(pd.depth, maxDepth);
+                        if (pd.index == currentIndex) {
+                            std::cout << pd.text << std::endl;
+                            ++placepair.first;
+                            if(placepair.first == placepair.second) {
+                                break;
+                            }
+                        } else {
+                            break;
+                        }
                     } else {
+                        if((placepair.first-1)->depth < maxDepth) {
+                            std::cout << "prev :" << (placepair.first - 1)->text << std::endl;
+                        }
                         break;
                     }
                 }
+                if(placepair.first != placepair.second) {
+                    valid |= true;
+                }
             }
+
             if (!valid) {
                 break;
             }
