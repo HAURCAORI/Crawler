@@ -138,7 +138,6 @@ std::vector<std::vector<ParseData>> HTMLParser::parseData(const std::vector<std:
     case ParseType::XML:
     {
         for(int i = 0; i < (int) target.size(); ++i) {
-            std::cout << target[i] << std::endl;
             ret.push_back(parseXML(target[i], i));
         }
     }
@@ -668,31 +667,35 @@ std::vector<ParseData> HTMLParser::parseXML(const std::string& target, int place
     if(target.empty()) {
         return ret;
     }
-    //int depth = std::count_if(target.begin(), target.end(), [](char c){ return (c == '/') ? true : false; });
+    int depth = std::count_if(target.begin(), target.end(), [](char c){ return (c == '/') ? true : false; });
 
     for(auto it = target.begin(); it != target.end(); ++it) {
         if(*it == '/' && *(it+1) == '*') {
             try {
                 std::string targetPrefix(target.begin(), it);   
                 pugi::xpath_node select = mDocXML->select_node(targetPrefix.c_str());
+                int count = 0;
                 for(auto iter_select = select.node().begin(); iter_select != select.node().end(); ++iter_select) {
-                    std::cout << iter_select->type() << std::endl;
+                    std::string targetSuffix(it, target.end());
+                    std::string replaceString = iter_select->name() + std::string("[") + std::to_string(count) + "]";
+                    targetSuffix.replace(1, 1, replaceString);
+                    std::vector<ParseData> temp = parseXML(targetPrefix + targetSuffix, place, count);
+                    ret.insert(ret.end(), temp.begin(), temp.end());
+                    count++;
                 }
             } catch(const pugi::xpath_exception& e) {
                 fprintf(stderr, "Select Failed. : %s", e.what());
             }
+            return ret;
         }
     }
 
-/*
-    int depth = 1;
     try {
         pugi::xpath_node select = mDocXML->select_node(target.c_str());
         ret.push_back(ParseData(select.node().child_value(), place, depth, index));
     } catch(const pugi::xpath_exception& e) {
         fprintf(stderr, "Select Failed. : %s", e.what());
     }
-    */
     return ret;
 }
 
