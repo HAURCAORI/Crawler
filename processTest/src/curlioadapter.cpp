@@ -109,6 +109,15 @@ std::vector<std::string> IOAdapter::processing() {
         throw CURLErrorAdapterOut("Parser fails.");
     }
     std::vector<std::vector<ParseData>> data = mParser->parseData(mTarget);
+
+/*
+    for(auto& vec : data) {
+        for(auto& el : vec) {
+            std::cout << el.text << std::endl;
+        }
+    }
+*/
+
     std::vector<std::pair<std::vector<Crawler::ParseData>::iterator, std::vector<Crawler::ParseData>::iterator>> iters_pairs;
 
     for (auto it = data.begin(); it != data.end(); ++it) {

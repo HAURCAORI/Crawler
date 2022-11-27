@@ -141,7 +141,7 @@
                 ]
             },
             "Output": {
-                "Target": "/html/body/div[2]/div[2]/div[2]/div[1]/div[1]/ul[2]/*",
+                "Target": "/html/body/div[2]/div[2]/div[2]/div[1]/div[1]/ul[2]/*/a",
                 "Placeholders": [
                 ],
                 "Type": "String",

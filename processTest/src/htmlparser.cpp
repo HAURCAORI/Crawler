@@ -677,7 +677,7 @@ std::vector<ParseData> HTMLParser::parseXML(const std::string& target, int place
                 int count = 0;
                 for(auto iter_select = select.node().begin(); iter_select != select.node().end(); ++iter_select) {
                     std::string targetSuffix(it, target.end());
-                    std::string replaceString = iter_select->name() + std::string("[") + std::to_string(count) + "]";
+                    std::string replaceString = iter_select->name() + std::string("[") + std::to_string(count+1) + "]";
                     targetSuffix.replace(1, 1, replaceString);
                     std::vector<ParseData> temp = parseXML(targetPrefix + targetSuffix, place, count);
                     ret.insert(ret.end(), temp.begin(), temp.end());
