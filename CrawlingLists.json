@@ -141,13 +141,8 @@
                 ]
             },
             "Output": {
-                "Target": "/html/body/div[2]/div[2]/div[2]/div[1]/div[1]/ul[2]/li[$0]/a",
+                "Target": "/html/body/div[2]/div[2]/div[2]/div[1]/div[1]/ul[2]/*",
                 "Placeholders": [
-                    [
-                        "1",
-                        "2",
-                        "3"
-                    ]
                 ],
                 "Type": "String",
                 "Adapter": "IO_ADAPTER_FILE",

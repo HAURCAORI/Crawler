@@ -138,6 +138,7 @@ std::vector<std::vector<ParseData>> HTMLParser::parseData(const std::vector<std:
     case ParseType::XML:
     {
         for(int i = 0; i < (int) target.size(); ++i) {
+            std::cout << target[i] << std::endl;
             ret.push_back(parseXML(target[i], i));
         }
     }
@@ -602,6 +603,7 @@ std::vector<ParseData> HTMLParser::parseJSON(const std::string& target, int plac
     if(target.empty()) {
         return ret;
     }
+    int depth = std::count_if(target.begin(), target.end(), [](char c){ return (c == '/') ? true : false; });
 
     for(auto it = target.begin(); it != target.end(); ++it) {
         if(*it == '/' && *(it+1) == '*') {
@@ -641,8 +643,6 @@ std::vector<ParseData> HTMLParser::parseJSON(const std::string& target, int plac
         return ret;
     }
 
-    int depth = std::count_if(target.begin(), target.end(), [](char c){ return (c == '/') ? true : false; });
-
     if(val->IsString()) {
         ret.push_back(ParseData(val->GetString(), place, depth, index));
     } else if(val->IsInt()) {
@@ -665,6 +665,26 @@ std::vector<ParseData> HTMLParser::parseJSON(const std::string& target, int plac
 
 std::vector<ParseData> HTMLParser::parseXML(const std::string& target, int place, int index) {
     std::vector<ParseData> ret;
+    if(target.empty()) {
+        return ret;
+    }
+    //int depth = std::count_if(target.begin(), target.end(), [](char c){ return (c == '/') ? true : false; });
+
+    for(auto it = target.begin(); it != target.end(); ++it) {
+        if(*it == '/' && *(it+1) == '*') {
+            try {
+                std::string targetPrefix(target.begin(), it);   
+                pugi::xpath_node select = mDocXML->select_node(targetPrefix.c_str());
+                for(auto iter_select = select.node().begin(); iter_select != select.node().end(); ++iter_select) {
+                    std::cout << iter_select->type() << std::endl;
+                }
+            } catch(const pugi::xpath_exception& e) {
+                fprintf(stderr, "Select Failed. : %s", e.what());
+            }
+        }
+    }
+
+/*
     int depth = 1;
     try {
         pugi::xpath_node select = mDocXML->select_node(target.c_str());
@@ -672,6 +692,7 @@ std::vector<ParseData> HTMLParser::parseXML(const std::string& target, int place
     } catch(const pugi::xpath_exception& e) {
         fprintf(stderr, "Select Failed. : %s", e.what());
     }
+    */
     return ret;
 }
 

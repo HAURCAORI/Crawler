@@ -60,7 +60,7 @@ struct HTMLTag {
 };
 
 struct ParserOptions {
-    std::string defaultParseType = "xml"; // 기본값 지정하기
+    std::string defaultParseType = "";
     std::string arrayDelimiter = ",";
     std::string nullValue = "null";
     bool getOriginal = false;

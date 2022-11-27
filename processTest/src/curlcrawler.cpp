@@ -34,6 +34,10 @@ static std::vector<std::string> ReplacePlaceholders(const std::string& original,
     if(index >= plhs.size()) { return std::vector<std::string>(1,original); }
     std::vector<std::string> ret;
     for(auto& el : plhs[index]) {
+        if(el.empty()) {
+            ret.push_back(original);
+            continue;
+        } 
         std::string rep = ReplacePlaceholder(original, index, el);
         std::vector<std::string> temp = ReplacePlaceholders(rep, plhs, index+1);
         ret.insert(ret.end(),std::make_move_iterator(temp.begin()), std::make_move_iterator(temp.end()));
@@ -254,8 +258,10 @@ Placeholders CrawlingObject::getURLPlaceholders() const {
         for(const auto& arr : list.GetArray()) {
             if(!arr.IsString()) { break; }
             item.push_back(arr.GetString());
-        }  
-        ret.push_back(item);
+        }
+        if(!item.empty()) {
+            ret.push_back(item);    
+        }
     }
     return ret;
 }
@@ -403,7 +409,9 @@ Placeholders CrawlingObject::getOutputPlaceholders() const {
             if(!arr.IsString()) { break; }
             item.push_back(arr.GetString());
         }  
-        ret.push_back(item);    
+        if(!item.empty()) {
+            ret.push_back(item);    
+        }
     }
     return ret;
 }
