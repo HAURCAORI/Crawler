@@ -20,16 +20,6 @@ int main() {
     using namespace Crawler;
     using namespace std::chrono_literals;
 
-    char szSrc[] = "대한민국";
-    char szDst[5];
-    auto size = ChangeCharset("utf-8", "euc-kr", szSrc, strlen(szSrc), szDst, sizeof(szDst));
-    std::cout << szDst << std::endl; 
-    char szDst2[100];
-    auto size2 = ChangeCharset("euc-kr", "utf-8", szDst, size, szDst2, sizeof(szDst2));
-    std::string result(szDst2,size2);
-    std::cout << result << std::endl;
-    return 0;
-
     //ParsingTest parsingtest;
     //parsingtest.excute();
 

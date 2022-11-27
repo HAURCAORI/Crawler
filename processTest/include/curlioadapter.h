@@ -19,7 +19,9 @@ enum AdapterOption {
   ADAPTER_OPT_FORMAT,
   ADAPTER_OPT_FILE_TRUNC,
   ADAPTER_OPT_PARSE_TYPE,
-  ADAPTER_OPT_ARRAY_DELIMITER
+  ADAPTER_OPT_ARRAY_DELIMITER,
+  ADAPTER_OPT_EXTRACT_HEADER,
+  ADAPTER_OPT_AUTO_ENCODING
 };
 
 static const std::map<std::string, AdapterOption> StringMapAdapterOption = {
@@ -29,7 +31,9 @@ static const std::map<std::string, AdapterOption> StringMapAdapterOption = {
     StringMap(ADAPTER_OPT_FORMAT),
     StringMap(ADAPTER_OPT_FILE_TRUNC),
     StringMap(ADAPTER_OPT_PARSE_TYPE),
-    StringMap(ADAPTER_OPT_ARRAY_DELIMITER)
+    StringMap(ADAPTER_OPT_ARRAY_DELIMITER),
+    StringMap(ADAPTER_OPT_EXTRACT_HEADER),
+    StringMap(ADAPTER_OPT_AUTO_ENCODING)
 };
 
 class HTMLParser;

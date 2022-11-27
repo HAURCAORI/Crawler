@@ -129,8 +129,9 @@ processTest/obj/curltype.o: processTest/src/curltype.cpp \
  /usr/include/c++/7/bits/stl_map.h /usr/include/c++/7/tuple \
  /usr/include/c++/7/array /usr/include/c++/7/bits/uses_allocator.h \
  /usr/include/c++/7/bits/invoke.h /usr/include/c++/7/bits/stl_multimap.h \
- webCrawler/include/curl/curl.h webCrawler/include/curl/curlver.h \
- webCrawler/include/curl/system.h \
+ processTest/lib/include/curl/curl.h \
+ processTest/lib/include/curl/curlver.h \
+ processTest/lib/include/curl/system.h \
  /usr/include/x86_64-linux-gnu/sys/socket.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct_iovec.h \
  /usr/include/x86_64-linux-gnu/bits/socket.h \
@@ -150,11 +151,14 @@ processTest/obj/curltype.o: processTest/src/curltype.cpp \
  /usr/include/x86_64-linux-gnu/bits/posix2_lim.h \
  /usr/include/x86_64-linux-gnu/bits/xopen_lim.h \
  /usr/include/x86_64-linux-gnu/bits/uio_lim.h \
- /usr/include/x86_64-linux-gnu/sys/time.h webCrawler/include/curl/easy.h \
- webCrawler/include/curl/multi.h webCrawler/include/curl/curl.h \
- webCrawler/include/curl/urlapi.h webCrawler/include/curl/options.h \
- webCrawler/include/curl/header.h processTest/include/stringextension.h \
- /usr/include/c++/7/vector /usr/include/c++/7/bits/stl_construct.h \
+ /usr/include/x86_64-linux-gnu/sys/time.h \
+ processTest/lib/include/curl/easy.h processTest/lib/include/curl/multi.h \
+ processTest/lib/include/curl/curl.h \
+ processTest/lib/include/curl/urlapi.h \
+ processTest/lib/include/curl/options.h \
+ processTest/lib/include/curl/header.h \
+ processTest/include/stringextension.h /usr/include/c++/7/vector \
+ /usr/include/c++/7/bits/stl_construct.h \
  /usr/include/c++/7/bits/stl_uninitialized.h \
  /usr/include/c++/7/bits/stl_vector.h \
  /usr/include/c++/7/bits/stl_bvector.h /usr/include/c++/7/bits/vector.tcc \

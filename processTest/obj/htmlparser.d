@@ -166,8 +166,9 @@ processTest/obj/htmlparser.o: processTest/src/htmlparser.cpp \
  /usr/include/c++/7/bits/algorithmfwd.h \
  /usr/include/c++/7/bits/stl_heap.h \
  /usr/include/c++/7/bits/uniform_int_dist.h \
- processTest/include/curltype.h webCrawler/include/curl/curl.h \
- webCrawler/include/curl/curlver.h webCrawler/include/curl/system.h \
+ processTest/include/curltype.h processTest/lib/include/curl/curl.h \
+ processTest/lib/include/curl/curlver.h \
+ processTest/lib/include/curl/system.h \
  /usr/include/x86_64-linux-gnu/sys/socket.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct_iovec.h \
  /usr/include/x86_64-linux-gnu/bits/socket.h \
@@ -187,10 +188,13 @@ processTest/obj/htmlparser.o: processTest/src/htmlparser.cpp \
  /usr/include/x86_64-linux-gnu/bits/posix2_lim.h \
  /usr/include/x86_64-linux-gnu/bits/xopen_lim.h \
  /usr/include/x86_64-linux-gnu/bits/uio_lim.h \
- /usr/include/x86_64-linux-gnu/sys/time.h webCrawler/include/curl/easy.h \
- webCrawler/include/curl/multi.h webCrawler/include/curl/curl.h \
- webCrawler/include/curl/urlapi.h webCrawler/include/curl/options.h \
- webCrawler/include/curl/header.h processTest/include/pugixml/pugixml.hpp \
+ /usr/include/x86_64-linux-gnu/sys/time.h \
+ processTest/lib/include/curl/easy.h processTest/lib/include/curl/multi.h \
+ processTest/lib/include/curl/curl.h \
+ processTest/lib/include/curl/urlapi.h \
+ processTest/lib/include/curl/options.h \
+ processTest/lib/include/curl/header.h \
+ processTest/include/pugixml/pugixml.hpp \
  processTest/include/pugixml/pugiconfig.hpp /usr/include/c++/7/iterator \
  /usr/include/c++/7/bits/stream_iterator.h \
  processTest/include/rapidjson/document.h \
@@ -225,4 +229,5 @@ processTest/obj/htmlparser.o: processTest/src/htmlparser.cpp \
  processTest/include/rapidjson/pointer.h \
  processTest/include/rapidjson/document.h \
  processTest/include/rapidjson/uri.h \
- processTest/include/rapidjson/internal/itoa.h
+ processTest/include/rapidjson/internal/itoa.h \
+ processTest/include/conversion.h /usr/include/iconv.h

@@ -64,6 +64,8 @@ struct ParserOptions {
     std::string arrayDelimiter = ",";
     std::string nullValue = "null";
     bool getOriginal = false;
+    bool extractHeader = true;
+    bool autoencoding = true; // encoding utf-8
 };
 
 struct HTTPResponse {
@@ -73,7 +75,7 @@ struct HTTPResponse {
     HTTPResponse() = default;
     HTTPResponse(const std::string& line); // 'HTTP/1.X 200 OK' 형태의 데이터를 받음
 
-    bool findHeader(const std::string header);
+    bool findHeader(const std::string& header);
     std::string getValue(const std::string& key);
     ParseType getParseType();
     void addHeader(const std::string& str);
@@ -123,6 +125,7 @@ private:
     xmlNode lastNode() const;
     HTMLTag lastNodeTag() const;
     void extractHeader(std::string& str);
+    void encodingData(std::string& str);
     void parse(const char* data);
     std::vector<ParseData> parseJSON(const std::string& target, int place, int index = 0);
     std::vector<ParseData> parseXML(const std::string& target, int place, int index = 0);

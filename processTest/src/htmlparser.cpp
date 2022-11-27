@@ -10,6 +10,8 @@
 #include <rapidjson/document.h>
 #include <rapidjson/pointer.h>
 
+#include "conversion.h"
+
 void rightEndSpace(std::string::iterator& it) {
     while(*(it+1) == ' ' || *(it+1) == '\n') { ++it; }
 }
@@ -65,7 +67,7 @@ HTTPResponse::HTTPResponse(const std::string& line) {
     }
 }
 
-bool HTTPResponse::findHeader(const std::string header) {
+bool HTTPResponse::findHeader(const std::string& header) {
     return headers.find(TrimAndLower(header)) != headers.end();
 }
 
@@ -161,6 +163,8 @@ void HTMLParser::set(std::string* data, const ParserOptions& parserOpts) {
     mData = data;
     mOptions = parserOpts;
     extractHeader(*mData);
+    encodingData(*mData);
+
     if(mOptions.defaultParseType.empty()) {
         mType = mResponse.getParseType();
     } else {
@@ -568,7 +572,9 @@ HTMLTag HTMLParser::lastNodeTag() const {
 }
 
 void HTMLParser::extractHeader(std::string& str) {
-    return;
+    if(!mOptions.extractHeader) {
+        return;
+    }
     std::string line;
     if(std::string(str,0,4) != "HTTP") {
         return;
@@ -582,13 +588,21 @@ void HTMLParser::extractHeader(std::string& str) {
     }
 }
 
+void HTMLParser::encodingData(std::string& str) {
+    std::string ct = TrimAndUpper(mResponse.getValue("content-type"));
+    size_t pos = ct.find("CHARSET=");
+    if(pos != std::string::npos) {
+        std::cout << ct.substr(pos) << std::endl;
+    }
+    
+    //ChangeCharset()
+}
+
 void HTMLParser::parse(const char* data) {
     switch (mType)
     {
     case ParseType::XML : {
-        std::string temp(data);
-        mDocXML->load_buffer(temp.c_str(), temp.size(), pugi::parse_default);
-        //mDocXML->load_string(data);
+        mDocXML->load_string(data);
     }
     break;
     case ParseType::JSON :

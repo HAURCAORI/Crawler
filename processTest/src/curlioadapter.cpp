@@ -73,6 +73,20 @@ void IOAdapter::setOption(AdapterOption option, const std::any& value) {
         mParserOptions->arrayDelimiter = std::any_cast<std::string>(value);
     }
     break;
+    case AdapterOption::ADAPTER_OPT_EXTRACT_HEADER: {
+        if(value.type() != typeid(std::remove_reference_t<bool>)) {
+            throw CURLErrorAdapterOption("Value type of 'ADAPTER_OPT_EXTRACT_HEADER' should be bool");
+        }
+        mParserOptions->extractHeader = std::any_cast<bool>(value);
+    }
+    break;
+    case AdapterOption::ADAPTER_OPT_AUTO_ENCODING: {
+        if(value.type() != typeid(std::remove_reference_t<bool>)) {
+            throw CURLErrorAdapterOption("Value type of 'ADAPTER_OPT_AUTO_ENCODING' should be bool");
+        }
+        mParserOptions->autoencoding = std::any_cast<bool>(value);
+    }
+    break;
     default:
         std::string optionString;
         for(auto it = StringMapAdapterOption.begin(); it != StringMapAdapterOption.end(); ++it){

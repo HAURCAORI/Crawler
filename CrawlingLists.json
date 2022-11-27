@@ -158,6 +158,9 @@
                     },
                     {
                         "ADAPTER_OPT_FILE_TRUNC": "true"
+                    },
+                    {
+                        "ADAPTER_OPT_EXTRACT_HEADER": "true"
                     }
                 ]
             },

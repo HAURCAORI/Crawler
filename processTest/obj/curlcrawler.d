@@ -139,8 +139,10 @@ processTest/obj/curlcrawler.o: processTest/src/curlcrawler.cpp \
  /usr/include/c++/7/bits/shared_ptr_atomic.h \
  /usr/include/c++/7/bits/atomic_base.h \
  /usr/include/c++/7/bits/atomic_lockfree_defines.h \
- /usr/include/c++/7/backward/auto_ptr.h webCrawler/include/curl/curl.h \
- webCrawler/include/curl/curlver.h webCrawler/include/curl/system.h \
+ /usr/include/c++/7/backward/auto_ptr.h \
+ processTest/lib/include/curl/curl.h \
+ processTest/lib/include/curl/curlver.h \
+ processTest/lib/include/curl/system.h \
  /usr/include/x86_64-linux-gnu/sys/socket.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct_iovec.h \
  /usr/include/x86_64-linux-gnu/bits/socket.h \
@@ -160,10 +162,12 @@ processTest/obj/curlcrawler.o: processTest/src/curlcrawler.cpp \
  /usr/include/x86_64-linux-gnu/bits/posix2_lim.h \
  /usr/include/x86_64-linux-gnu/bits/xopen_lim.h \
  /usr/include/x86_64-linux-gnu/bits/uio_lim.h \
- /usr/include/x86_64-linux-gnu/sys/time.h webCrawler/include/curl/easy.h \
- webCrawler/include/curl/multi.h webCrawler/include/curl/curl.h \
- webCrawler/include/curl/urlapi.h webCrawler/include/curl/options.h \
- webCrawler/include/curl/header.h processTest/include/curltype.h \
+ /usr/include/x86_64-linux-gnu/sys/time.h \
+ processTest/lib/include/curl/easy.h processTest/lib/include/curl/multi.h \
+ processTest/lib/include/curl/curl.h \
+ processTest/lib/include/curl/urlapi.h \
+ processTest/lib/include/curl/options.h \
+ processTest/lib/include/curl/header.h processTest/include/curltype.h \
  /usr/include/c++/7/map /usr/include/c++/7/bits/stl_tree.h \
  /usr/include/c++/7/bits/node_handle.h /usr/include/c++/7/optional \
  /usr/include/c++/7/bits/enable_special_members.h \

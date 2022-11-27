@@ -5,12 +5,8 @@
 #include <string.h>
 #include "iconv.h"
 
-#include <iostream>
-/*
-char szSrc[] = "대한민국";
-char szDst[100];
-ChangeCharset("utf-8", "euc-kr", szSrc, strlen(szSrc), szDst, sizeof(szDst)); 
-*/
+#define CONVERSION_OFFSET 3;
+
 inline size_t ChangeCharset(const char *srcCharset, const char *dstCharset, char *src, int srcLength, char *dst, int dstLength)
 {
   iconv_t it = iconv_open(dstCharset, srcCharset);
@@ -53,8 +49,34 @@ inline size_t ChangeCharset(const char *srcCharset, const char *dstCharset, char
 }
 
 inline std::string ChangeCharset(const char *srcCharset, const char *dstCharset, const std::string& src) {
-  
-  //ChangeCharset(srcCharset, dstCharset, )
+  int srcLength = src.length() + 1;
+  int dstLength = src.length() * CONVERSION_OFFSET;
+  char* c_src = new char[srcLength];
+  char* c_dst = new char[dstLength];
+  strcpy(c_src, src.c_str());
+
+  size_t size = ChangeCharset(srcCharset, dstCharset, c_src, srcLength, c_dst, dstLength);
+  std::string ret;
+  if(size != 0) {
+    ret = std::string(c_dst, size);
+  }
+  delete[] c_src;
+  delete[] c_dst;
+  return ret;
+}
+
+inline std::string ChangeCharset(const char *srcCharset, const char *dstCharset, char* src, int srcLength) {
+  int dstLength = srcLength * CONVERSION_OFFSET;
+  char* c_dst = new char[dstLength];
+
+  size_t size = ChangeCharset(srcCharset, dstCharset, src, srcLength, c_dst, dstLength);
+  std::string ret;
+  if(size != 0) {
+    ret = std::string(c_dst, size);
+  }
+
+  delete[] c_dst;
+  return ret;
 }
 
 #endif
