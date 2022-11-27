@@ -216,4 +216,8 @@ processTest/obj/main.o: processTest/src/main.cpp \
  /usr/include/c++/7/bits/fstream.tcc /usr/include/c++/7/sstream \
  /usr/include/c++/7/bits/sstream.tcc processTest/include/curlcrawler.h \
  processTest/include/stringextension.h /usr/include/c++/7/algorithm \
+ processTest/include/conversion.h /usr/include/string.h \
+ /usr/include/strings.h \
+ /usr/include/x86_64-linux-gnu/bits/strings_fortified.h \
+ /usr/include/x86_64-linux-gnu/bits/string_fortified.h \
  /usr/include/iconv.h

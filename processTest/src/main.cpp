@@ -9,6 +9,7 @@
 
 #include "testcode.hpp"
 
+#include "conversion.h"
 
 #include <chrono>
 #define BEGIN_CHRONO std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
@@ -18,6 +19,16 @@ int main() {
     curl_global_init(CURL_GLOBAL_DEFAULT);
     using namespace Crawler;
     using namespace std::chrono_literals;
+
+    char szSrc[] = "대한민국";
+    char szDst[5];
+    auto size = ChangeCharset("utf-8", "euc-kr", szSrc, strlen(szSrc), szDst, sizeof(szDst));
+    std::cout << szDst << std::endl; 
+    char szDst2[100];
+    auto size2 = ChangeCharset("euc-kr", "utf-8", szDst, size, szDst2, sizeof(szDst2));
+    std::string result(szDst2,size2);
+    std::cout << result << std::endl;
+    return 0;
 
     //ParsingTest parsingtest;
     //parsingtest.excute();
