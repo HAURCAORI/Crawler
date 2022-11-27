@@ -568,6 +568,7 @@ HTMLTag HTMLParser::lastNodeTag() const {
 }
 
 void HTMLParser::extractHeader(std::string& str) {
+    return;
     std::string line;
     if(std::string(str,0,4) != "HTTP") {
         return;
@@ -584,11 +585,12 @@ void HTMLParser::extractHeader(std::string& str) {
 void HTMLParser::parse(const char* data) {
     switch (mType)
     {
-    case ParseType::XML :
-    
-        mDocXML->load_buffer(data, strlen(data), pugi::parse_default, pugi::encoding_utf16);
+    case ParseType::XML : {
+        std::string temp(data);
+        mDocXML->load_buffer(temp.c_str(), temp.size(), pugi::parse_default);
         //mDocXML->load_string(data);
-        break;
+    }
+    break;
     case ParseType::JSON :
         mDocJSON->Parse(data);
         break;

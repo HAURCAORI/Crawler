@@ -2,8 +2,8 @@
 PROJECT_PATH = ./processTest
 
 # Library Path
-LIB_INCLUDE = ./webCrawler/include
-LIB_PATH = ./webCrawler/lib
+LIB_INCLUDE = ./processTest/lib/include
+LIB_PATH = ./processTest/lib
 
 #STATIC_LIBS = $(subst lib, -l,$(basename $(notdir $(wildcard $(LIB_PATH)/*/*.a))))
 #DYNAMIC_LIBS = $(notdir $(wildcard $(LIB_PATH)/*/*.so.*))
@@ -12,6 +12,7 @@ LIBS += -L$(LIB_PATH)/openssl -Wl,-R$(LIB_PATH)/openssl -lssl -lcrypto
 #LIBS += -L$(LIB_PATH)/openssl -Wl,-R$(LIB_PATH)/openssl -lssl -lcrypto
 LIBS += -L$(LIB_PATH)/zlib -Wl,-R$(LIB_PATH)/zlib -lz
 LIBS += -L$(LIB_PATH)/ldap -Wl,-R$(LIB_PATH)/ldap -llber -lldap
+LIBS += -L$(LIB_PATH)/iconv -Wl,-R$(LIB_PATH)/charset -lcharset
 
 # Compiler
 CC = g++ -std=c++17
