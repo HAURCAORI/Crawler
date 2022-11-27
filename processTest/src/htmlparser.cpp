@@ -163,7 +163,7 @@ void HTMLParser::set(std::string* data, const ParserOptions& parserOpts) {
     mData = data;
     mOptions = parserOpts;
     extractHeader(*mData);
-    encodingData(*mData);
+    encodingData(mData);
 
     if(mOptions.defaultParseType.empty()) {
         mType = mResponse.getParseType();
@@ -588,14 +588,19 @@ void HTMLParser::extractHeader(std::string& str) {
     }
 }
 
-void HTMLParser::encodingData(std::string& str) {
+void HTMLParser::encodingData(std::string* str) {
+    if(!mOptions.autoencoding) {
+        return;
+    }
     std::string ct = TrimAndUpper(mResponse.getValue("content-type"));
     size_t pos = ct.find("CHARSET=");
-    if(pos != std::string::npos) {
-        std::cout << ct.substr(pos) << std::endl;
+    if(pos == std::string::npos) {
+        return;
     }
-    
-    //ChangeCharset()
+    std::string charset = ct.substr(pos + 8);
+    if(!ChangeCharset(charset.c_str(), mOptions.defaultEncoding.c_str(), str)) {
+        fprintf(stderr, "Invalid charset:%s\r\n", charset.c_str());
+    }
 }
 
 void HTMLParser::parse(const char* data) {

@@ -5,7 +5,7 @@
 #include <string.h>
 #include "iconv.h"
 
-#define CONVERSION_OFFSET 3;
+static const size_t CONVERSION_OFFSET = 3;
 
 inline size_t ChangeCharset(const char *srcCharset, const char *dstCharset, char *src, int srcLength, char *dst, int dstLength)
 {
@@ -49,7 +49,7 @@ inline size_t ChangeCharset(const char *srcCharset, const char *dstCharset, char
 }
 
 inline std::string ChangeCharset(const char *srcCharset, const char *dstCharset, const std::string& src) {
-  int srcLength = src.length() + 1;
+  int srcLength = src.length();
   int dstLength = src.length() * CONVERSION_OFFSET;
   char* c_src = new char[srcLength];
   char* c_dst = new char[dstLength];
@@ -77,6 +77,22 @@ inline std::string ChangeCharset(const char *srcCharset, const char *dstCharset,
 
   delete[] c_dst;
   return ret;
+}
+
+inline bool ChangeCharset(const char *srcCharset, const char *dstCharset, std::string* src) {
+  int srcLength = src->length();
+  int dstLength = src->length() * CONVERSION_OFFSET;
+  char* c_src = new char[srcLength];
+  char* c_dst = new char[dstLength];
+  strcpy(c_src, src->c_str());
+
+  size_t size = ChangeCharset(srcCharset, dstCharset, c_src, srcLength, c_dst, dstLength);
+  if(size != 0) {
+    *src = std::string(c_dst, size);
+  }
+  delete[] c_src;
+  delete[] c_dst;
+  return (size != 0) ? true : false;
 }
 
 #endif

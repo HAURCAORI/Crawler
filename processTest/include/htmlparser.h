@@ -63,6 +63,7 @@ struct ParserOptions {
     std::string defaultParseType = "";
     std::string arrayDelimiter = ",";
     std::string nullValue = "null";
+    std::string defaultEncoding = "utf-8";
     bool getOriginal = false;
     bool extractHeader = true;
     bool autoencoding = true; // encoding utf-8
@@ -125,7 +126,7 @@ private:
     xmlNode lastNode() const;
     HTMLTag lastNodeTag() const;
     void extractHeader(std::string& str);
-    void encodingData(std::string& str);
+    void encodingData(std::string* str);
     void parse(const char* data);
     std::vector<ParseData> parseJSON(const std::string& target, int place, int index = 0);
     std::vector<ParseData> parseXML(const std::string& target, int place, int index = 0);

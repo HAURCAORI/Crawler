@@ -87,6 +87,13 @@ void IOAdapter::setOption(AdapterOption option, const std::any& value) {
         mParserOptions->autoencoding = std::any_cast<bool>(value);
     }
     break;
+    case AdapterOption::ADAPTER_OPT_DEFAULT_ENCODING: {
+        if(value.type() != typeid(std::remove_reference_t<std::string>)) {
+            throw CURLErrorAdapterOption("Value type of 'ADAPTER_OPT_DEFAULT_ENCODING' should be string");
+        }
+        mParserOptions->defaultEncoding = std::any_cast<std::string>(value);
+    }
+    break;
     default:
         std::string optionString;
         for(auto it = StringMapAdapterOption.begin(); it != StringMapAdapterOption.end(); ++it){
