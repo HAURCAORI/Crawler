@@ -585,7 +585,9 @@ void HTMLParser::parse(const char* data) {
     switch (mType)
     {
     case ParseType::XML :
-        mDocXML->load_string(data);
+    
+        mDocXML->load_buffer(data, strlen(data), pugi::parse_default, pugi::encoding_utf16);
+        //mDocXML->load_string(data);
         break;
     case ParseType::JSON :
         mDocJSON->Parse(data);
