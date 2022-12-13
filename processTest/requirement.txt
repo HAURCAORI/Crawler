@@ -82,3 +82,39 @@ root[CrawlingList]
          └─Details             : 세부 내역
 
 4. 구현
+
+========================================
+<Scheduler 요구 사항>
+1. 기본동작
+Schedule 객체로 새 작업을 생성 -> Scheduler 작업 큐에 enqueue -> Scheduler에서 interval마다 Schedule 실행
+
+2. 객체
+(1) Schedule : 스케쥴 정보 및 동작 지정
+[속성]
+이름
+설명
+실행 결과
+실행 시간
+이벤트
+
+(2) Trigger
+[속성]
+주기 : once / daily / weekly / montly
+시작 날짜 및 시간
+만료 날짜 및 시간
+
+(3) Scheduler : 스케쥴의 동작 수행 및 관리
+[기능]
+스케쥴 추가 / 삭제 / 변경
+sleep을 통해 시간 간격마다 실행
+[옵션]
+예약 시간 놓칠 경우 작업 수행
+실패 시 다시 시작 간격
+
+(4) Result : 처리 결과 확인
+FAIL : 실패
+SUCCESS : 성공
+시간 초과
+실행 오류
+
+(5) Error : 에러 처리
