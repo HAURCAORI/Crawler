@@ -11,6 +11,8 @@
 
 #include "conversion.h"
 
+#include "scheduler.h"
+
 #include <chrono>
 #define BEGIN_CHRONO std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 #define END_CHRONO std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - begin).count() << "[ms]" << std::endl;
@@ -20,7 +22,13 @@ int main() {
     using namespace Crawler;
     using namespace std::chrono_literals;
 
+    using namespace Scheduler;
+
+    Trigger t;
     
+    //std::cout << t.start << std::endl;
+    //std::cout << t.end << std::endl;
+    //std::cout << t.contain(TimePoint(10s)) << std::endl;
 
 
     //ParsingTest parsingtest;

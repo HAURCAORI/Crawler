@@ -220,4 +220,4 @@ processTest/obj/main.o: processTest/src/main.cpp \
  /usr/include/strings.h \
  /usr/include/x86_64-linux-gnu/bits/strings_fortified.h \
  /usr/include/x86_64-linux-gnu/bits/string_fortified.h \
- /usr/include/iconv.h
+ /usr/include/iconv.h processTest/include/scheduler.h
