@@ -34,12 +34,15 @@ public:
         return *this;
     }
 
+    
+
     friend bool operator==(const TimePoint& lhs, const TimePoint& rhs);
     friend bool operator!=(const TimePoint& lhs, const TimePoint& rhs);
     friend bool operator<(const TimePoint& lhs, const TimePoint& rhs);
     friend bool operator>(const TimePoint& lhs, const TimePoint& rhs);
     friend bool operator<=(const TimePoint& lhs, const TimePoint& rhs);
     friend bool operator>=(const TimePoint& lhs, const TimePoint& rhs);
+    friend std::istream& operator>>(std::istream& lhs, TimePoint& rhs);
 };
 
 bool operator==(const TimePoint& lhs, const TimePoint& rhs) { return lhs.mPoint == rhs.mPoint; };
@@ -48,6 +51,7 @@ bool operator<(const TimePoint& lhs, const TimePoint& rhs) { return lhs.mPoint <
 bool operator>(const TimePoint& lhs, const TimePoint& rhs) { return operator<(rhs, lhs); };
 bool operator<=(const TimePoint& lhs, const TimePoint& rhs) { return !(operator>(lhs, rhs)); };
 bool operator>=(const TimePoint& lhs, const TimePoint& rhs) { return !(operator<(lhs, rhs)); };
+std::ostream& operator>>(std::ostream& ostr, const TimePoint& rhs) {  return ostr; }
 
 
 
