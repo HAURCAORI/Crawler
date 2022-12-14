@@ -24,11 +24,11 @@ int main() {
 
     using namespace Scheduler;
 
-    Trigger t;
+    Trigger t(SCHEDULE_ONCE, TimePoint(), (TimePoint) 60s);
+
     
-    //std::cout << t.start << std::endl;
-    //std::cout << t.end << std::endl;
-    //std::cout << t.contain(TimePoint(10s)) << std::endl;
+    std::cout << t.end << std::endl;
+    std::cout << t.contain(std::chrono::system_clock::now()) << std::endl;
 
 
     //ParsingTest parsingtest;
