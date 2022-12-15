@@ -26,8 +26,9 @@ int main() {
 
     Trigger t(SCHEDULE_ONCE, TimePoint(), (TimePoint) 60s);
 
+    TimePoint tp = TimePoint(2023,0,0);
     
-    std::cout << t.end << std::endl;
+    std::cout << tp << std::endl;
     std::cout << t.contain(std::chrono::system_clock::now()) << std::endl;
 
 
