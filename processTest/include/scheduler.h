@@ -7,6 +7,17 @@
 #include <functional>
 #include <queue>
 
+time_t MakeLocalTime(int year, int month, int day, int hour, int minute, int second) {
+    std::tm timeinfo = std::tm();
+    timeinfo.tm_year = year - 1900;
+    timeinfo.tm_mon = month - 1;
+    timeinfo.tm_mday = day;
+    timeinfo.tm_hour = hour;
+    timeinfo.tm_min = minute;
+    timeinfo.tm_sec = second;
+    return std::mktime(&timeinfo);
+}
+
 namespace Scheduler {
 
 enum ScheduleType{
@@ -33,15 +44,7 @@ public:
     TimePoint(TimePoint&& src) = default;
     TimePoint(const std::chrono::system_clock::time_point& Point) : mPoint(Point) {}
     TimePoint(const std::chrono::system_clock::duration& Duration) : mPoint(std::chrono::system_clock::now() + Duration) {}
-    TimePoint(long years, long months, long days, long hours = 0, long minutes = 0, long seconds = 0) {
-        mPoint += std::chrono::duration<long, std::ratio<31556952>>(years - 1969);
-    
-        //mPoint += std::chrono::duration<long, std::ratio<2629746>>(months);
-        //mPoint += std::chrono::duration<long, std::ratio<86400>>(days);
-        //mPoint += std::chrono::duration<long, std::ratio<3600>>(hours);
-        //mPoint += std::chrono::duration<long, std::ratio<60>>(minutes);
-        //mPoint += std::chrono::duration<long, std::ratio<1>>(seconds);
-    }
+    TimePoint(int year, int month, int day, int hour = 0, int minute = 0, int second = 0) : mPoint(std::chrono::system_clock::from_time_t(MakeLocalTime(year, month, day, hour, minute, second))) {}
 
     virtual ~TimePoint() = default;
     TimePoint& operator=(const TimePoint& rhs) = default;
@@ -92,15 +95,21 @@ public:
     TimeDuration(const TimeDuration& src) = default;
     TimeDuration(TimeDuration&& src) = default;
     TimeDuration(const std::chrono::system_clock::duration& Duration) : mDuration(Duration) {}
-
-    TimeDuration(const TimePoint& tp1, const TimePoint& tp2) {}
+    TimeDuration(const TimePoint& tp1, const TimePoint& tp2) : mDuration(tp1 - tp2) {}
 
     virtual ~TimeDuration() = default;
     TimeDuration& operator=(const TimeDuration& rhs) = default;
     TimeDuration& operator=(TimeDuration&& rhs) = default;
+    friend std::ostream& operator<<(std::ostream& ostr, const TimeDuration& rhs);
 
     operator std::chrono::system_clock::duration() const { return mDuration; }
 };
+
+std::ostream& operator<<(std::ostream& ostr, const TimeDuration& rhs) {
+    long count = std::chrono::duration_cast<std::chrono::seconds>(rhs.mDuration).count();
+    ostr << count / 3600 << ":" << (count % 3600) / 60 << ":" << count % 60;
+    return ostr;
+}
 
 TimeDuration operator-(const TimePoint& lhs, const TimePoint& rhs) { return TimeDuration(lhs.mPoint - rhs.mPoint); } // class TimePoint public method
 
