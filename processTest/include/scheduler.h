@@ -62,7 +62,11 @@ public:
         return *this;
     }
 
+    friend TimePoint operator+(const TimePoint& lhs, const TimeDuration& rhs);
+    friend TimePoint operator+(const TimeDuration& lhs, const TimePoint& rhs);
+    friend TimePoint operator-(const TimePoint& lhs, const TimeDuration& rhs);
     friend TimeDuration operator-(const TimePoint& lhs, const TimePoint& rhs);
+
     friend bool operator==(const TimePoint& lhs, const TimePoint& rhs);
     friend bool operator!=(const TimePoint& lhs, const TimePoint& rhs);
     friend bool operator<(const TimePoint& lhs, const TimePoint& rhs);
@@ -96,10 +100,21 @@ public:
     TimeDuration(TimeDuration&& src) = default;
     TimeDuration(const std::chrono::system_clock::duration& Duration) : mDuration(Duration) {}
     TimeDuration(const TimePoint& tp1, const TimePoint& tp2) : mDuration(tp1 - tp2) {}
+    TimeDuration(int hour, int minute, int second) {
+        mDuration += std::chrono::hours(hour);
+        mDuration += std::chrono::minutes(minute);
+        mDuration += std::chrono::seconds(second);
+    }
+    TimeDuration(int day, int hour, int minute, int second) : TimeDuration(hour + day*24, minute, second) {}
 
     virtual ~TimeDuration() = default;
     TimeDuration& operator=(const TimeDuration& rhs) = default;
     TimeDuration& operator=(TimeDuration&& rhs) = default;
+
+    friend TimePoint operator+(const TimePoint& lhs, const TimeDuration& rhs);
+    friend TimePoint operator+(const TimeDuration& lhs, const TimePoint& rhs);
+    friend TimePoint operator-(const TimePoint& lhs, const TimeDuration& rhs);
+
     friend std::ostream& operator<<(std::ostream& ostr, const TimeDuration& rhs);
 
     operator std::chrono::system_clock::duration() const { return mDuration; }
@@ -111,12 +126,16 @@ std::ostream& operator<<(std::ostream& ostr, const TimeDuration& rhs) {
     return ostr;
 }
 
-TimeDuration operator-(const TimePoint& lhs, const TimePoint& rhs) { return TimeDuration(lhs.mPoint - rhs.mPoint); } // class TimePoint public method
+// time_point & duration operators
+TimePoint operator+(const TimePoint& lhs, const TimeDuration& rhs) { return TimePoint(lhs.mPoint + rhs.mDuration); }
+TimePoint operator+(const TimeDuration& lhs, const TimePoint& rhs) { return TimePoint(lhs.mDuration + rhs.mPoint); }
+TimePoint operator-(const TimePoint& lhs, const TimeDuration& rhs) { return TimePoint(lhs.mPoint - rhs.mDuration); }
+TimeDuration operator-(const TimePoint& lhs, const TimePoint& rhs) { return TimeDuration(lhs.mPoint - rhs.mPoint); } 
 
 // type / interval / start / end / lastProcessTime
 struct Trigger {
     ScheduleType type = ScheduleType::SCHEDULE_ONCE;
-
+    
     TimePoint start = std::chrono::system_clock::time_point::min();
     TimePoint end = std::chrono::system_clock::time_point::max();
 

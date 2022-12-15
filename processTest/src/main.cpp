@@ -28,10 +28,12 @@ int main() {
 
     TimePoint tp = TimePoint(2022,12,1,0,30,0);
     TimePoint tp2 = TimePoint(2022,11,1,0,0,0);
-    TimeDuration td(tp, tp2);
+    TimeDuration td(24,0,0);
     
+    auto tp3 = tp;
+    tp3 += td;
 
-    std::cout << td << std::endl;
+    std::cout << tp3 << std::endl;
     std::cout << t.contain(std::chrono::system_clock::now()) << std::endl;
 
 
