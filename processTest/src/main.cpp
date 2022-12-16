@@ -24,17 +24,13 @@ int main() {
 
     using namespace Scheduler;
 
-    Trigger t(SCHEDULE_ONCE, TimePoint(), (TimePoint) 60s);
-
-    TimePoint tp = TimePoint(2022,12,1,0,30,0);
-    TimePoint tp2 = TimePoint(2022,11,1,0,0,0);
-    TimeDuration td(24,0,0);
-    
-    auto tp3 = tp;
-    tp3 += td;
-
-    std::cout << tp3 << std::endl;
-    std::cout << t.contain(std::chrono::system_clock::now()) << std::endl;
+    Trigger t(SCHEDULE_MONTHLY, TimePoint(), TimePoint(2025,1,1), TimeDuration(std::chrono::hours(1)));
+    Scheduler::Schedule sch(t);
+    int iterCount = 0;
+    while(iterCount < 1000) {
+        sch.execute(std::chrono::system_clock::now() + std::chrono::hours(iterCount*24));
+        iterCount += 1;
+    }
 
 
     //ParsingTest parsingtest;
