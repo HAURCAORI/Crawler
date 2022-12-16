@@ -317,29 +317,35 @@ public:
         return true;
     }
 
+    TimePoint getTemp() { return mTrigger.nextProcess; }
+
     friend bool operator<(const Schedule& lhs, const Schedule& rhs);
 };
 
-bool operator<(const Schedule& lhs, const Schedule& rhs) { return lhs.mTrigger.nextProcess < rhs.mTrigger.nextProcess; }
+bool operator<(const Schedule& lhs, const Schedule& rhs) { return lhs.mTrigger.nextProcess > rhs.mTrigger.nextProcess; }
 
 class Scheduler {
 private: 
 std::priority_queue<Schedule> mSchedules;
 
 public:
-Scheduler();
-Scheduler(const Scheduler& src);
-Scheduler(Scheduler&& src) noexcept;
-virtual ~Scheduler() noexcept;
-Scheduler& operator=(const Scheduler& rhs);
-Scheduler& operator=(Scheduler&& rhs) noexcept;
+Scheduler() = default;
+Scheduler(const Scheduler& src) = default;
+Scheduler(Scheduler&& src) = default;
+virtual ~Scheduler() = default;
+Scheduler& operator=(const Scheduler& rhs) = default;
+Scheduler& operator=(Scheduler&& rhs) = default;
 
 void add(const Schedule& schedule) {
     mSchedules.emplace(schedule);
 }
 
-void print() {
-    
+void flush() {
+    while (!mSchedules.empty()) {
+        auto s = mSchedules.top();
+        std::cout << s.getTemp() << std::endl;
+        mSchedules.pop();
+    }
 }
 
 };

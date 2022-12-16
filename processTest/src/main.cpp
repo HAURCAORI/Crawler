@@ -24,13 +24,24 @@ int main() {
 
     using namespace Scheduler;
 
-    Trigger t(SCHEDULE_MONTHLY, TimePoint(), TimePoint(2025,1,1), TimeDuration(std::chrono::hours(1)));
-    Scheduler::Schedule sch(t);
+    
+
+    Scheduler::Scheduler scheduler;
+    for(int i = 1; i < 10; i++) {
+        Trigger t(SCHEDULE_MONTHLY, TimePoint(2024,i,i), TimePoint(2025,1,1), TimeDuration(std::chrono::hours(1)));
+        Scheduler::Schedule sch(t);
+        scheduler.add(sch);
+    }
+    
+    scheduler.flush();
+    /*
     int iterCount = 0;
     while(iterCount < 1000) {
         sch.execute(std::chrono::system_clock::now() + std::chrono::hours(iterCount*24));
         iterCount += 1;
     }
+    */
+
 
 
     //ParsingTest parsingtest;
