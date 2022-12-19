@@ -307,10 +307,15 @@ private:
     std::string mDescription;
     Trigger mTrigger;
     std::function<void()> mFunc;
+    s_id mId;
 public:
     Schedule() = default;
     Schedule(const Trigger& Trigger) : mTrigger(Trigger) {}
     Schedule(const std::string& Name, const std::string& Description, const Trigger& Trigger) : mName(Name), mDescription(Description), mTrigger(Trigger) {}
+    Schedule(const Schedule& src) = default;
+    Schedule(Schedule&& src) = default;
+    Schedule& operator=(const Schedule& rhs) = default;
+    Schedule& operator=(Schedule&& rhs) = default;
 
     void setName(const std::string& Name) { mName = Name; }
     void setDescription(const std::string& Description) { mDescription = Description; }
@@ -319,6 +324,8 @@ public:
     TimePoint getStartTime() const { return mTrigger.start; }
     TimePoint getEndTime() const { return mTrigger.end; }
     TimeDuration getInterval() const { return mTrigger.time; }
+
+    //null
 
     void setEvent(std::function<void()> event) { mFunc = event; }
 
@@ -352,6 +359,8 @@ public:
 
     friend bool operator==(const Schedule& lhs, const Schedule& rhs);
     friend bool operator<(const Schedule& lhs, const Schedule& rhs);
+    
+    friend class Scheduler;
 };
 
 bool operator==(const Schedule& lhs, const Schedule& rhs) { return lhs.mName == rhs.mName && lhs.mTrigger == rhs.mTrigger; }
@@ -395,18 +404,21 @@ class schedule_priority_queue : public std::priority_queue<Schedule, std::vector
         return true;
     }
 
-    bool find(const std::string& name) {
-        if(std::find_if(this->c.begin(), this->c.end(), [name](const Schedule& sch) { return sch.getName() == name; }) ==  this->c.end()) { return false; }
-        return true;
+    Schedule& find(const std::string& name) {
+        auto it = std::find_if(this->c.begin(), this->c.end(), [name](const Schedule& sch) { return sch.getName() == name; });
+        if(it == this->c.end()) {
+            // error
+            throw std::out_of_range("a");
+        }
+        return *it;
     }
-
 };
 
 
 class Scheduler{
 private: 
 schedule_priority_queue mSchedules;
-std::unordered_map<int, Schedule*> um_id_schedule;
+std::unordered_map<int, std::string> um_id_name;
 std::thread mThread = std::thread([this]() { this->run(); });
 std::condition_variable cv_job_q_;
 std::mutex m_job_q_;
@@ -444,33 +456,38 @@ void run() {
 
 }
 
+
+// um_id_name을 삭제하고 schedule에 id를 수정할 수 있도록 함.
+
 s_id add(Schedule schedule) {
     std::unique_lock<std::mutex> lock(m_job_q_);
-    std::cout << &schedule << std::endl;
-    um_id_schedule.insert(std::make_pair(mCount, &schedule));
-    mSchedules.emplace(std::move(schedule));
+    um_id_name.insert(std::make_pair(mCount, schedule.getName()));
+    mSchedules.emplace(schedule);
+    
     return mCount++;
 }
 
 bool remove(s_id id) {
-    auto it = um_id_schedule.find(id);
-    if(it == um_id_schedule.end()) {
+    auto it = um_id_name.find(id);
+    if(it == um_id_name.end()) {
         return false;
     }
     std::unique_lock<std::mutex> lock(m_job_q_);
-    um_id_schedule.erase(it);
-    mSchedules.remove(*(it->second));
+    um_id_name.erase(it);
+    mSchedules.remove(it->second);
 }
 
 Schedule& at(s_id id) {
     //throw
-    return *(um_id_schedule.find(id)->second);
+    return mSchedules.find(um_id_name.find(id)->second);
 }
 
+/*
 const Schedule& at(s_id id) const {
     //throw
-    return *(um_id_schedule.find(id)->second);
+    return mSchedules.find(um_id_name.find(id)->second);
 }
+*/
 
 void flush() {
     TimePoint tp(std::chrono::system_clock::now());
@@ -479,24 +496,24 @@ void flush() {
         s.execute(tp);
         mSchedules.pop();
     }
-    um_id_schedule.clear();
+    um_id_name.clear();
 }
 
 void clear() {
     while(!mSchedules.empty()) {
         mSchedules.pop();
     }
-    um_id_schedule.clear();
+    um_id_name.clear();
 }
 
 int count() {
-    std::cout << "ms:" << mSchedules.size() << "/um" << um_id_schedule.size() << std::endl;
+    std::cout << "ms:" << mSchedules.size() << "/um" << um_id_name.size() << std::endl;
     return mSchedules.size();
 }
 
 void printTemp() {
-    for(auto it = um_id_schedule.begin(); it != um_id_schedule.end(); ++it) {
-        std::cout << it->first << "/" << it->second->getStartTime() << std::endl;
+    for(auto it = um_id_name.begin(); it != um_id_name.end(); ++it) {
+        std::cout << it->first << "/" << it->second << std::endl;
     }
 }
 

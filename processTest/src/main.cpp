@@ -30,7 +30,8 @@ int main() {
     
     for(int i = 1; i < 5; i++) {
         Trigger t(SCHEDULE_MONTHLY, TimePoint(2024,i,i), TimePoint(2025,1,1), TimeDuration(std::chrono::hours(1)));
-        Scheduler::Schedule sch(t);
+        std::string str = std::to_string(i);
+        Scheduler::Schedule sch(str,str,t);
         scheduler.add(sch);
     }
     scheduler.printTemp();
