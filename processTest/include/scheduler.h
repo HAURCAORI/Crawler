@@ -6,6 +6,15 @@
 #include <chrono>
 #include <functional>
 #include <queue>
+#include <unordered_map>
+#include <thread>
+#include <mutex>
+#include <condition_variable>
+
+#define UTC_OFFSET 9
+
+typedef int s_id;
+
 
 time_t make_local_time(int year, int month, int day, int hour, int minute, int second) {
     std::tm timeinfo = std::tm();
@@ -68,7 +77,7 @@ To round_down(const std::chrono::duration<Rep, Period>& d) {
 
 
 template <class Duration>
-std::tm make_utc_tm(std::chrono::time_point<std::chrono::system_clock, Duration> tp) {
+std::tm make_tm_from_UTC(std::chrono::time_point<std::chrono::system_clock, Duration> tp, int convertLocal = 0) {
     using namespace std;
     using namespace std::chrono;
     typedef duration<int, ratio_multiply<hours::period, ratio<24>>> days;
@@ -91,7 +100,7 @@ std::tm make_utc_tm(std::chrono::time_point<std::chrono::system_clock, Duration>
     tm.tm_wday = weekday_from_days(d.count());
     tm.tm_yday = d.count() - days_from_civil(year, 1, 1);
     // Fill in the time
-    t += hours(9); // 체크 필요
+    t += hours(convertLocal); // 체크 필요
     tm.tm_hour = duration_cast<hours>(t).count();
     t -= hours(tm.tm_hour);
     tm.tm_min = duration_cast<minutes>(t).count();
@@ -241,7 +250,7 @@ struct Trigger {
         count++;
         lastProcess = nextProcess;
         if(type == ScheduleType::SCHEDULE_MONTHLY) {
-            std::tm timeinfo = make_utc_tm((std::chrono::system_clock::time_point) lastProcess);
+            std::tm timeinfo = make_tm_from_UTC((std::chrono::system_clock::time_point) lastProcess, UTC_OFFSET);
             timeinfo.tm_mon += 1;
             nextProcess = std::chrono::system_clock::from_time_t(std::mktime(&timeinfo));
             time = nextProcess - lastProcess;
@@ -253,6 +262,9 @@ struct Trigger {
             // std::cout << "skip" << std::endl;
             next(point);
         }
+    }
+    bool operator==(const Trigger& rhs) {
+        return this->type == rhs.type && this->start == this->start && this->end == rhs.end;
     }
 private:
     void setInterval() {
@@ -274,7 +286,7 @@ private:
             time = TimeDuration(168,0,0);
             break;
             case ScheduleType::SCHEDULE_MONTHLY: {
-                std::tm timeinfo = make_utc_tm((std::chrono::system_clock::time_point) start);
+                std::tm timeinfo = make_tm_from_UTC((std::chrono::system_clock::time_point) start, UTC_OFFSET);
                 timeinfo.tm_mon += 1;
                 std::chrono::system_clock::time_point afterMonth = std::chrono::system_clock::from_time_t(std::mktime(&timeinfo));
                 time = afterMonth - lastProcess;
@@ -287,6 +299,8 @@ private:
     }
 };
 
+
+
 class Schedule {
 private:
     std::string mName;
@@ -298,7 +312,26 @@ public:
     Schedule(const Trigger& Trigger) : mTrigger(Trigger) {}
     Schedule(const std::string& Name, const std::string& Description, const Trigger& Trigger) : mName(Name), mDescription(Description), mTrigger(Trigger) {}
 
+    void setName(const std::string& Name) { mName = Name; }
+    void setDescription(const std::string& Description) { mDescription = Description; }
+    std::string getName() const  { return mName; }
+    std::string getDescription() const { return mDescription; }
+    TimePoint getStartTime() const { return mTrigger.start; }
+    TimePoint getEndTime() const { return mTrigger.end; }
+    TimeDuration getInterval() const { return mTrigger.time; }
+
     void setEvent(std::function<void()> event) { mFunc = event; }
+
+    bool expired() {
+        if(mTrigger.type == ScheduleType::SCHEDULE_ONCE && mTrigger.count > 0) {
+            return true;
+        }
+        if(mTrigger.end < std::chrono::system_clock::now()) {
+            return true;
+        }
+        return false;
+    }
+
     bool execute(const TimePoint& point) {
         if(!mTrigger.contain(point)) { return false; }
 
@@ -312,41 +345,162 @@ public:
             fprintf(stderr, "Schedule execute error:%s\r\n", e.what());
             return false;
         }
-        //std::cout <<  mTrigger.nextProcess << std::endl;
+        std::cout <<  mTrigger.nextProcess << std::endl;
         mTrigger.next(point);
         return true;
     }
 
-    TimePoint getTemp() { return mTrigger.nextProcess; }
-
+    friend bool operator==(const Schedule& lhs, const Schedule& rhs);
     friend bool operator<(const Schedule& lhs, const Schedule& rhs);
 };
 
+bool operator==(const Schedule& lhs, const Schedule& rhs) { return lhs.mName == rhs.mName && lhs.mTrigger == rhs.mTrigger; }
 bool operator<(const Schedule& lhs, const Schedule& rhs) { return lhs.mTrigger.nextProcess > rhs.mTrigger.nextProcess; }
 
-class Scheduler {
+// modified priority queue
+class schedule_priority_queue : public std::priority_queue<Schedule, std::vector<Schedule>>{
+  public:
+    bool remove(const Schedule& sch) {
+        auto it = std::find(this->c.begin(), this->c.end(), sch);
+        if (it == this->c.end()) {
+            return false;
+        }
+        if (it == this->c.begin()) {
+            // deque the top element
+            this->pop();
+        }    
+        else {
+            // remove element and re-heap
+            this->c.erase(it);
+            std::make_heap(this->c.begin(), this->c.end(), this->comp);
+        }
+        return true;
+    }
+
+    bool remove(const std::string& name) {
+        auto it = std::find_if(this->c.begin(), this->c.end(), [name](const Schedule& sch) { return sch.getName() == name; });
+       
+        if (it == this->c.end()) {
+            return false;
+        }
+        if (it == this->c.begin()) {
+            // deque the top element
+            this->pop();
+        }    
+        else {
+            // remove element and re-heap
+            this->c.erase(it);
+            std::make_heap(this->c.begin(), this->c.end(), this->comp);
+        }
+        return true;
+    }
+
+    bool find(const std::string& name) {
+        if(std::find_if(this->c.begin(), this->c.end(), [name](const Schedule& sch) { return sch.getName() == name; }) ==  this->c.end()) { return false; }
+        return true;
+    }
+
+};
+
+
+class Scheduler{
 private: 
-std::priority_queue<Schedule> mSchedules;
+schedule_priority_queue mSchedules;
+std::unordered_map<int, Schedule*> um_id_schedule;
+std::thread mThread = std::thread([this]() { this->run(); });
+std::condition_variable cv_job_q_;
+std::mutex m_job_q_;
+bool stop = false;;
+int mCount = 1;
+
+protected:
+
+void WorkerThread() {
+    while(true) {
+        std::unique_lock<std::mutex> lock(m_job_q_);
+        cv_job_q_.wait(lock, [this]() { return !mSchedules.empty() || stop; });
+        if(stop) {
+            return;
+        }
+
+        lock.unlock();
+        //job
+    }
+}
 
 public:
 Scheduler() = default;
 Scheduler(const Scheduler& src) = default;
 Scheduler(Scheduler&& src) = default;
-virtual ~Scheduler() = default;
+virtual ~Scheduler() noexcept {
+    stop = true;
+    cv_job_q_.notify_all();
+    mThread.join();
+}
 Scheduler& operator=(const Scheduler& rhs) = default;
 Scheduler& operator=(Scheduler&& rhs) = default;
 
-void add(const Schedule& schedule) {
-    mSchedules.emplace(schedule);
+void run() {
+
+}
+
+s_id add(Schedule schedule) {
+    std::unique_lock<std::mutex> lock(m_job_q_);
+    std::cout << &schedule << std::endl;
+    um_id_schedule.insert(std::make_pair(mCount, &schedule));
+    mSchedules.emplace(std::move(schedule));
+    return mCount++;
+}
+
+bool remove(s_id id) {
+    auto it = um_id_schedule.find(id);
+    if(it == um_id_schedule.end()) {
+        return false;
+    }
+    std::unique_lock<std::mutex> lock(m_job_q_);
+    um_id_schedule.erase(it);
+    mSchedules.remove(*(it->second));
+}
+
+Schedule& at(s_id id) {
+    //throw
+    return *(um_id_schedule.find(id)->second);
+}
+
+const Schedule& at(s_id id) const {
+    //throw
+    return *(um_id_schedule.find(id)->second);
 }
 
 void flush() {
+    TimePoint tp(std::chrono::system_clock::now());
     while (!mSchedules.empty()) {
         auto s = mSchedules.top();
-        std::cout << s.getTemp() << std::endl;
+        s.execute(tp);
         mSchedules.pop();
     }
+    um_id_schedule.clear();
 }
+
+void clear() {
+    while(!mSchedules.empty()) {
+        mSchedules.pop();
+    }
+    um_id_schedule.clear();
+}
+
+int count() {
+    std::cout << "ms:" << mSchedules.size() << "/um" << um_id_schedule.size() << std::endl;
+    return mSchedules.size();
+}
+
+void printTemp() {
+    for(auto it = um_id_schedule.begin(); it != um_id_schedule.end(); ++it) {
+        std::cout << it->first << "/" << it->second->getStartTime() << std::endl;
+    }
+}
+
+
 
 };
 

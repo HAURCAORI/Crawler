@@ -27,13 +27,27 @@ int main() {
     
 
     Scheduler::Scheduler scheduler;
-    for(int i = 1; i < 10; i++) {
+    
+    for(int i = 1; i < 5; i++) {
         Trigger t(SCHEDULE_MONTHLY, TimePoint(2024,i,i), TimePoint(2025,1,1), TimeDuration(std::chrono::hours(1)));
         Scheduler::Schedule sch(t);
         scheduler.add(sch);
     }
+    scheduler.printTemp();
+    std::cout << scheduler.at(1).getStartTime() << std::endl;
+    std::cout << scheduler.at(3).getStartTime() << std::endl;
+    scheduler.count();
+    /*
+    for(int i = 1; i < 10; i++) {
+        Trigger t(SCHEDULE_MONTHLY, TimePoint(2024,i,i), TimePoint(2025,1,1), TimeDuration(std::chrono::hours(1)));
+        Scheduler::Schedule sch(t);
+        scheduler.add(sch);
+        std::cout
+    }
+    */
     
-    scheduler.flush();
+    //scheduler.flush();
+    
     /*
     int iterCount = 0;
     while(iterCount < 1000) {
