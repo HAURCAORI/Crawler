@@ -28,19 +28,21 @@ int main() {
     Scheduler::Scheduler scheduler;
     
     for(int i = 1; i < 5; i++) {
-        Trigger t(SCHEDULE_MONTHLY, TimePoint(2024,i,i), TimePoint(2025,1,1), TimeDuration(std::chrono::hours(1)));
+        TimePoint tp = TimePoint::now();
+        Trigger t(SCHEDULE_ONCE, tp + TimeDuration(0,0,10 + i*5), TimePoint(2025,1,1), TimeDuration(std::chrono::hours(1)));
         std::string str = std::to_string(i);
         Scheduler::Schedule sch(str,str,t);
         scheduler.add(sch);
     }
     
     scheduler.printTemp();
-    /*
+    
     std::cout << scheduler.at(1).getStartTime() << std::endl;
     std::cout << scheduler.at(3).getStartTime() << std::endl;
-    scheduler.count();
 
-    
+
+    std::this_thread::sleep_for(60s);
+/*    
     for(int i = 1; i < 10; i++) {
         Trigger t(SCHEDULE_MONTHLY, TimePoint(2024,i,i), TimePoint(2025,1,1), TimeDuration(std::chrono::hours(1)));
         Scheduler::Schedule sch(t);

@@ -166,6 +166,10 @@ public:
     TimePoint& operator+=(const std::chrono::system_clock::duration& rhs) { mPoint += rhs; return *this; }
     TimePoint& operator-=(const std::chrono::system_clock::duration& rhs) { mPoint -= rhs; return *this; }
 
+    // Method
+    std::chrono::system_clock::time_point get() { return mPoint; }
+    static TimePoint now() { return TimePoint(std::chrono::system_clock::now()); }
+
     // TimePoint and TimeDuration operators
     friend TimePoint operator+(const TimePoint& lhs, const TimeDuration& rhs);
     friend TimePoint operator+(const TimeDuration& lhs, const TimePoint& rhs);
@@ -215,7 +219,7 @@ public:
     TimeDuration(const std::chrono::system_clock::duration& Duration) : mDuration(Duration) {}
     TimeDuration(const TimePoint& tp1, const TimePoint& tp2) : mDuration(tp1 - tp2) {}
     TimeDuration(int hour, int minute, int second) {
-        mDuration += std::chrono::hours(hour);
+        mDuration = std::chrono::hours(hour);
         mDuration += std::chrono::minutes(minute);
         mDuration += std::chrono::seconds(second);
     }
@@ -227,6 +231,9 @@ public:
     // Assignment
     TimeDuration& operator=(const TimeDuration& rhs) = default;
     TimeDuration& operator=(TimeDuration&& rhs) = default;
+
+    // Method
+    std::chrono::system_clock::duration get() { return mDuration; }
 
     // TimePoint and TimeDuration operators
     friend TimePoint operator+(const TimePoint& lhs, const TimeDuration& rhs);
@@ -448,21 +455,28 @@ private:
     std::thread mThread = std::thread([this]() { this->WorkerThread(); });
     std::condition_variable cv_job_q_;
     std::mutex m_job_q_;
-    bool mStop = false;;
-    int mCount = 1;
+    TimeDuration mWaitTime = TimeDuration(0,0,3);
+    bool mStop = false;
+    int mCounter = 1;
 
 protected:
 
 void WorkerThread() {
     while(true) {
         std::unique_lock<std::mutex> lock(m_job_q_);
-        cv_job_q_.wait(lock, [this]() { return !mSchedules.empty() || mStop; });
+        cv_job_q_.wait_for(lock, mWaitTime.get(), [this]() { return mStop; });
         if(mStop) {
             return;
         }
+        
+        //auto job = mSchedules.top();
+        //mSchedules.pop();
+
+        std::cout << TimePoint::now() << " - thread" << std::endl;
 
         lock.unlock();
-        //job
+        
+        //auto ret = job.execute();
     }
 }
 
@@ -473,60 +487,61 @@ public:
     Scheduler(Scheduler&& src) = default;
 
     // Destructor
-    virtual ~Scheduler() noexcept { stop(); mThread.join(); }
+    virtual ~Scheduler() noexcept { stop();}
     
     // Assignment
     Scheduler& operator=(const Scheduler& rhs) = default;
     Scheduler& operator=(Scheduler&& rhs) = default;
 
     void run() {
-
+        if(!mStop) { return; }
+        mStop = false;
+        cv_job_q_.notify_all();
     }
 
     void stop() {
+        if(mStop) { return; }
         mStop = true;
         cv_job_q_.notify_all();
+        mThread.join(); 
     }
 
 
 // um_id_name을 삭제하고 schedule에 id를 수정할 수 있도록 함.
 
-s_id add(Schedule schedule) {
+s_id add(const Schedule& schedule) {
     std::unique_lock<std::mutex> lock(m_job_q_);
-   
-    std::cout << schedule.getStartTime() << std::endl;
-    um_id_name.insert(std::make_pair(mCount, std::ref(mSchedules.insert(schedule)) ));
-    
-    return mCount++;
+    um_id_name.insert(std::make_pair(mCounter, std::ref(mSchedules.insert(schedule)) ));
+    cv_job_q_.notify_one();
+    return mCounter++;
 }
 
-/*
+
 bool remove(s_id id) {
     auto it = um_id_name.find(id);
     if(it == um_id_name.end()) {
         return false;
     }
     std::unique_lock<std::mutex> lock(m_job_q_);
-    um_id_name.erase(it);
     mSchedules.remove(it->second);
+    um_id_name.erase(it);
+    return true;
 }
-*/
-/*
+
+
 Schedule& at(s_id id) {
     //throw
-    return mSchedules.find(um_id_name.find(id)->second);
+    return um_id_name.find(id)->second;
 }
-*/
 
-/*
 const Schedule& at(s_id id) const {
     //throw
-    return mSchedules.find(um_id_name.find(id)->second);
+    return um_id_name.find(id)->second;
 }
-*/
+
 
 void flush() {
-    TimePoint tp(std::chrono::system_clock::now());
+    std::unique_lock<std::mutex> lock(m_job_q_);
     while (!mSchedules.empty()) {
         auto s = mSchedules.top();
         s.execute();
@@ -536,15 +551,11 @@ void flush() {
 }
 
 void clear() {
+    std::unique_lock<std::mutex> lock(m_job_q_);
     while(!mSchedules.empty()) {
         mSchedules.pop();
     }
     um_id_name.clear();
-}
-
-int count() {
-    std::cout << "ms:" << mSchedules.size() << "/um" << um_id_name.size() << std::endl;
-    return mSchedules.size();
 }
 
 void printTemp() {
