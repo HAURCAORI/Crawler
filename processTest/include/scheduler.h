@@ -15,18 +15,9 @@
 
 typedef int s_id;
 
-
-time_t make_local_time(int year, int month, int day, int hour, int minute, int second) {
-    std::tm timeinfo = std::tm();
-    timeinfo.tm_year = year - 1900;
-    timeinfo.tm_mon = month - 1;
-    timeinfo.tm_mday = day;
-    timeinfo.tm_hour = hour;
-    timeinfo.tm_min = minute;
-    timeinfo.tm_sec = second;
-    return std::mktime(&timeinfo);
-}
-
+/**
+ *  UTC time helper function;
+ */
 template <class Int>
 constexpr Int days_from_civil(Int y, unsigned m, unsigned d) noexcept {
     static_assert(std::numeric_limits<unsigned>::digits >= 18,
@@ -109,8 +100,27 @@ std::tm make_tm_from_UTC(std::chrono::time_point<std::chrono::system_clock, Dura
     return tm;
 }
 
+/**
+ *  local_time get function
+ */
+time_t make_local_time(int year, int month, int day, int hour, int minute, int second) {
+    std::tm timeinfo = std::tm();
+    timeinfo.tm_year = year - 1900;
+    timeinfo.tm_mon = month - 1;
+    timeinfo.tm_mday = day;
+    timeinfo.tm_hour = hour;
+    timeinfo.tm_min = minute;
+    timeinfo.tm_sec = second;
+    return std::mktime(&timeinfo);
+}
+
+
+/**
+ *  namespace Scheduler
+ */
 namespace Scheduler {
 
+// Scheduler variables
 enum ScheduleType{
     SCHEDULE_ONCE = 1,
     SCHEDULE_INTERVAL,
@@ -121,56 +131,63 @@ enum ScheduleType{
 
 enum ScheduleResult {
     SKED_SUCCESS = 0,
+    SKED_WAIT,
+    SKED_EXPIRED,
     SKED_FAIL
 };
 
+// Forward declaration of TimeDuration.
 class TimeDuration;
 
+/**
+ *  TimePoint Object(Wrapper of std::chrono::system_clock::time_point)
+ */
 class TimePoint {
 private:
     std::chrono::system_clock::time_point mPoint;
 
 public:
+    // Constructor
     TimePoint() : mPoint(std::chrono::system_clock::now()) {}
     TimePoint(const TimePoint& src) = default;
     TimePoint(TimePoint&& src) = default;
     TimePoint(const std::chrono::system_clock::time_point& Point) : mPoint(Point) {}
     TimePoint(const std::chrono::system_clock::duration& Duration) : mPoint(std::chrono::system_clock::now() + Duration) {}
-    TimePoint(int year, int month, int day, int hour = 0, int minute = 0, int second = 0) : mPoint(std::chrono::system_clock::from_time_t(make_local_time(year, month, day, hour, minute, second))) {}
-
+    TimePoint(int year, int month, int day, int hour = 0, int minute = 0, int second = 0)
+             : mPoint(std::chrono::system_clock::from_time_t(make_local_time(year, month, day, hour, minute, second))) {}
+    
+    // Destructor
     virtual ~TimePoint() = default;
+
+    // Assignment
     TimePoint& operator=(const TimePoint& rhs) = default;
     TimePoint& operator=(TimePoint&& rhs) = default;
-    TimePoint& operator=(const std::chrono::system_clock::time_point& rhs) {
-        mPoint = rhs;
-        return *this;
-    }
-    TimePoint& operator+=(const std::chrono::system_clock::duration& rhs) {
-        mPoint += rhs;
-        return *this;
-    }
-    TimePoint& operator-=(const std::chrono::system_clock::duration& rhs) {
-        mPoint -= rhs;
-        return *this;
-    }
+    TimePoint& operator=(const std::chrono::system_clock::time_point& rhs) { mPoint = rhs; return *this; }
+    TimePoint& operator+=(const std::chrono::system_clock::duration& rhs) { mPoint += rhs; return *this; }
+    TimePoint& operator-=(const std::chrono::system_clock::duration& rhs) { mPoint -= rhs; return *this; }
 
+    // TimePoint and TimeDuration operators
     friend TimePoint operator+(const TimePoint& lhs, const TimeDuration& rhs);
     friend TimePoint operator+(const TimeDuration& lhs, const TimePoint& rhs);
     friend TimePoint operator-(const TimePoint& lhs, const TimeDuration& rhs);
     friend TimeDuration operator-(const TimePoint& lhs, const TimePoint& rhs);
 
+    // Relational operators
     friend bool operator==(const TimePoint& lhs, const TimePoint& rhs);
     friend bool operator!=(const TimePoint& lhs, const TimePoint& rhs);
     friend bool operator<(const TimePoint& lhs, const TimePoint& rhs);
     friend bool operator>(const TimePoint& lhs, const TimePoint& rhs);
     friend bool operator<=(const TimePoint& lhs, const TimePoint& rhs);
     friend bool operator>=(const TimePoint& lhs, const TimePoint& rhs);
+
+    // Stream operator
     friend std::ostream& operator<<(std::ostream& ostr, const TimePoint& rhs);
 
-    
+    // Type cast operator
     operator std::chrono::system_clock::time_point() const { return mPoint; }
 };
 
+// TimePoint oprators define
 bool operator==(const TimePoint& lhs, const TimePoint& rhs) { return lhs.mPoint == rhs.mPoint; };
 bool operator!=(const TimePoint& lhs, const TimePoint& rhs) { return !(operator==(lhs, rhs)); };
 bool operator<(const TimePoint& lhs, const TimePoint& rhs) { return lhs.mPoint < rhs.mPoint; };
@@ -183,11 +200,15 @@ std::ostream& operator<<(std::ostream& ostr, const TimePoint& rhs) {
     return ostr;
 }
 
+/**
+ *  TimeDuration Object(Wrapper of std::chrono::system_clock::duration)
+ */
 class TimeDuration {
 private:
     std::chrono::system_clock::duration mDuration;
 
 public:
+    // Constructor
     TimeDuration() = default;
     TimeDuration(const TimeDuration& src) = default;
     TimeDuration(TimeDuration&& src) = default;
@@ -200,23 +221,30 @@ public:
     }
     TimeDuration(int day, int hour, int minute, int second) : TimeDuration(hour + day*24, minute, second) {}
 
+    // Destructor
     virtual ~TimeDuration() = default;
+
+    // Assignment
     TimeDuration& operator=(const TimeDuration& rhs) = default;
     TimeDuration& operator=(TimeDuration&& rhs) = default;
 
+    // TimePoint and TimeDuration operators
     friend TimePoint operator+(const TimePoint& lhs, const TimeDuration& rhs);
     friend TimePoint operator+(const TimeDuration& lhs, const TimePoint& rhs);
     friend TimePoint operator-(const TimePoint& lhs, const TimeDuration& rhs);
 
+    // Relational operator
     friend bool operator==(const TimeDuration& lhs, const TimeDuration& rhs);
 
+    // Stream operator
     friend std::ostream& operator<<(std::ostream& ostr, const TimeDuration& rhs);
 
+    // Type cast
     operator std::chrono::system_clock::duration() const { return mDuration; }
 };
 
+// TimeDuration oprators define
 bool operator==(const TimeDuration& lhs, const TimeDuration& rhs) { return lhs.mDuration == rhs.mDuration; }
-
 std::ostream& operator<<(std::ostream& ostr, const TimeDuration& rhs) {
     long count = std::chrono::duration_cast<std::chrono::seconds>(rhs.mDuration).count();
     ostr << count / 3600 << ":" << (count % 3600) / 60 << ":" << count % 60;
@@ -229,8 +257,12 @@ TimePoint operator+(const TimeDuration& lhs, const TimePoint& rhs) { return Time
 TimePoint operator-(const TimePoint& lhs, const TimeDuration& rhs) { return TimePoint(lhs.mPoint - rhs.mDuration); }
 TimeDuration operator-(const TimePoint& lhs, const TimePoint& rhs) { return TimeDuration(lhs.mPoint - rhs.mPoint); } 
 
-// type / interval / start / end / lastProcessTime
+
+/**
+ *  Trigger Object(class of time informations)
+ */
 struct Trigger {
+    // Variables
     ScheduleType type = ScheduleType::SCHEDULE_ONCE;
     TimePoint start = std::chrono::system_clock::time_point::min();
     TimePoint end = std::chrono::system_clock::time_point::max();
@@ -239,13 +271,15 @@ struct Trigger {
     TimePoint nextProcess = std::chrono::system_clock::time_point::min();
     int count = 0;
 
-    Trigger() { setInterval(); };
-    Trigger(ScheduleType Type) : type(Type) { setInterval(); }
-    Trigger(ScheduleType Type, const TimePoint& Start, const TimePoint& End) : type(Type), start(Start), end(End) { setInterval(); }
-    Trigger(ScheduleType Type, const TimePoint& Start, const TimePoint& End, const TimeDuration& Time) : type(Type), start(Start), end(End), time(Time) { setInterval(); }
-    inline bool contain(const TimePoint& Point) {
-        return (start <= Point) && (Point < end);
-    }
+    // Constructor
+    Trigger() { initInterval(); };
+    Trigger(ScheduleType Type) : type(Type) { initInterval(); }
+    Trigger(ScheduleType Type, const TimePoint& Start, const TimePoint& End) : type(Type), start(Start), end(End) { initInterval(); }
+    Trigger(ScheduleType Type, const TimePoint& Start, const TimePoint& End, const TimeDuration& Time) : type(Type), start(Start), end(End), time(Time) { initInterval(); }
+
+    // Methods
+    inline bool inRange(const TimePoint& Point) { return (start <= Point) && (Point < end); }
+
     void next(const TimePoint& point) {
         count++;
         lastProcess = nextProcess;
@@ -263,25 +297,27 @@ struct Trigger {
             next(point);
         }
     }
+
+    // Relational operator
     friend bool operator==(const Trigger& lhs, const Trigger& rhs);
 private:
-    void setInterval() {
+    void initInterval() {
         lastProcess = start;
         nextProcess = start;
         switch(type) {
             case ScheduleType::SCHEDULE_ONCE:
-            time = TimeDuration();
+                time = TimeDuration();
             break;
             case ScheduleType::SCHEDULE_INTERVAL:
-            if(time == TimeDuration()) {
-                time = end - start;
-            }
+                if(time == TimeDuration()) {
+                    time = end - start;
+                }
             break;
             case ScheduleType::SCHEDULE_DAILY:
-            time = TimeDuration(24,0,0);
+                time = TimeDuration(24,0,0);
             break;
             case ScheduleType::SCHEDULE_WEEKLY:
-            time = TimeDuration(168,0,0);
+                time = TimeDuration(168,0,0);
             break;
             case ScheduleType::SCHEDULE_MONTHLY: {
                 std::tm timeinfo = make_tm_from_UTC((std::chrono::system_clock::time_point) start, UTC_OFFSET);
@@ -291,16 +327,19 @@ private:
             }
             break;
             default:
-            fprintf(stderr, "ScheduleType error in Trigger.\r\n");
+                fprintf(stderr, "ScheduleType error in Trigger.\r\n");
             break;
         }
     }
 };
 
-bool operator==(const Trigger& lhs, const Trigger& rhs) {
-    return lhs.type == rhs.type && lhs.start == lhs.start && lhs.end == rhs.end;
-}
+// Trigger operator define
+bool operator==(const Trigger& lhs, const Trigger& rhs) { return lhs.type == rhs.type && lhs.start == lhs.start && lhs.end == rhs.end; }
 
+
+/**
+ *  Schedule Object
+ */
 class Schedule {
 private:
     std::string mName;
@@ -309,40 +348,41 @@ private:
     std::function<void()> mFunc;
     s_id mId;
 public:
+    // Constructor
     Schedule() = default;
     Schedule(const Trigger& Trigger) : mTrigger(Trigger) {}
     Schedule(const std::string& Name, const std::string& Description, const Trigger& Trigger) : mName(Name), mDescription(Description), mTrigger(Trigger) {}
     Schedule(const Schedule& src) = default;
     Schedule(Schedule&& src) = default;
+
+    // Destructor
+    virtual ~Schedule() = default;
+
+    // Assignment
     Schedule& operator=(const Schedule& rhs) = default;
     Schedule& operator=(Schedule&& rhs) = default;
 
+    // Getter, Setter
     void setName(const std::string& Name) { mName = Name; }
     void setDescription(const std::string& Description) { mDescription = Description; }
+    void setEvent(std::function<void()> event) { mFunc = event; }
     std::string getName() const  { return mName; }
     std::string getDescription() const { return mDescription; }
     TimePoint getStartTime() const { return mTrigger.start; }
     TimePoint getEndTime() const { return mTrigger.end; }
     TimeDuration getInterval() const { return mTrigger.time; }
-
-    //null
-
-    void setEvent(std::function<void()> event) { mFunc = event; }
-
+    
+    // Methods
     bool expired() {
-        if(mTrigger.type == ScheduleType::SCHEDULE_ONCE && mTrigger.count > 0) {
-            return true;
-        }
-        if(mTrigger.end < std::chrono::system_clock::now()) {
-            return true;
-        }
+        if(mTrigger.type == ScheduleType::SCHEDULE_ONCE && mTrigger.count > 0) { return true; }
+        if(mTrigger.end < std::chrono::system_clock::now()) { return true; }
         return false;
     }
 
-    bool execute(const TimePoint& point) {
-        if(!mTrigger.contain(point)) { return false; }
-
-        if(mTrigger.nextProcess > point) { return false; }
+    ScheduleResult execute() {
+        TimePoint point = std::chrono::system_clock::now();
+        if(expired()) { return ScheduleResult::SKED_EXPIRED; }
+        if(mTrigger.nextProcess > point) { return ScheduleResult::SKED_WAIT; }
 
         try {
             if(mFunc) {
@@ -350,30 +390,36 @@ public:
             }
         } catch(std::exception e) {
             fprintf(stderr, "Schedule execute error:%s\r\n", e.what());
-            return false;
+            return ScheduleResult::SKED_FAIL;
         }
         std::cout <<  mTrigger.nextProcess << std::endl;
         mTrigger.next(point);
-        return true;
+        return ScheduleResult::SKED_SUCCESS;
     }
 
+    // Relational operators
     friend bool operator==(const Schedule& lhs, const Schedule& rhs);
     friend bool operator<(const Schedule& lhs, const Schedule& rhs);
     
-    class comp {
-    public:
-        bool operator()(const Schedule& lhs, const Schedule& rhs) { return lhs < rhs; }
-    };
-
     friend class Scheduler;
 };
 
+// Schedule operators define
 bool operator==(const Schedule& lhs, const Schedule& rhs) { return lhs.mName == rhs.mName && lhs.mTrigger == rhs.mTrigger; }
 bool operator<(const Schedule& lhs, const Schedule& rhs) { return lhs.mTrigger.nextProcess > rhs.mTrigger.nextProcess; }
 
-// modified priority queue
-class schedule_priority_queue : public std::priority_queue<Schedule, std::vector<Schedule>, Schedule::comp>{
+/**
+ *  Modified priority queue(insert, remove)
+ */
+class schedule_priority_queue : public std::priority_queue<Schedule, std::vector<Schedule>>{
   public:
+    // insert : Emplace object into the queue and return it's reference.
+    Schedule& insert(const Schedule& sch) {
+        this->emplace(sch);
+        return *(std::find(this->c.begin(), this->c.end(), sch));
+    }
+    
+    // remove : Remove object by object reference.
     bool remove(const Schedule& sch) {
         auto it = std::find(this->c.begin(), this->c.end(), sch);
         if (it == this->c.end()) {
@@ -390,59 +436,28 @@ class schedule_priority_queue : public std::priority_queue<Schedule, std::vector
         }
         return true;
     }
-
-    bool remove(const std::string& name) {
-        auto it = std::find_if(this->c.begin(), this->c.end(), [name](const Schedule& sch) { return sch.getName() == name; });
-       
-        if (it == this->c.end()) {
-            return false;
-        }
-        if (it == this->c.begin()) {
-            // deque the top element
-            this->pop();
-        }    
-        else {
-            // remove element and re-heap
-            this->c.erase(it);
-            std::make_heap(this->c.begin(), this->c.end(), this->comp);
-        }
-        return true;
-    }
-
-    Schedule& find(const std::string& name) {
-        auto it = std::find_if(this->c.begin(), this->c.end(), [name](const Schedule& sch) { return sch.getName() == name; });
-        if(it == this->c.end()) {
-            // error
-            throw std::out_of_range("a");
-        }
-        return *it;
-    }
-
-    Schedule& insert(const Schedule& sch) {
-        this->push(sch);
-        auto it = std::find(this->c.begin(), this->c.end(), sch);
-        return *it;
-    }
 };
 
-
+/**
+ *  Scheduler
+ */
 class Scheduler{
 private: 
-schedule_priority_queue mSchedules;
-std::unordered_map<int, Schedule&> um_id_name;
-std::thread mThread = std::thread([this]() { this->run(); });
-std::condition_variable cv_job_q_;
-std::mutex m_job_q_;
-bool stop = false;;
-int mCount = 1;
+    schedule_priority_queue mSchedules;
+    std::unordered_map<int, Schedule&> um_id_name;
+    std::thread mThread = std::thread([this]() { this->WorkerThread(); });
+    std::condition_variable cv_job_q_;
+    std::mutex m_job_q_;
+    bool mStop = false;;
+    int mCount = 1;
 
 protected:
 
 void WorkerThread() {
     while(true) {
         std::unique_lock<std::mutex> lock(m_job_q_);
-        cv_job_q_.wait(lock, [this]() { return !mSchedules.empty() || stop; });
-        if(stop) {
+        cv_job_q_.wait(lock, [this]() { return !mSchedules.empty() || mStop; });
+        if(mStop) {
             return;
         }
 
@@ -452,20 +467,26 @@ void WorkerThread() {
 }
 
 public:
-Scheduler() = default;
-Scheduler(const Scheduler& src) = default;
-Scheduler(Scheduler&& src) = default;
-virtual ~Scheduler() noexcept {
-    stop = true;
-    cv_job_q_.notify_all();
-    mThread.join();
-}
-Scheduler& operator=(const Scheduler& rhs) = default;
-Scheduler& operator=(Scheduler&& rhs) = default;
+    // Constructor
+    Scheduler() = default;
+    Scheduler(const Scheduler& src) = default;
+    Scheduler(Scheduler&& src) = default;
 
-void run() {
+    // Destructor
+    virtual ~Scheduler() noexcept { stop(); mThread.join(); }
+    
+    // Assignment
+    Scheduler& operator=(const Scheduler& rhs) = default;
+    Scheduler& operator=(Scheduler&& rhs) = default;
 
-}
+    void run() {
+
+    }
+
+    void stop() {
+        mStop = true;
+        cv_job_q_.notify_all();
+    }
 
 
 // um_id_name을 삭제하고 schedule에 id를 수정할 수 있도록 함.
@@ -508,7 +529,7 @@ void flush() {
     TimePoint tp(std::chrono::system_clock::now());
     while (!mSchedules.empty()) {
         auto s = mSchedules.top();
-        s.execute(tp);
+        s.execute();
         mSchedules.pop();
     }
     um_id_name.clear();
@@ -536,7 +557,7 @@ void printTemp() {
 
 };
 
-}
+} // namespace of Scheduler
 
 
 #endif
