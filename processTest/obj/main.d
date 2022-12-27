@@ -229,4 +229,5 @@ processTest/obj/main.o: processTest/src/main.cpp \
  /usr/include/c++/7/bits/locale_conv.h \
  /usr/include/c++/7/bits/stringfwd.h /usr/include/c++/7/bits/allocator.h \
  /usr/include/c++/7/bits/codecvt.h /usr/include/c++/7/bits/unique_ptr.h \
- /usr/include/c++/7/bits/quoted_string.h
+ /usr/include/c++/7/bits/quoted_string.h \
+ processTest/include/priorityqueue\ copy.h

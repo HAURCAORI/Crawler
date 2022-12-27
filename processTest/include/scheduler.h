@@ -360,6 +360,11 @@ public:
     friend bool operator==(const Schedule& lhs, const Schedule& rhs);
     friend bool operator<(const Schedule& lhs, const Schedule& rhs);
     
+    class comp {
+    public:
+        bool operator()(const Schedule& lhs, const Schedule& rhs) { return lhs < rhs; }
+    };
+
     friend class Scheduler;
 };
 
@@ -367,7 +372,7 @@ bool operator==(const Schedule& lhs, const Schedule& rhs) { return lhs.mName == 
 bool operator<(const Schedule& lhs, const Schedule& rhs) { return lhs.mTrigger.nextProcess > rhs.mTrigger.nextProcess; }
 
 // modified priority queue
-class schedule_priority_queue : public std::priority_queue<Schedule, std::vector<Schedule>>{
+class schedule_priority_queue : public std::priority_queue<Schedule, std::vector<Schedule>, Schedule::comp>{
   public:
     bool remove(const Schedule& sch) {
         auto it = std::find(this->c.begin(), this->c.end(), sch);
@@ -412,13 +417,20 @@ class schedule_priority_queue : public std::priority_queue<Schedule, std::vector
         }
         return *it;
     }
+
+    Schedule insert(const Schedule& sch) {
+        this->push(sch);
+        auto it = std::find(this->c.begin(), this->c.end(), sch);
+        
+        return sch;
+    }
 };
 
 
 class Scheduler{
 private: 
 schedule_priority_queue mSchedules;
-std::unordered_map<int, std::string> um_id_name;
+std::unordered_map<int, Schedule&> um_id_name;
 std::thread mThread = std::thread([this]() { this->run(); });
 std::condition_variable cv_job_q_;
 std::mutex m_job_q_;
@@ -461,12 +473,14 @@ void run() {
 
 s_id add(Schedule schedule) {
     std::unique_lock<std::mutex> lock(m_job_q_);
-    um_id_name.insert(std::make_pair(mCount, schedule.getName()));
-    mSchedules.emplace(schedule);
+    um_id_name.insert(std::make_pair(mCount, std::ref(schedule)));
+    std::cout << schedule.getStartTime() << std::endl;
+    mSchedules.insert(schedule);
     
     return mCount++;
 }
 
+/*
 bool remove(s_id id) {
     auto it = um_id_name.find(id);
     if(it == um_id_name.end()) {
@@ -476,11 +490,13 @@ bool remove(s_id id) {
     um_id_name.erase(it);
     mSchedules.remove(it->second);
 }
-
+*/
+/*
 Schedule& at(s_id id) {
     //throw
     return mSchedules.find(um_id_name.find(id)->second);
 }
+*/
 
 /*
 const Schedule& at(s_id id) const {
@@ -513,7 +529,7 @@ int count() {
 
 void printTemp() {
     for(auto it = um_id_name.begin(); it != um_id_name.end(); ++it) {
-        std::cout << it->first << "/" << it->second << std::endl;
+        std::cout << it->first << "/" << it->second.getStartTime() << std::endl;
     }
 }
 

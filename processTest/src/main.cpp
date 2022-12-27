@@ -13,6 +13,9 @@
 
 #include "scheduler.h"
 
+#include "priorityqueue copy.h"
+
+
 #include <chrono>
 #define BEGIN_CHRONO std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 #define END_CHRONO std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - begin).count() << "[ms]" << std::endl;
@@ -23,7 +26,6 @@ int main() {
     using namespace std::chrono_literals;
 
     using namespace Scheduler;
-
     
 
     Scheduler::Scheduler scheduler;
@@ -35,10 +37,11 @@ int main() {
         scheduler.add(sch);
     }
     scheduler.printTemp();
+    /*
     std::cout << scheduler.at(1).getStartTime() << std::endl;
     std::cout << scheduler.at(3).getStartTime() << std::endl;
     scheduler.count();
-    /*
+    
     for(int i = 1; i < 10; i++) {
         Trigger t(SCHEDULE_MONTHLY, TimePoint(2024,i,i), TimePoint(2025,1,1), TimeDuration(std::chrono::hours(1)));
         Scheduler::Schedule sch(t);
