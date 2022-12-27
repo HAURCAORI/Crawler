@@ -287,7 +287,7 @@ struct Trigger {
     // Methods
     inline bool inRange(const TimePoint& Point) { return (start <= Point) && (Point < end); }
 
-    void next(const TimePoint& point) {
+    bool next(const TimePoint& point) {
         count++;
         lastProcess = nextProcess;
         if(type == ScheduleType::SCHEDULE_MONTHLY) {
@@ -298,11 +298,13 @@ struct Trigger {
         } else {
             nextProcess += time;
         }
+
         if(nextProcess < point) {
             // Scheduler의 문제로 execute 수행 못한 채 상당시간 지났을 경우 처리
-            // std::cout << "skip" << std::endl;
-            next(point);
-        }
+            //std::cout << "skip" << std::endl;
+            return true; 
+        } 
+        return false;
     }
 
     // Relational operator
@@ -378,18 +380,24 @@ public:
     TimePoint getStartTime() const { return mTrigger.start; }
     TimePoint getEndTime() const { return mTrigger.end; }
     TimeDuration getInterval() const { return mTrigger.time; }
+    TimePoint getLastProcessTime() const { return mTrigger.lastProcess; }
+    TimePoint getNextProcessTime() const { return mTrigger.nextProcess; }
     
+    void setStartTime(const TimePoint& tp) { mTrigger.start = tp; }
+
     // Methods
-    bool expired() {
+    bool expired(const TimePoint& time) {
         if(mTrigger.type == ScheduleType::SCHEDULE_ONCE && mTrigger.count > 0) { return true; }
-        if(mTrigger.end < std::chrono::system_clock::now()) { return true; }
+        if(mTrigger.end < time) { return true; }
         return false;
     }
 
+    bool executable(const TimePoint& time) { return mTrigger.nextProcess < time; }
+
     ScheduleResult execute() {
-        TimePoint point = std::chrono::system_clock::now();
-        if(expired()) { return ScheduleResult::SKED_EXPIRED; }
-        if(mTrigger.nextProcess > point) { return ScheduleResult::SKED_WAIT; }
+        TimePoint time = std::chrono::system_clock::now();
+        if(expired(time)) { return ScheduleResult::SKED_EXPIRED; }
+        if(!executable(time)) { return ScheduleResult::SKED_WAIT; }
 
         try {
             if(mFunc) {
@@ -399,8 +407,8 @@ public:
             fprintf(stderr, "Schedule execute error:%s\r\n", e.what());
             return ScheduleResult::SKED_FAIL;
         }
-        std::cout <<  mTrigger.nextProcess << std::endl;
-        mTrigger.next(point);
+        
+        while(mTrigger.next(time));
         return ScheduleResult::SKED_SUCCESS;
     }
 
@@ -443,6 +451,12 @@ class schedule_priority_queue : public std::priority_queue<Schedule, std::vector
         }
         return true;
     }
+
+    void print() {
+        for(auto it = this->c.begin(); it != c.end(); ++it) {
+            std::cout << it->getName() << ":" << it->getNextProcessTime() << std::endl; 
+        }
+    }
 };
 
 /**
@@ -457,6 +471,7 @@ private:
     std::mutex m_job_q_;
     TimeDuration mWaitTime = TimeDuration(0,0,3);
     bool mStop = false;
+    bool mSuccess = false;
     int mCounter = 1;
 
 protected:
@@ -464,19 +479,32 @@ protected:
 void WorkerThread() {
     while(true) {
         std::unique_lock<std::mutex> lock(m_job_q_);
-        cv_job_q_.wait_for(lock, mWaitTime.get(), [this]() { return mStop; });
-        if(mStop) {
-            return;
-        }
-        
-        //auto job = mSchedules.top();
-        //mSchedules.pop();
-
+        cv_job_q_.wait_for(lock, mWaitTime.get(), [this]() { return (mSuccess && !mSchedules.empty()) || mStop; });
+        if(mStop) { return; }
         std::cout << TimePoint::now() << " - thread" << std::endl;
+        if(mSchedules.empty()) { continue; }
+        mSchedules.print();
+        
 
+        auto job = mSchedules.top();
+        mSchedules.pop();
         lock.unlock();
         
-        //auto ret = job.execute();
+        auto ret = job.execute();
+
+        lock.lock();
+        if(ret == ScheduleResult::SKED_SUCCESS) {
+            mSuccess = true;
+            mSchedules.emplace(job);
+        } else if(ret == ScheduleResult::SKED_WAIT) {
+            mSuccess = false;
+            mSchedules.emplace(job);
+        } else {
+            mSuccess = false;
+        }
+        lock.unlock();
+
+        
     }
 }
 
@@ -558,11 +586,6 @@ void clear() {
     um_id_name.clear();
 }
 
-void printTemp() {
-    for(auto it = um_id_name.begin(); it != um_id_name.end(); ++it) {
-        std::cout << it->first << "/" << it->second.getStartTime() << std::endl;
-    }
-}
 
 
 
