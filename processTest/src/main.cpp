@@ -13,12 +13,91 @@
 
 #include "scheduler.h"
 
-#include "priorityqueue copy.h"
+#include "modifiedpriorityqueue.h"
 
 
 #include <chrono>
 #define BEGIN_CHRONO std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 #define END_CHRONO std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - begin).count() << "[ms]" << std::endl;
+/*
+using namespace Scheduler;
+class TestSchedule {
+private:
+    std::string mName;
+    std::string mDescription;
+    Trigger mTrigger;
+    std::function<void()> mFunc;
+    s_id mId;
+public:
+    TestSchedule() = default;
+    TestSchedule(const Trigger& Trigger) : mTrigger(Trigger) {}
+    TestSchedule(const std::string& Name, const std::string& Description, const Trigger& Trigger) : mName(Name), mDescription(Description), mTrigger(Trigger) {}
+    TestSchedule(const TestSchedule& src) = default;
+    TestSchedule(TestSchedule&& src) = default;
+    TestSchedule& operator=(const TestSchedule& rhs) = default;
+    TestSchedule& operator=(TestSchedule&& rhs) = default;
+
+    void setName(const std::string& Name) { mName = Name; }
+    void setDescription(const std::string& Description) { mDescription = Description; }
+    std::string getName() const  { return mName; }
+    std::string getDescription() const { return mDescription; }
+    TimePoint getStartTime() const { return mTrigger.start; }
+    TimePoint getEndTime() const { return mTrigger.end; }
+    TimeDuration getInterval() const { return mTrigger.time; }
+
+    //null
+
+    void setEvent(std::function<void()> event) { mFunc = event; }
+
+    bool expired() {
+        if(mTrigger.type == ScheduleType::SCHEDULE_ONCE && mTrigger.count > 0) {
+            return true;
+        }
+        if(mTrigger.end < std::chrono::system_clock::now()) {
+            return true;
+        }
+        return false;
+    }
+
+    bool execute(const TimePoint& point) {
+        if(!mTrigger.contain(point)) { return false; }
+
+        if(mTrigger.nextProcess > point) { return false; }
+
+        try {
+            if(mFunc) {
+                mFunc();
+            }
+        } catch(std::exception e) {
+            fprintf(stderr, "Schedule execute error:%s\r\n", e.what());
+            return false;
+        }
+        std::cout <<  mTrigger.nextProcess << std::endl;
+        mTrigger.next(point);
+        return true;
+    }
+
+    friend bool operator==(const TestSchedule& lhs, const TestSchedule& rhs);
+    friend bool operator<(const TestSchedule& lhs, const TestSchedule& rhs);
+    
+    class comp {
+    public:
+        bool operator()(const TestSchedule& lhs, const TestSchedule& rhs) { return lhs < rhs; }
+    };
+};
+bool operator==(const TestSchedule& lhs, const TestSchedule& rhs) { return lhs.mName == rhs.mName && lhs.mTrigger == rhs.mTrigger; }
+bool operator<(const TestSchedule& lhs, const TestSchedule& rhs) { return lhs.mTrigger.nextProcess > rhs.mTrigger.nextProcess; }
+
+
+class Test : std::priority_queue<TestSchedule, std::vector<TestSchedule>> {
+public:
+    void insert(TestSchedule a) {
+        this->emplace(a);
+        auto it = find(this->c.begin(), this->c.end(), a);
+        std::cout << a.getName() << std::endl;
+    }
+};
+*/
 
 int main() {
     curl_global_init(CURL_GLOBAL_DEFAULT);
@@ -27,6 +106,12 @@ int main() {
 
     using namespace Scheduler;
     
+    //Test temp;
+    //Trigger t(SCHEDULE_MONTHLY, TimePoint(2024,1,1), TimePoint(2025,1,1), TimeDuration(std::chrono::hours(1)));
+    //TestSchedule test("a", "b", Trigger());
+    //temp.insert(test);
+
+
 
     Scheduler::Scheduler scheduler;
     
@@ -36,11 +121,13 @@ int main() {
         Scheduler::Schedule sch(str,str,t);
         scheduler.add(sch);
     }
+    
     scheduler.printTemp();
     /*
     std::cout << scheduler.at(1).getStartTime() << std::endl;
     std::cout << scheduler.at(3).getStartTime() << std::endl;
     scheduler.count();
+
     
     for(int i = 1; i < 10; i++) {
         Trigger t(SCHEDULE_MONTHLY, TimePoint(2024,i,i), TimePoint(2025,1,1), TimeDuration(std::chrono::hours(1)));
@@ -49,6 +136,7 @@ int main() {
         std::cout
     }
     */
+    
     
     //scheduler.flush();
     

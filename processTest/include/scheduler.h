@@ -263,9 +263,7 @@ struct Trigger {
             next(point);
         }
     }
-    bool operator==(const Trigger& rhs) {
-        return this->type == rhs.type && this->start == this->start && this->end == rhs.end;
-    }
+    friend bool operator==(const Trigger& lhs, const Trigger& rhs);
 private:
     void setInterval() {
         lastProcess = start;
@@ -299,7 +297,9 @@ private:
     }
 };
 
-
+bool operator==(const Trigger& lhs, const Trigger& rhs) {
+    return lhs.type == rhs.type && lhs.start == lhs.start && lhs.end == rhs.end;
+}
 
 class Schedule {
 private:
@@ -418,11 +418,10 @@ class schedule_priority_queue : public std::priority_queue<Schedule, std::vector
         return *it;
     }
 
-    Schedule insert(const Schedule& sch) {
+    Schedule& insert(const Schedule& sch) {
         this->push(sch);
         auto it = std::find(this->c.begin(), this->c.end(), sch);
-        
-        return sch;
+        return *it;
     }
 };
 
@@ -473,9 +472,9 @@ void run() {
 
 s_id add(Schedule schedule) {
     std::unique_lock<std::mutex> lock(m_job_q_);
-    um_id_name.insert(std::make_pair(mCount, std::ref(schedule)));
+   
     std::cout << schedule.getStartTime() << std::endl;
-    mSchedules.insert(schedule);
+    um_id_name.insert(std::make_pair(mCount, std::ref(mSchedules.insert(schedule)) ));
     
     return mCount++;
 }
