@@ -412,16 +412,22 @@ public:
         return ScheduleResult::SKED_SUCCESS;
     }
 
+    bool empty() { return *this == EmptySchedule(); }
+
     // Relational operators
     friend bool operator==(const Schedule& lhs, const Schedule& rhs);
     friend bool operator<(const Schedule& lhs, const Schedule& rhs);
     
+    // etc.
+    static Schedule& EmptySchedule() { static Schedule sch; return sch; }
     friend class Scheduler;
 };
 
 // Schedule operators define
 bool operator==(const Schedule& lhs, const Schedule& rhs) { return lhs.mName == rhs.mName && lhs.mTrigger == rhs.mTrigger; }
 bool operator<(const Schedule& lhs, const Schedule& rhs) { return lhs.mTrigger.nextProcess > rhs.mTrigger.nextProcess; }
+
+
 
 /**
  *  Modified priority queue(insert, remove)
@@ -452,6 +458,7 @@ class schedule_priority_queue : public std::priority_queue<Schedule, std::vector
         return true;
     }
 
+    // print
     void print() {
         for(auto it = this->c.begin(); it != c.end(); ++it) {
             std::cout << it->getName() << ":" << it->getNextProcessTime() << std::endl; 
@@ -483,8 +490,7 @@ void WorkerThread() {
         if(mStop) { return; }
         std::cout << TimePoint::now() << " - thread" << std::endl;
         if(mSchedules.empty()) { continue; }
-        mSchedules.print();
-        
+        //mSchedules.print();
 
         auto job = mSchedules.top();
         mSchedules.pop();
@@ -521,74 +527,81 @@ public:
     Scheduler& operator=(const Scheduler& rhs) = default;
     Scheduler& operator=(Scheduler&& rhs) = default;
 
-    void run() {
+    // Methods
+    void start() {
         if(!mStop) { return; }
         mStop = false;
+        mThread = std::thread([this]() { this->WorkerThread(); });
         cv_job_q_.notify_all();
     }
 
     void stop() {
         if(mStop) { return; }
         mStop = true;
+        mSuccess = false;
         cv_job_q_.notify_all();
         mThread.join(); 
     }
 
-
-// um_id_name을 삭제하고 schedule에 id를 수정할 수 있도록 함.
-
-s_id add(const Schedule& schedule) {
-    std::unique_lock<std::mutex> lock(m_job_q_);
-    um_id_name.insert(std::make_pair(mCounter, std::ref(mSchedules.insert(schedule)) ));
-    cv_job_q_.notify_one();
-    return mCounter++;
-}
-
-
-bool remove(s_id id) {
-    auto it = um_id_name.find(id);
-    if(it == um_id_name.end()) {
-        return false;
+    s_id add(const Schedule& schedule) {
+        std::unique_lock<std::mutex> lock(m_job_q_);
+        um_id_name.insert(std::make_pair( mCounter, std::ref(mSchedules.insert(schedule)) ));
+        cv_job_q_.notify_one();
+        return mCounter++;
     }
-    std::unique_lock<std::mutex> lock(m_job_q_);
-    mSchedules.remove(it->second);
-    um_id_name.erase(it);
-    return true;
-}
 
 
-Schedule& at(s_id id) {
-    //throw
-    return um_id_name.find(id)->second;
-}
-
-const Schedule& at(s_id id) const {
-    //throw
-    return um_id_name.find(id)->second;
-}
-
-
-void flush() {
-    std::unique_lock<std::mutex> lock(m_job_q_);
-    while (!mSchedules.empty()) {
-        auto s = mSchedules.top();
-        s.execute();
-        mSchedules.pop();
+    bool remove(s_id id) {
+        auto it = um_id_name.find(id);
+        if(it == um_id_name.end()) {
+            return false;
+        }
+        std::unique_lock<std::mutex> lock(m_job_q_);
+        mSchedules.remove(it->second);
+        um_id_name.erase(it);
+        return true;
     }
-    um_id_name.clear();
-}
 
-void clear() {
-    std::unique_lock<std::mutex> lock(m_job_q_);
-    while(!mSchedules.empty()) {
-        mSchedules.pop();
+    Schedule& at(s_id id) {
+        auto it = um_id_name.find(id);
+        if(it == um_id_name.end()) {
+            throw std::out_of_range("out of range");
+        }
+        return it->second;
     }
-    um_id_name.clear();
-}
+
+    const Schedule& at(s_id id) const {
+        auto it = um_id_name.find(id);
+        if(it == um_id_name.end()) {
+            throw std::out_of_range("out of range");
+        }
+        return it->second;
+    }
 
 
+    void flush() {
+        std::unique_lock<std::mutex> lock(m_job_q_);
+        while (!mSchedules.empty()) {
+            auto s = mSchedules.top();
+            s.execute();
+            mSchedules.pop();
+        }
+        um_id_name.clear();
+    }
 
+    void clear() {
+        std::unique_lock<std::mutex> lock(m_job_q_);
+        while(!mSchedules.empty()) {
+            mSchedules.pop();
+        }
+        um_id_name.clear();
+    }
 
+    Schedule& operator[](s_id id) {
+        auto it = um_id_name.find(id);
+        if(it == um_id_name.end()) { return Schedule::EmptySchedule(); }
+        return it->second;
+    }
 };
 
 } // namespace of Scheduler

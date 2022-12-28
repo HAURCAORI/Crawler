@@ -175,8 +175,8 @@ public:
     bool loadList(const std::string& path = DEFAULT_PATH);
     static bool createListFile(const std::string& path = DEFAULT_PATH, bool trunc = false);
 
-    void addList(const std::string& id, const URI& uri, Output output, Schedule schedule);
-    void addList(const std::string& id, const std::string& url, const std::string& target, Adapter adapter = Adapter::Console);
+    bool addList(const std::string& id, const URI& uri, Output output, Schedule schedule);
+    bool addList(const std::string& id, const std::string& url, const std::string& target, Adapter adapter = Adapter::Console);
     void eraseList();
 
     CrawlingObject at(size_t index);
@@ -189,9 +189,11 @@ private:
     rapidjson::Value createListNode(const std::string& id, const URI& uri, const Output& output, const Schedule& schedule); // Json List 생성
     rapidjson::Value createInfoNode(); // Json List 생성
     void validCheckAll();
-    void validCheck(rapidjson::Value& node);
+    void validCheck(rapidjson::Value& node); // 필수 노드 체크
     bool saveListFile() noexcept;
     bool loadListFile();
+    bool idDuplicated(const std::string& id);
+
 
     bool isLoaded = false;
     bool isSaveChanges = true;
@@ -201,6 +203,8 @@ private:
     static const std::string DEFAULT_PATH;
     static const std::string DEFAULT_JSON;
     static const char* ROOT_NODE;
+    
+    std::unordered_map<int, int> mMap;
 };
 
 }

@@ -11,6 +11,7 @@
 #include <iostream>
 
 #include "stringextension.h"
+#include "scheduler.h"
 
 static std::string ReplacePlaceholder(const std::string& original, size_t index, const std::string& str) {
     if(original.empty()) { return std::string(); }
@@ -602,16 +603,20 @@ bool CURLCrawler::createListFile(const std::string& path, bool trunc) {
     return true;
 }
 
-void CURLCrawler::addList(const std::string& id, const URI& uri, Output output, Schedule schedule) {
-    if(!isLoaded) { return; }
-    if(!mDoc->HasMember(ROOT_NODE)) { return; }
+bool CURLCrawler::addList(const std::string& id, const URI& uri, Output output, Schedule schedule) {
+    if(!isLoaded) { return false; }
+    if(!mDoc->HasMember(ROOT_NODE)) { return false; }
+    if(idDuplicated(id)) { return false; }
     (*mDoc)[ROOT_NODE].PushBack(createListNode(id, uri, output, schedule).Move(), mDoc->GetAllocator());
+    return true;
 }
 
-void CURLCrawler::addList(const std::string& id, const std::string& url, const std::string& target, Adapter adapter) {
-    if(!isLoaded) { return; }
-    if(!mDoc->HasMember(ROOT_NODE)) { return; }
+bool CURLCrawler::addList(const std::string& id, const std::string& url, const std::string& target, Adapter adapter) {
+    if(!isLoaded) { return false; }
+    if(!mDoc->HasMember(ROOT_NODE)) { return false; }
+    if(idDuplicated(id)) { return false; }
     (*mDoc)[ROOT_NODE].PushBack(createListNode(id,URI(url), Output(target, adapter), Schedule()).Move(), mDoc->GetAllocator());
+    return true;
 }
 
 CrawlingObject CURLCrawler::at(size_t index) {
@@ -809,6 +814,18 @@ bool CURLCrawler::loadListFile() {
 
     isLoaded = true;
     return true;
+}
+
+bool CURLCrawler::idDuplicated(const std::string& id) {
+    if(!isLoaded) { return false; }
+    if(!mDoc->HasMember(ROOT_NODE)) { return false; }
+    for(auto& node : (*mDoc)[ROOT_NODE].GetArray()) {
+        if(!node.HasMember("ID")) { continue; }
+        if(node["ID"].GetString() == id) {
+             return true;
+        }
+    }
+    return false;
 }
 
 const std::string CURLCrawler::DEFAULT_PATH = "./CrawlingLists.json";

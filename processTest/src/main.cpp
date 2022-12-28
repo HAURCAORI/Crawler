@@ -9,10 +9,6 @@
 
 #include "testcode.hpp"
 
-#include "conversion.h"
-
-#include "scheduler.h"
-
 #include <chrono>
 #define BEGIN_CHRONO std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 #define END_CHRONO std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - begin).count() << "[ms]" << std::endl;
@@ -22,57 +18,17 @@ int main() {
     using namespace Crawler;
     using namespace std::chrono_literals;
 
-    using namespace Scheduler;
-    
-
-    Scheduler::Scheduler scheduler;
-    
-    for(int i = 1; i < 5; i++) {
-        TimePoint tp = TimePoint(2022,12,1);//TimePoint::now();
-        Trigger t(SCHEDULE_INTERVAL, tp + TimeDuration(0,0,5 + i*5), TimePoint(2025,1,1), TimeDuration(std::chrono::minutes(1)));
-        std::string str = std::to_string(i);
-        Scheduler::Schedule sch(str,str,t);
-        scheduler.add(sch);
-    }
-
-    //std::cout << scheduler.at(1).getStartTime() << std::endl;
-    //std::cout << scheduler.at(3).getStartTime() << std::endl;
-
-
-    std::this_thread::sleep_for(300s);
-/*    
-    for(int i = 1; i < 10; i++) {
-        Trigger t(SCHEDULE_MONTHLY, TimePoint(2024,i,i), TimePoint(2025,1,1), TimeDuration(std::chrono::hours(1)));
-        Scheduler::Schedule sch(t);
-        scheduler.add(sch);
-        std::cout
-    }
-    */
-    
-    
-    //scheduler.flush();
-    
-    /*
-    int iterCount = 0;
-    while(iterCount < 1000) {
-        sch.execute(std::chrono::system_clock::now() + std::chrono::hours(iterCount*24));
-        iterCount += 1;
-    }
-    */
-
-
-
     //ParsingTest parsingtest;
     //parsingtest.excute();
-/*
+
     Crawler::CURLCrawler object;
     object.setSaveChange(false);
     //obj.createListFile("./CrawlingLists.json", true);
     object.loadList();
-    //obj.addList("A","https://www.naver.com/,","/div/div");
+    //std::cout << object.addList("K","https://www.naver.com/,","/div/div") << std::endl;
     auto o = object.at(2);
     o.execute();
-*/
+
     //std::this_thread::sleep_for(1s);
 
     //o.setURIOptions({{"a","b"}});
