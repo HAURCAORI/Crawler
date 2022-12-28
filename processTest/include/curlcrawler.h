@@ -107,10 +107,10 @@ private:
     std::future<void> mFuture;
 public:
     CrawlingObject(rapidjson::Value& value, rapidjson::Allocation& allocation);
-    CrawlingObject(const CrawlingObject& src) = default;
+    CrawlingObject(const CrawlingObject& src) = delete;
     CrawlingObject(CrawlingObject&& src) = default;
     virtual ~CrawlingObject() noexcept;
-    CrawlingObject& operator=(const CrawlingObject& src) = default;
+    CrawlingObject& operator=(const CrawlingObject& src) = delete;
     CrawlingObject& operator=(CrawlingObject&& SRC) = default;
 
     // Process
@@ -189,7 +189,9 @@ public:
 
     bool addList(const std::string& id, const URI& uri, Output output, Schedule schedule);
     bool addList(const std::string& id, const std::string& url, const std::string& target, Adapter adapter = Adapter::Console);
-    void eraseList();
+    void eraseList(); // 아직 구현 x
+
+    size_t count();
 
     CrawlingObject& at(size_t index);
     CrawlingObject& at(const std::string& id);

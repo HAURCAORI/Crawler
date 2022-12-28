@@ -33,7 +33,8 @@ int main() {
     //obj.createListFile("./CrawlingLists.json", true);
     object.loadList();
     //std::cout << object.addList("K","https://www.naver.com/,","/div/div") << std::endl;
-    //auto o = object.at(2);
+    auto& o = object.at("C");
+    std::cout << o.getID() << std::endl;
     //o.execute();
     
 
