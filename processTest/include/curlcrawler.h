@@ -193,6 +193,7 @@ public:
     CrawlingObject operator[](size_t index);
     CrawlingObject operator[](const std::string& id);
 
+
     // Valid flag 확인하는 Valid Method 추가하기
 
     void setSaveChange(bool value);

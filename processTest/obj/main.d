@@ -215,4 +215,13 @@ processTest/obj/main.o: processTest/src/main.cpp \
  /usr/include/x86_64-linux-gnu/c++/7/bits/c++io.h \
  /usr/include/c++/7/bits/fstream.tcc /usr/include/c++/7/sstream \
  /usr/include/c++/7/bits/sstream.tcc processTest/include/curlcrawler.h \
- processTest/include/stringextension.h /usr/include/c++/7/algorithm
+ processTest/include/stringextension.h /usr/include/c++/7/algorithm \
+ processTest/include/scheduler.h /usr/include/c++/7/iomanip \
+ /usr/include/c++/7/locale /usr/include/c++/7/bits/locale_facets_nonio.h \
+ /usr/include/x86_64-linux-gnu/c++/7/bits/time_members.h \
+ /usr/include/x86_64-linux-gnu/c++/7/bits/messages_members.h \
+ /usr/include/libintl.h /usr/include/c++/7/bits/locale_facets_nonio.tcc \
+ /usr/include/c++/7/bits/locale_conv.h \
+ /usr/include/c++/7/bits/stringfwd.h /usr/include/c++/7/bits/allocator.h \
+ /usr/include/c++/7/bits/codecvt.h /usr/include/c++/7/bits/unique_ptr.h \
+ /usr/include/c++/7/bits/quoted_string.h

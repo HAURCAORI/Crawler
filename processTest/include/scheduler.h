@@ -114,6 +114,61 @@ time_t make_local_time(int year, int month, int day, int hour, int minute, int s
     return std::mktime(&timeinfo);
 }
 
+/**
+ *  string to time_t function
+ */
+bool make_local_time(const std::string& str, std::tm* timeinfo) {
+    bool setdate = false;
+    int count = 0, temp = 0;
+    for(auto it = str.begin(); it != str.end(); ++it) {
+        if(isdigit(*it)) { temp *= 10; temp += *it - '0'; continue; }
+        if(count == 0) {
+            if(*it == '-' || *it == '.') {
+                if(setdate) { continue; }
+                if(temp > 9999) { return false; }
+                if(temp < 100) { temp += 2000; }
+                timeinfo->tm_year = temp - 1900;
+                temp = 0; setdate = true; ++count;
+            } else if(*it == ':') {
+                if(temp > 24) { return false; }
+                timeinfo->tm_hour = temp;
+                temp = 0; setdate = false; ++count;
+            }
+        } else if(count == 1) {
+            if(*it == '-' || *it == '.') {
+                if(temp > 12) { return false; }
+                timeinfo->tm_mon = temp - 1;
+                temp = 0; ++count;
+            } else if(*it == ':') {
+                if(temp > 60) { return false; }
+                timeinfo->tm_min = temp;
+                temp = 0; ++count;
+            }
+        } else if(count == 2) {
+            if(*it == ' ' || *it == '.') {
+                if(setdate) {
+                    if(temp > 31) { return false; }
+                    timeinfo->tm_mday = temp;
+                } else {
+                    if(temp > 60) { return false; }
+                    timeinfo->tm_sec = temp;
+                }
+                temp = 0; count = 0;
+            }
+        }
+    }
+    if(count == 2) {
+        if(setdate) {
+            if(temp > 31) { return false; }
+            timeinfo->tm_mday = temp;
+        } else {
+            if(temp > 60) { return false; }
+            timeinfo->tm_sec = temp;    
+        }
+    }
+    return true;
+}
+
 
 /**
  *  namespace Scheduler
@@ -155,7 +210,17 @@ public:
     TimePoint(const std::chrono::system_clock::duration& Duration) : mPoint(std::chrono::system_clock::now() + Duration) {}
     TimePoint(int year, int month, int day, int hour = 0, int minute = 0, int second = 0)
              : mPoint(std::chrono::system_clock::from_time_t(make_local_time(year, month, day, hour, minute, second))) {}
-    
+    TimePoint(const std::string& str) {
+        if(str.empty()) { mPoint = std::chrono::system_clock::now(); return; }
+        std::tm time = {};
+        if(make_local_time(str, &time)) {
+            mPoint = std::chrono::system_clock::from_time_t(std::mktime(&time));
+        } else {
+            throw std::invalid_argument("TimePoint invalid argument.");
+        }
+    }
+
+
     // Destructor
     virtual ~TimePoint() = default;
 

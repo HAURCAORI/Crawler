@@ -254,14 +254,4 @@ processTest/obj/curlcrawler.o: processTest/src/curlcrawler.cpp \
  /usr/include/x86_64-linux-gnu/bits/getopt_posix.h \
  /usr/include/x86_64-linux-gnu/bits/getopt_core.h \
  /usr/include/x86_64-linux-gnu/bits/unistd.h /usr/include/c++/7/iostream \
- processTest/include/stringextension.h /usr/include/c++/7/algorithm \
- processTest/include/scheduler.h /usr/include/c++/7/iomanip \
- /usr/include/c++/7/locale /usr/include/c++/7/bits/locale_facets_nonio.h \
- /usr/include/x86_64-linux-gnu/c++/7/bits/time_members.h \
- /usr/include/x86_64-linux-gnu/c++/7/bits/messages_members.h \
- /usr/include/libintl.h /usr/include/c++/7/bits/locale_facets_nonio.tcc \
- /usr/include/c++/7/bits/locale_conv.h \
- /usr/include/c++/7/bits/stringfwd.h /usr/include/c++/7/bits/allocator.h \
- /usr/include/c++/7/bits/codecvt.h /usr/include/c++/7/bits/unique_ptr.h \
- /usr/include/c++/7/bits/quoted_string.h /usr/include/c++/7/sstream \
- /usr/include/c++/7/bits/sstream.tcc
+ processTest/include/stringextension.h /usr/include/c++/7/algorithm

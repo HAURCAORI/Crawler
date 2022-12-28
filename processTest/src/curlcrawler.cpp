@@ -816,7 +816,11 @@ void CURLCrawler::validCheck(rapidjson::Value& node) {
 
 void CURLCrawler::initSchedule() {
     Scheduler::Trigger trigger;
+    try {
+        trigger.start = 
+    } catch(const std::invalid_argument& ex) {
 
+    }
 }
 
 bool CURLCrawler::saveListFile() noexcept{
