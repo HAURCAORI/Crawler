@@ -44,8 +44,8 @@ enum class OutputType { NONE, String, Value, Bool };
 static const std::map<OutputType, std::string> strOutputType = {{ OutputType::String, "String" }, { OutputType::Value, "Value" }, { OutputType::Bool, "Bool" }};
 enum class Adapter { NONE, File, Console, SQL };
 static const std::map<Adapter, std::string> strAdapter = {{ Adapter::File, "File" }, { Adapter::Console, "Console" }, { Adapter::SQL, "SQL" }};
-enum class ScheduleType { NONE, Once, Interval, Daily, Weekly, Monthly };
-static const std::map<ScheduleType, std::string> strScheduleType = {{ ScheduleType::Once, "Once" }, { ScheduleType::Interval, "Interval" }, { ScheduleType::Daily, "Daily" }, { ScheduleType::Weekly, "Weekly" }, { ScheduleType::Monthly, "Monthly" }};
+enum class CrawlingScheduleType { NONE, Once, Interval, Daily, Weekly, Monthly };
+static const std::map<CrawlingScheduleType, std::string> strScheduleType = {{ CrawlingScheduleType::Once, "Once" }, { CrawlingScheduleType::Interval, "Interval" }, { CrawlingScheduleType::Daily, "Daily" }, { CrawlingScheduleType::Weekly, "Weekly" }, { CrawlingScheduleType::Monthly, "Monthly" }};
 
 
 typedef std::vector<std::string> Headers;
@@ -84,13 +84,13 @@ struct Output {
 
 // Schedule Struct
 struct Schedule {
-    ScheduleType type;
+    CrawlingScheduleType type;
     std::string start;
     std::string expired;
     std::string interval;
-    Schedule() : type(ScheduleType::Once) {}
-    Schedule(ScheduleType schedule) : type(schedule) {}
-    Schedule(ScheduleType schedule, const std::string& startTime, const std::string& expiredTime, const std::string& intervalTime)
+    Schedule() : type(CrawlingScheduleType::Once) {}
+    Schedule(CrawlingScheduleType schedule) : type(schedule) {}
+    Schedule(CrawlingScheduleType schedule, const std::string& startTime, const std::string& expiredTime, const std::string& intervalTime)
                 : type(schedule), start(startTime), expired(expiredTime), interval(intervalTime) {}
 };
 
@@ -125,6 +125,8 @@ public:
     // Process
     void execute();
 
+    Scheduler::Schedule* getSchedule();
+
     // ID
     std::string getID() const;
 
@@ -158,12 +160,12 @@ public:
     void setOutputPlaceholders(const Placeholders& placeholders);
 
     // SCHEDULE
-    ScheduleType getScheduleType() const;
+    CrawlingScheduleType getScheduleType() const;
     std::string getScheduleStart() const;
     std::string getScheduleExpired() const;
     std::string getScheduleInterval() const;
     //std::string getScheduleValue() const;
-    void setScheduleType(ScheduleType scheduletype);
+    void setScheduleType(CrawlingScheduleType scheduletype);
     void setScheduleStart(const std::string& time);
     void setScheduleExpired(const std::string& time);
     void setScheduleInterval(const std::string& time);

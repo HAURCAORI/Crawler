@@ -188,7 +188,8 @@ enum ScheduleResult {
     SKED_SUCCESS = 0,
     SKED_WAIT,
     SKED_EXPIRED,
-    SKED_FAIL
+    SKED_FAIL,
+    SKED_ERROR
 };
 
 // Forward declaration of TimeDuration.
@@ -289,6 +290,17 @@ public:
         mDuration += std::chrono::seconds(second);
     }
     TimeDuration(int day, int hour, int minute, int second) : TimeDuration(hour + day*24, minute, second) {}
+    TimeDuration(const std::string& str) {
+        if(str.empty()) { mDuration = std::chrono::system_clock::duration::zero(); return; }
+        std::tm time = {};
+        if(make_local_time(str, &time)) {
+            mDuration = std::chrono::hours(time.tm_hour);
+            mDuration += std::chrono::minutes(time.tm_min);
+            mDuration += std::chrono::seconds(time.tm_sec);
+        } else {
+            throw std::invalid_argument("TimePoint invalid argument.");
+        }
+    }
 
     // Destructor
     virtual ~TimeDuration() = default;
@@ -553,15 +565,21 @@ void WorkerThread() {
         std::unique_lock<std::mutex> lock(m_job_q_);
         cv_job_q_.wait_for(lock, mWaitTime.get(), [this]() { return (mSuccess && !mSchedules.empty()) || mStop; });
         if(mStop) { return; }
-        std::cout << TimePoint::now() << " - thread" << std::endl;
+        //std::cout << TimePoint::now() << " - thread" << std::endl;
         if(mSchedules.empty()) { continue; }
-        //mSchedules.print();
+        mSchedules.print();
 
         auto job = mSchedules.top();
         mSchedules.pop();
         lock.unlock();
         
-        auto ret = job.execute();
+        ScheduleResult ret = ScheduleResult::SKED_SUCCESS;
+        try {
+            ret = job.execute();
+        } catch(std::exception ex) {
+            ret = ScheduleResult::SKED_ERROR;
+            fprintf(stderr, "Thread error\r\n");
+        }
 
         lock.lock();
         if(ret == ScheduleResult::SKED_SUCCESS) {
@@ -586,7 +604,7 @@ public:
     Scheduler(Scheduler&& src) = default;
 
     // Destructor
-    virtual ~Scheduler() noexcept { stop();}
+    virtual ~Scheduler() noexcept { stop(); }
     
     // Assignment
     Scheduler& operator=(const Scheduler& rhs) = default;

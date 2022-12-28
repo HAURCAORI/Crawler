@@ -170,18 +170,39 @@ void CrawlingObject::success(bool result) {
 }
 
 void CrawlingObject::init() {
-    //Scheduler::ScheduleType schedule_type;
+    Scheduler::ScheduleType schedule_type;
+    switch(getScheduleType()) {
+        case CrawlingScheduleType::Once: schedule_type = Scheduler::ScheduleType::SCHEDULE_ONCE;
+        break;
+        case CrawlingScheduleType::Interval : schedule_type = Scheduler::ScheduleType::SCHEDULE_INTERVAL;
+        break;
+        case CrawlingScheduleType::Daily : schedule_type = Scheduler::ScheduleType::SCHEDULE_DAILY;
+        break;
+        case CrawlingScheduleType::Weekly : schedule_type = Scheduler::ScheduleType::SCHEDULE_WEEKLY;
+        break;
+        case CrawlingScheduleType::Monthly : schedule_type = Scheduler::ScheduleType::SCHEDULE_MONTHLY;
+        break;
+        default: schedule_type = Scheduler::ScheduleType::SCHEDULE_ONCE;
+        break;
+    }
+    try {
+        Scheduler::TimePoint start(getScheduleStart());
+        Scheduler::TimePoint expired(getScheduleExpired());
+        Scheduler::TimeDuration interval(getScheduleInterval());
 
-
-    Scheduler::Trigger trigger;
-    
-
-    Scheduler::Schedule schedule;
-
+        Scheduler::Trigger trigger(schedule_type, start, expired, interval);
+        
+        mSchedule = std::make_unique<Scheduler::Schedule>(Scheduler::Schedule(getID(), "", trigger));
+        //mSchedule->setEvent([&](){ execute(); });
+    } catch(const std::invalid_argument& ex) {
+        mSchedule.reset();
+        fprintf(stderr, "CrawlingObject has invalid argument.\r\n");
+        return;
+    }
 }
 
 
-CrawlingObject::CrawlingObject(rapidjson::Value& value, rapidjson::Allocation& allocation) : mCrawlingNode(value), alloc(allocation) {}
+CrawlingObject::CrawlingObject(rapidjson::Value& value, rapidjson::Allocation& allocation) : mCrawlingNode(value), alloc(allocation) { init(); }
 
 CrawlingObject::~CrawlingObject() noexcept {
     using namespace std::chrono_literals;
@@ -202,11 +223,15 @@ void CrawlingObject::execute() {
         }
         url.append(parameters);
     }
-
+    
     auto strs = ReplacePlaceholders(url, getURLPlaceholders());
     for(auto& s : strs) {
         enqueueObject(s);
     }
+}
+
+Scheduler::Schedule* CrawlingObject::getSchedule() {
+    return mSchedule.get();
 }
 
 // ID
@@ -512,23 +537,23 @@ void CrawlingObject::setOutputPlaceholders(const Placeholders& placeholders) {
 }
 
 // SCHEDULE
-ScheduleType CrawlingObject::getScheduleType() const {
-    if(!mCrawlingNode.HasMember("Schedule")) { return ScheduleType::NONE; }
-    if(!mCrawlingNode["Schedule"].HasMember("Type")) { return ScheduleType::NONE; }
-    if(!mCrawlingNode["Schedule"]["Type"].IsString()) { return ScheduleType::NONE; }
+CrawlingScheduleType CrawlingObject::getScheduleType() const {
+    if(!mCrawlingNode.HasMember("Schedule")) { return CrawlingScheduleType::NONE; }
+    if(!mCrawlingNode["Schedule"].HasMember("Type")) { return CrawlingScheduleType::NONE; }
+    if(!mCrawlingNode["Schedule"]["Type"].IsString()) { return CrawlingScheduleType::NONE; }
     std::string value = TrimAndLower(mCrawlingNode["Schedule"]["Type"].GetString());
     if(value == "once") {
-        return ScheduleType::Once;
+        return CrawlingScheduleType::Once;
     } else if(value == "interval") {
-        return ScheduleType::Interval;
+        return CrawlingScheduleType::Interval;
     } else if(value == "daily") {
-        return ScheduleType::Daily;
+        return CrawlingScheduleType::Daily;
     } else if(value == "weekly") {
-        return ScheduleType::Weekly;
+        return CrawlingScheduleType::Weekly;
     } else if(value == "monthly") {
-        return ScheduleType::Monthly;
+        return CrawlingScheduleType::Monthly;
     } else {
-        return ScheduleType::NONE;
+        return CrawlingScheduleType::NONE;
     }
 }
 
@@ -562,19 +587,19 @@ std::string CrawlingObject::getScheduleValue() const {
 }
 */
 
-void CrawlingObject::setScheduleType(ScheduleType scheduletype) {
+void CrawlingObject::setScheduleType(CrawlingScheduleType scheduletype) {
     if(!mCrawlingNode.HasMember("Schedule")) { return; }
     if(!mCrawlingNode["Schedule"].HasMember("Type")) { return; }
     switch(scheduletype) {
-        case ScheduleType::Once: mCrawlingNode["Schedule"]["Type"].SetString("Once", alloc);
+        case CrawlingScheduleType::Once: mCrawlingNode["Schedule"]["Type"].SetString("Once", alloc);
         break;
-        case ScheduleType::Interval : mCrawlingNode["Schedule"]["Type"].SetString("Interval", alloc);
+        case CrawlingScheduleType::Interval : mCrawlingNode["Schedule"]["Type"].SetString("Interval", alloc);
         break;
-        case ScheduleType::Daily : mCrawlingNode["Schedule"]["Type"].SetString("Daily", alloc);
+        case CrawlingScheduleType::Daily : mCrawlingNode["Schedule"]["Type"].SetString("Daily", alloc);
         break;
-        case ScheduleType::Weekly : mCrawlingNode["Schedule"]["Type"].SetString("Weekly", alloc);
+        case CrawlingScheduleType::Weekly : mCrawlingNode["Schedule"]["Type"].SetString("Weekly", alloc);
         break;
-        case ScheduleType::Monthly : mCrawlingNode["Schedule"]["Type"].SetString("Monthly", alloc);
+        case CrawlingScheduleType::Monthly : mCrawlingNode["Schedule"]["Type"].SetString("Monthly", alloc);
         break;
         default: mCrawlingNode["Schedule"]["Type"].SetString("NULL", alloc);
         break;
@@ -647,7 +672,7 @@ bool CrawlingObject::operator==(const CrawlingObject& rhs) {
     return this->mCrawlingNode == rhs.mCrawlingNode;
 }
 
-CURLCrawler::CURLCrawler() : mDoc(std::make_unique<rapidjson::Document>()) {
+CURLCrawler::CURLCrawler() : mDoc(std::make_unique<rapidjson::Document>()), mScheduler(std::make_unique<Scheduler::Scheduler>()) {
     
 }
 
@@ -673,12 +698,15 @@ bool CURLCrawler::createListFile(const std::string& path, bool trunc) {
 }
 
 void CURLCrawler::add(CrawlingObject&& obj) {
+    Scheduler::Schedule* sch = obj.getSchedule();
+    if(sch != nullptr) {
+        mScheduler->add(*sch);
+    }
     if(std::find(mObj.begin(), mObj.end(), obj) == mObj.end()) {
         mObj.emplace_back(std::move(obj));
     }
 
-
-    //mScheduler->add();
+    
 }
 
 bool CURLCrawler::addList(const std::string& id, const URI& uri, Output output, Schedule schedule) {

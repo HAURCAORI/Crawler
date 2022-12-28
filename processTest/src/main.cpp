@@ -35,12 +35,15 @@ int main() {
     //std::cout << object.addList("K","https://www.naver.com/,","/div/div") << std::endl;
     auto& o = object.at("C");
     std::cout << o.getID() << std::endl;
+
+    std::this_thread::sleep_for(300s);
+
     //o.execute();
     
 
     // todo: execute 될 때 info valid 수정 경로 확인
 
-    //std::this_thread::sleep_for(1s);
+    
 
     //o.setURIOptions({{"a","b"}});
     
