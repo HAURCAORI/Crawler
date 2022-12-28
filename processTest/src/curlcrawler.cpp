@@ -169,6 +169,18 @@ void CrawlingObject::success(bool result) {
     mCrawlingNode["Info"]["PerformCount"].SetInt(count + 1);
 }
 
+void CrawlingObject::init() {
+    //Scheduler::ScheduleType schedule_type;
+
+
+    Scheduler::Trigger trigger;
+    
+
+    Scheduler::Schedule schedule;
+
+}
+
+
 CrawlingObject::CrawlingObject(rapidjson::Value& value, rapidjson::Allocation& allocation) : mCrawlingNode(value), alloc(allocation) {}
 
 CrawlingObject::~CrawlingObject() noexcept {
@@ -631,6 +643,9 @@ std::string CrawlingObject::getDetails() const {
     return mCrawlingNode["Info"]["Details"].GetString();
 }
 
+bool CrawlingObject::operator==(const CrawlingObject& rhs) {
+    return this->mCrawlingNode == rhs.mCrawlingNode;
+}
 
 CURLCrawler::CURLCrawler() : mDoc(std::make_unique<rapidjson::Document>()) {
     
@@ -657,12 +672,21 @@ bool CURLCrawler::createListFile(const std::string& path, bool trunc) {
     return true;
 }
 
+void CURLCrawler::add(CrawlingObject&& obj) {
+    if(std::find(mObj.begin(), mObj.end(), obj) == mObj.end()) {
+        mObj.emplace_back(std::move(obj));
+    }
+
+
+    //mScheduler->add();
+}
+
 bool CURLCrawler::addList(const std::string& id, const URI& uri, Output output, Schedule schedule) {
     if(!isLoaded) { return false; }
     if(!mDoc->HasMember(ROOT_NODE)) { return false; }
     if(idDuplicated(id)) { return false; }
     auto& node = (*mDoc)[ROOT_NODE].PushBack(createListNode(id, uri, output, schedule).Move(), mDoc->GetAllocator());
-    mObj.emplace_back(std::move(CrawlingObject(node, mDoc->GetAllocator())));
+    add(std::move(CrawlingObject(node, mDoc->GetAllocator())));
     return true;
 }
 
@@ -671,7 +695,7 @@ bool CURLCrawler::addList(const std::string& id, const std::string& url, const s
     if(!mDoc->HasMember(ROOT_NODE)) { return false; }
     if(idDuplicated(id)) { return false; }
     auto& node = (*mDoc)[ROOT_NODE].PushBack(createListNode(id,URI(url), Output(target, adapter), Schedule()).Move(), mDoc->GetAllocator());
-    mObj.emplace_back(std::move(CrawlingObject(node, mDoc->GetAllocator())));
+    add(std::move(CrawlingObject(node, mDoc->GetAllocator())));
     return true;
 }
 
@@ -864,7 +888,7 @@ void CURLCrawler::validCheck(rapidjson::Value& node) {
 void CURLCrawler::initObject() {
     auto list = (*mDoc)[ROOT_NODE].GetArray();
     for(auto it = list.begin(); it != list.end(); ++it) {
-        mObj.emplace_back(std::move(CrawlingObject(*it, mDoc->GetAllocator())));
+        add(std::move(CrawlingObject(*it, mDoc->GetAllocator())));
     }
 }
 
@@ -927,7 +951,6 @@ bool CURLCrawler::loadListFile() {
     isLoaded = true;
 
     initObject();
-    initSchedule();
 
     return true;
 }

@@ -30,6 +30,11 @@ typedef rapidjson::GenericValue<rapidjson::UTF8<char>,rapidjson::MemoryPoolAlloc
 typedef rapidjson::MemoryPoolAllocator<rapidjson::CrtAllocator> Allocation;
 }
 
+namespace Scheduler {
+class Schedule;
+class Scheduler;
+}
+
 namespace Crawler {
 
 // Enum
@@ -102,8 +107,12 @@ class CrawlingObject {
 private:
     rapidjson::Value& mCrawlingNode;
     rapidjson::Allocation& alloc;
+    
+    std::unique_ptr<Scheduler::Schedule> mSchedule;
+
     void enqueueObject(const std::string& url);
     void success(bool result);
+    void init();
     std::future<void> mFuture;
 public:
     CrawlingObject(rapidjson::Value& value, rapidjson::Allocation& allocation);
@@ -111,7 +120,7 @@ public:
     CrawlingObject(CrawlingObject&& src) = default;
     virtual ~CrawlingObject() noexcept;
     CrawlingObject& operator=(const CrawlingObject& src) = delete;
-    CrawlingObject& operator=(CrawlingObject&& SRC) = default;
+    CrawlingObject& operator=(CrawlingObject&& src) = default;
 
     // Process
     void execute();
@@ -166,6 +175,8 @@ public:
     int64_t getTimestamp() const;
     int getPerformCount() const;
     std::string getDetails() const;
+
+    bool operator==(const CrawlingObject& rhs);
 };
 
 /*
@@ -187,9 +198,11 @@ public:
     bool loadList(const std::string& path = DEFAULT_PATH);
     static bool createListFile(const std::string& path = DEFAULT_PATH, bool trunc = false);
 
+    void add(CrawlingObject&& obj);
     bool addList(const std::string& id, const URI& uri, Output output, Schedule schedule);
     bool addList(const std::string& id, const std::string& url, const std::string& target, Adapter adapter = Adapter::Console);
     void eraseList(); // 아직 구현 x
+    
 
     size_t count();
 
@@ -224,7 +237,7 @@ private:
     static const std::string DEFAULT_JSON;
     static const char* ROOT_NODE;
     
-    std::unordered_map<std::string, int> umIdSchedule;
+    std::unique_ptr<Scheduler::Scheduler> mScheduler;
 };
 
 }
