@@ -51,14 +51,16 @@
             },
             "Schedule": {
                 "Type": "Once",
-                "Value": ""
+                "Start": "",
+                "Expired": "",
+                "Interval": ""
             },
             "Info": {
                 "Valid": true,
                 "Success": true,
                 "Timestamp": 1668693344414,
                 "PerformCount": 49,
-                "Details": ""
+                "Details": "Schedule Requires : 'Type', 'Start', 'Expired', 'Interval'\r\n"
             }
         },
         {
@@ -116,14 +118,16 @@
             },
             "Schedule": {
                 "Type": "Once",
-                "Value": ""
+                "Start": "",
+                "Expired": "",
+                "Interval": ""
             },
             "Info": {
                 "Valid": true,
                 "Success": true,
                 "Timestamp": 1669472905975,
                 "PerformCount": 167,
-                "Details": ""
+                "Details": "Schedule Requires : 'Type', 'Start', 'Expired', 'Interval'\r\n"
             }
         },
         {
@@ -142,8 +146,7 @@
             },
             "Output": {
                 "Target": "/html/body/div[3]/div[3]/div[1]/div[1]/div[1]/div[2]/div[1]/table/tbody/*/th/a",
-                "Placeholders": [
-                ],
+                "Placeholders": [],
                 "Type": "String",
                 "Adapter": "IO_ADAPTER_FILE",
                 "Options": [
@@ -166,14 +169,16 @@
             },
             "Schedule": {
                 "Type": "Once",
-                "Value": ""
+                "Start": "",
+                "Expired": "",
+                "Interval": ""
             },
             "Info": {
                 "Valid": true,
                 "Success": true,
-                "Timestamp": 1668673617441,
-                "PerformCount": 27,
-                "Details": ""
+                "Timestamp": 1672211046194,
+                "PerformCount": 30,
+                "Details": "Schedule Requires : 'Type', 'Start', 'Expired', 'Interval'\r\n"
             }
         }
     ]

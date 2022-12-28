@@ -24,8 +24,11 @@
         ]
       },
       "Schedule": { #실행 조건 설정(필수)
-        "Type" : "Time", # [Once, Time, Interval, Weekly]
-        "Value" : "3600" # value
+        "Type" : "Time", # [Once, Interval, Daily, Weekly, Monthly]
+        "Start" : "2022.12.01. 09" # 시작 시간 
+        "Expired" : " " # 만기 시간
+        "Interval" : " " # interval 설정 시 필요
+        //"Value" : "3600" # value
       },
       "Info" : { # 실행 결과 및 통계(자동 생성)
         "Success" : true,

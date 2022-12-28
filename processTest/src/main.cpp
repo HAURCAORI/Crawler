@@ -9,6 +9,8 @@
 
 #include "testcode.hpp"
 
+#include "scheduler.h"
+
 #include <chrono>
 #define BEGIN_CHRONO std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 #define END_CHRONO std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - begin).count() << "[ms]" << std::endl;
@@ -21,13 +23,20 @@ int main() {
     //ParsingTest parsingtest;
     //parsingtest.excute();
 
+    Scheduler::TimePoint tp("string");
+    std::cout << tp << std::endl;
+
+/*
     Crawler::CURLCrawler object;
     object.setSaveChange(false);
     //obj.createListFile("./CrawlingLists.json", true);
     object.loadList();
     //std::cout << object.addList("K","https://www.naver.com/,","/div/div") << std::endl;
-    auto o = object.at(2);
-    o.execute();
+    //auto o = object.at(2);
+    //o.execute();
+    */
+
+    // todo: execute 될 때 info valid 수정 경로 확인
 
     //std::this_thread::sleep_for(1s);
 

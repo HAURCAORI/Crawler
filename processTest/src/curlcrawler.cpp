@@ -178,6 +178,7 @@ CrawlingObject::~CrawlingObject() noexcept {
 
 // Process
 void CrawlingObject::execute() {
+    if(!isValid()) { throw std::runtime_error("Try to execute invalid CrawlingObject"); }
     std::string url = getURL();
     std::string parameters = getParameters();
     if(!parameters.empty()) {
@@ -496,25 +497,48 @@ ScheduleType CrawlingObject::getScheduleType() const {
     std::string value = TrimAndLower(mCrawlingNode["Schedule"]["Type"].GetString());
     if(value == "once") {
         return ScheduleType::Once;
-    } else if(value == "time") {
-        return ScheduleType::Time;
     } else if(value == "interval") {
         return ScheduleType::Interval;
-    } else if(value == "weekly") {
-        return ScheduleType::Weekly;
     } else if(value == "daily") {
         return ScheduleType::Daily;
+    } else if(value == "weekly") {
+        return ScheduleType::Weekly;
+    } else if(value == "monthly") {
+        return ScheduleType::Monthly;
     } else {
         return ScheduleType::NONE;
     }
 }
 
+std::string CrawlingObject::getScheduleStart() const {
+    if(!mCrawlingNode.HasMember("Schedule")) { return std::string(); }
+    if(!mCrawlingNode["Schedule"].HasMember("Start")) { return std::string(); }
+    if(!mCrawlingNode["Schedule"]["Start"].IsString()) { return std::string(); }
+    return mCrawlingNode["Schedule"]["Start"].GetString();
+}
+
+std::string CrawlingObject::getScheduleExpired() const {
+    if(!mCrawlingNode.HasMember("Schedule")) { return std::string(); }
+    if(!mCrawlingNode["Schedule"].HasMember("Expired")) { return std::string(); }
+    if(!mCrawlingNode["Schedule"]["Expired"].IsString()) { return std::string(); }
+    return mCrawlingNode["Schedule"]["Expired"].GetString();
+}
+
+std::string CrawlingObject::getScheduleInterval() const {
+    if(!mCrawlingNode.HasMember("Schedule")) { return std::string(); }
+    if(!mCrawlingNode["Schedule"].HasMember("Interval")) { return std::string(); }
+    if(!mCrawlingNode["Schedule"]["Interval"].IsString()) { return std::string(); }
+    return mCrawlingNode["Schedule"]["Interval"].GetString();
+}
+
+/* deprecated
 std::string CrawlingObject::getScheduleValue() const {
     if(!mCrawlingNode.HasMember("Schedule")) { return std::string(); }
     if(!mCrawlingNode["Schedule"].HasMember("Value")) { return std::string(); }
     if(!mCrawlingNode["Schedule"]["Value"].IsString()) { return std::string(); }
     return mCrawlingNode["Schedule"]["Value"].GetString();
 }
+*/
 
 void CrawlingObject::setScheduleType(ScheduleType scheduletype) {
     if(!mCrawlingNode.HasMember("Schedule")) { return; }
@@ -522,24 +546,44 @@ void CrawlingObject::setScheduleType(ScheduleType scheduletype) {
     switch(scheduletype) {
         case ScheduleType::Once: mCrawlingNode["Schedule"]["Type"].SetString("Once", alloc);
         break;
-        case ScheduleType::Time : mCrawlingNode["Schedule"]["Type"].SetString("Time", alloc);
-        break;
         case ScheduleType::Interval : mCrawlingNode["Schedule"]["Type"].SetString("Interval", alloc);
+        break;
+        case ScheduleType::Daily : mCrawlingNode["Schedule"]["Type"].SetString("Daily", alloc);
         break;
         case ScheduleType::Weekly : mCrawlingNode["Schedule"]["Type"].SetString("Weekly", alloc);
         break;
-        case ScheduleType::Daily : mCrawlingNode["Schedule"]["Type"].SetString("Daily", alloc);
+        case ScheduleType::Monthly : mCrawlingNode["Schedule"]["Type"].SetString("Monthly", alloc);
         break;
         default: mCrawlingNode["Schedule"]["Type"].SetString("NULL", alloc);
         break;
     }
 }
 
+void CrawlingObject::setScheduleStart(const std::string& value) {
+    if(!mCrawlingNode.HasMember("Schedule")) { return; }
+    if(!mCrawlingNode["Schedule"].HasMember("Start")) { return; }
+    mCrawlingNode["Schedule"]["Start"].SetString(value, alloc);
+}
+
+void CrawlingObject::setScheduleExpired(const std::string& value) {
+    if(!mCrawlingNode.HasMember("Schedule")) { return; }
+    if(!mCrawlingNode["Schedule"].HasMember("Expired")) { return; }
+    mCrawlingNode["Schedule"]["Expired"].SetString(value, alloc);
+}
+
+void CrawlingObject::setScheduleInterval(const std::string& value) {
+    if(!mCrawlingNode.HasMember("Schedule")) { return; }
+    if(!mCrawlingNode["Schedule"].HasMember("Interval")) { return; }
+    mCrawlingNode["Schedule"]["Interval"].SetString(value, alloc);
+}
+
+/* deprecated
 void CrawlingObject::setScheduleValue(const std::string& value) {
     if(!mCrawlingNode.HasMember("Schedule")) { return; }
     if(!mCrawlingNode["Schedule"].HasMember("Value")) { return; }
     mCrawlingNode["Schedule"]["Value"].SetString(value, alloc);
 }
+*/
 
 // INFO
 bool CrawlingObject::isValid() const {
@@ -690,7 +734,10 @@ rapidjson::Value CURLCrawler::createListNode(const std::string& id, const URI& u
     {
         rapidjson::Value node_Schedule(rapidjson::kObjectType);
         node_Schedule.AddMember("Type", strScheduleType.at(schedule.type), alloc);
-        node_Schedule.AddMember("Value", schedule.value, alloc);
+        node_Schedule.AddMember("Start", schedule.start, alloc);
+        node_Schedule.AddMember("Expired", schedule.expired, alloc);
+        node_Schedule.AddMember("Interval", schedule.interval, alloc);
+        //node_Schedule.AddMember("Value", schedule.value, alloc);
         object.AddMember("Schedule", node_Schedule.Move(), alloc);
     }
 
@@ -760,11 +807,16 @@ void CURLCrawler::validCheck(rapidjson::Value& node) {
         return;
     }
 
-    if(!node["Schedule"].HasMember("Type") || !node["Schedule"].HasMember("Value")) {
-        node["Info"]["Details"].SetString("Schedule Requires : 'Type', 'Value'\r\n");
+    if(!node["Schedule"].HasMember("Type") || !node["Schedule"].HasMember("Start") || !node["Schedule"].HasMember("Expired") || !node["Schedule"].HasMember("Interval")) {
+        node["Info"]["Details"].SetString("Schedule Requires : 'Type', 'Start', 'Expired', 'Interval'\r\n");
         return;
     }
     node["Info"]["Valid"].SetBool(true);
+}
+
+void CURLCrawler::initSchedule() {
+    Scheduler::Trigger trigger;
+
 }
 
 bool CURLCrawler::saveListFile() noexcept{
@@ -813,6 +865,9 @@ bool CURLCrawler::loadListFile() {
     validCheckAll();
 
     isLoaded = true;
+
+    initSchedule();
+
     return true;
 }
 

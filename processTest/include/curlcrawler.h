@@ -39,8 +39,8 @@ enum class OutputType { NONE, String, Value, Bool };
 static const std::map<OutputType, std::string> strOutputType = {{ OutputType::String, "String" }, { OutputType::Value, "Value" }, { OutputType::Bool, "Bool" }};
 enum class Adapter { NONE, File, Console, SQL };
 static const std::map<Adapter, std::string> strAdapter = {{ Adapter::File, "File" }, { Adapter::Console, "Console" }, { Adapter::SQL, "SQL" }};
-enum class ScheduleType { NONE, Once, Time, Interval, Weekly, Daily };
-static const std::map<ScheduleType, std::string> strScheduleType = {{ ScheduleType::Once, "Once" }, { ScheduleType::Time, "Time" }, { ScheduleType::Interval, "Interval" }, { ScheduleType::Weekly, "Weekly" }, { ScheduleType::Daily, "Daily" }};
+enum class ScheduleType { NONE, Once, Interval, Daily, Weekly, Monthly };
+static const std::map<ScheduleType, std::string> strScheduleType = {{ ScheduleType::Once, "Once" }, { ScheduleType::Interval, "Interval" }, { ScheduleType::Daily, "Daily" }, { ScheduleType::Weekly, "Weekly" }, { ScheduleType::Monthly, "Monthly" }};
 
 
 typedef std::vector<std::string> Headers;
@@ -80,10 +80,13 @@ struct Output {
 // Schedule Struct
 struct Schedule {
     ScheduleType type;
-    std::string value;  // via function
+    std::string start;
+    std::string expired;
+    std::string interval;
     Schedule() : type(ScheduleType::Once) {}
     Schedule(ScheduleType schedule) : type(schedule) {}
-    Schedule(ScheduleType schedule, const std::string& val) : type(schedule), value(val) {}
+    Schedule(ScheduleType schedule, const std::string& startTime, const std::string& expiredTime, const std::string& intervalTime)
+                : type(schedule), start(startTime), expired(expiredTime), interval(intervalTime) {}
 };
 
 // Info Struct
@@ -144,9 +147,15 @@ public:
 
     // SCHEDULE
     ScheduleType getScheduleType() const;
-    std::string getScheduleValue() const;
+    std::string getScheduleStart() const;
+    std::string getScheduleExpired() const;
+    std::string getScheduleInterval() const;
+    //std::string getScheduleValue() const;
     void setScheduleType(ScheduleType scheduletype);
-    void setScheduleValue(const std::string& value);
+    void setScheduleStart(const std::string& time);
+    void setScheduleExpired(const std::string& time);
+    void setScheduleInterval(const std::string& time);
+    //void setScheduleValue(const std::string& value);
 
     // INFO
     bool isValid() const;
@@ -184,12 +193,15 @@ public:
     CrawlingObject operator[](size_t index);
     CrawlingObject operator[](const std::string& id);
 
+    // Valid flag 확인하는 Valid Method 추가하기
+
     void setSaveChange(bool value);
 private:
     rapidjson::Value createListNode(const std::string& id, const URI& uri, const Output& output, const Schedule& schedule); // Json List 생성
     rapidjson::Value createInfoNode(); // Json List 생성
     void validCheckAll();
-    void validCheck(rapidjson::Value& node); // 필수 노드 체크
+    void validCheck(rapidjson::Value& node); // 필수 노드 체크(Info 노드는 자동 생성), valid flag를 false로 설정
+    void initSchedule();
     bool saveListFile() noexcept;
     bool loadListFile();
     bool idDuplicated(const std::string& id);
@@ -204,7 +216,7 @@ private:
     static const std::string DEFAULT_JSON;
     static const char* ROOT_NODE;
     
-    std::unordered_map<int, int> mMap;
+    std::unordered_map<std::string, int> umIdSchedule;
 };
 
 }
