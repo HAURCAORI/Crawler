@@ -116,6 +116,9 @@ public:
     // Process
     void execute();
 
+    // ID
+    std::string getID() const;
+
     // URI
     std::string getURL() const;
     Method getMethod() const;
@@ -188,10 +191,10 @@ public:
     bool addList(const std::string& id, const std::string& url, const std::string& target, Adapter adapter = Adapter::Console);
     void eraseList();
 
-    CrawlingObject at(size_t index);
-    CrawlingObject at(const std::string& id);
-    CrawlingObject operator[](size_t index);
-    CrawlingObject operator[](const std::string& id);
+    CrawlingObject& at(size_t index);
+    CrawlingObject& at(const std::string& id);
+    CrawlingObject& operator[](size_t index);
+    CrawlingObject& operator[](const std::string& id);
 
 
     // Valid flag 확인하는 Valid Method 추가하기
@@ -202,6 +205,7 @@ private:
     rapidjson::Value createInfoNode(); // Json List 생성
     void validCheckAll();
     void validCheck(rapidjson::Value& node); // 필수 노드 체크(Info 노드는 자동 생성), valid flag를 false로 설정
+    void initObject();
     void initSchedule();
     bool saveListFile() noexcept;
     bool loadListFile();
@@ -212,6 +216,7 @@ private:
     bool isSaveChanges = true;
     int mCount = 0;
     std::unique_ptr<rapidjson::Document> mDoc;
+    std::vector<CrawlingObject> mObj;
     std::string mListFilePath;
     static const std::string DEFAULT_PATH;
     static const std::string DEFAULT_JSON;

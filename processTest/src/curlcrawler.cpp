@@ -173,7 +173,10 @@ CrawlingObject::CrawlingObject(rapidjson::Value& value, rapidjson::Allocation& a
 
 CrawlingObject::~CrawlingObject() noexcept {
     using namespace std::chrono_literals;
-    mFuture.wait_for(10s);
+    if(mFuture.valid()) {
+        mFuture.wait_for(10s);
+        // 왜 있지?
+    }
 }
 
 // Process
@@ -192,6 +195,13 @@ void CrawlingObject::execute() {
     for(auto& s : strs) {
         enqueueObject(s);
     }
+}
+
+// ID
+std::string CrawlingObject::getID() const {
+    if(!mCrawlingNode.HasMember("ID")) { return std::string(); }
+    if(!mCrawlingNode["ID"].IsString()) { return std::string(); }
+    return mCrawlingNode["ID"].GetString();
 }
 
 // URI
@@ -663,6 +673,36 @@ bool CURLCrawler::addList(const std::string& id, const std::string& url, const s
     return true;
 }
 
+CrawlingObject& CURLCrawler::at(size_t index) {
+    if(!isLoaded) {
+        throw std::runtime_error("JSON file doesn't loaded.");
+    }
+    if(index >= mObj.size()) { 
+        throw std::out_of_range("CurlCrawler out of range.");
+    }
+    return mObj[index];
+}
+
+CrawlingObject& CURLCrawler::at(const std::string& id) {
+    if(!isLoaded) {
+        throw std::runtime_error("JSON file doesn't loaded.");
+    }
+    auto it = std::find_if(mObj.begin(), mObj.end(), [id](const CrawlingObject& obj) { return obj.getID() == id;} );
+    if(it == mObj.end()) {
+        throw std::out_of_range("CurlCrawler out of range.");
+    }
+    return *it;
+}
+
+CrawlingObject& CURLCrawler::operator[](size_t index) {
+    return mObj[index];
+}
+
+CrawlingObject& CURLCrawler::operator[](const std::string& id) {
+    return *std::find_if(mObj.begin(), mObj.end(), [id](const CrawlingObject& obj) { return obj.getID() == id;} );
+}
+
+/* old version
 CrawlingObject CURLCrawler::at(size_t index) {
     if(!isLoaded) {
         throw std::runtime_error("JSON file doesn't loaded.");
@@ -687,6 +727,7 @@ CrawlingObject CURLCrawler::operator[](size_t index) {
 CrawlingObject CURLCrawler::operator[](const std::string& id) {
     return CrawlingObject((*mDoc)[ROOT_NODE][id], mDoc->GetAllocator());
 }
+*/
 
 void CURLCrawler::setSaveChange(bool value) {
     isSaveChanges = value;
@@ -814,13 +855,19 @@ void CURLCrawler::validCheck(rapidjson::Value& node) {
     node["Info"]["Valid"].SetBool(true);
 }
 
+void CURLCrawler::initObject() {
+    
+}
+
 void CURLCrawler::initSchedule() {
+    /*
     Scheduler::Trigger trigger;
     try {
         trigger.start = 
     } catch(const std::invalid_argument& ex) {
 
     }
+    */
 }
 
 bool CURLCrawler::saveListFile() noexcept{
