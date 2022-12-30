@@ -32,7 +32,7 @@ typedef rapidjson::MemoryPoolAllocator<rapidjson::CrtAllocator> Allocation;
 
 namespace Scheduler {
 class Schedule;
-class Scheduler;
+class EventScheduler;
 }
 
 namespace Crawler {
@@ -239,7 +239,7 @@ private:
     static const std::string DEFAULT_JSON;
     static const char* ROOT_NODE;
     
-    std::unique_ptr<Scheduler::Scheduler> mScheduler;
+    std::unique_ptr<Scheduler::EventScheduler> mScheduler;
 };
 
 }

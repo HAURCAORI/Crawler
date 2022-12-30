@@ -255,7 +255,7 @@ processTest/obj/curlcrawler.o: processTest/src/curlcrawler.cpp \
  /usr/include/x86_64-linux-gnu/bits/getopt_core.h \
  /usr/include/x86_64-linux-gnu/bits/unistd.h /usr/include/c++/7/iostream \
  processTest/include/stringextension.h /usr/include/c++/7/algorithm \
- processTest/include/scheduler.h /usr/include/c++/7/iomanip \
+ processTest/include/scheduler.hpp /usr/include/c++/7/iomanip \
  /usr/include/c++/7/locale /usr/include/c++/7/bits/locale_facets_nonio.h \
  /usr/include/x86_64-linux-gnu/c++/7/bits/time_members.h \
  /usr/include/x86_64-linux-gnu/c++/7/bits/messages_members.h \

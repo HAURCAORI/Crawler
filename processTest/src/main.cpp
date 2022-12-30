@@ -9,7 +9,7 @@
 
 #include "testcode.hpp"
 
-//#include "scheduler.h"
+#include "scheduler.hpp"
 
 #include <chrono>
 #define BEGIN_CHRONO std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
@@ -33,10 +33,11 @@ int main() {
     //obj.createListFile("./CrawlingLists.json", true);
     object.loadList();
     //std::cout << object.addList("K","https://www.naver.com/,","/div/div") << std::endl;
-    auto& o = object.at("C");
-    std::cout << o.getID() << std::endl;
+    //auto& o = object.at("C");
+    //std::cout << o.getID() << std::endl;
 
-    std::this_thread::sleep_for(300s);
+    std::this_thread::sleep_for(60s);
+    std::cout << "main end" << std::endl;
 
     //o.execute();
     

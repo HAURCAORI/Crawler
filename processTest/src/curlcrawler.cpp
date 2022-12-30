@@ -11,7 +11,7 @@
 #include <iostream>
 
 #include "stringextension.h"
-#include "scheduler.h"
+#include "scheduler.hpp"
 
 static std::string ReplacePlaceholder(const std::string& original, size_t index, const std::string& str) {
     if(original.empty()) { return std::string(); }
@@ -672,12 +672,16 @@ bool CrawlingObject::operator==(const CrawlingObject& rhs) {
     return this->mCrawlingNode == rhs.mCrawlingNode;
 }
 
-CURLCrawler::CURLCrawler() : mDoc(std::make_unique<rapidjson::Document>()), mScheduler(std::make_unique<Scheduler::Scheduler>()) {
+CURLCrawler::CURLCrawler() : mDoc(std::make_unique<rapidjson::Document>()), mScheduler(std::make_unique<Scheduler::EventScheduler>()) {
     
 }
 
 CURLCrawler::~CURLCrawler() noexcept {
     saveListFile();
+    mScheduler.reset();
+    mDoc.reset();
+
+    fprintf(stderr,"Destructor of CrawlingObject\r\n");
 }
 
 bool CURLCrawler::loadList(const std::string& path) {

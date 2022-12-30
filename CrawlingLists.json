@@ -50,10 +50,10 @@
                 ]
             },
             "Schedule": {
-                "Type": "Once",
+                "Type": "Interval",
                 "Start": "2022-12-28",
                 "Expired": "2024-01-01",
-                "Interval": ""
+                "Interval": "0:0:10"
             },
             "Info": {
                 "Valid": true,
