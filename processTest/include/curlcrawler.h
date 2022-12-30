@@ -112,7 +112,7 @@ private:
 
     void enqueueObject(const std::string& url);
     void success(bool result);
-    void init();
+    void initialize();
     std::future<void> mFuture;
 public:
     CrawlingObject(rapidjson::Value& value, rapidjson::Allocation& allocation);
@@ -124,8 +124,9 @@ public:
 
     // Process
     void execute();
+    void init();
 
-    Scheduler::Schedule* getSchedule();
+    Scheduler::Schedule* getSchedule() const;
 
     // ID
     std::string getID() const;
@@ -205,6 +206,8 @@ public:
     bool addList(const std::string& id, const std::string& url, const std::string& target, Adapter adapter = Adapter::Console);
     void eraseList(); // 아직 구현 x
     
+    //temp
+    int temp() { return mObj.size(); }
 
     size_t count();
 

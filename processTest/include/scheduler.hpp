@@ -607,12 +607,12 @@ inline void WorkerThread() {
         std::unique_lock<std::mutex> lock(m_job_q_);
         cv_job_q_.wait_for(lock, mWaitTime.get(), [this]() { return (mSuccess && !mSchedules.empty()) || mStop; });
         if(mStop) { return; }
-        //std::cout << TimePoint::now() << " - thread" << std::endl;
+        std::cout << TimePoint::now() << " - thread" << std::endl;
         if(mSchedules.empty()) { 
             lock.unlock();
             continue;
         }
-        //mSchedules.print();
+        mSchedules.print();
 
         auto job = mSchedules.top();
         mSchedules.pop();

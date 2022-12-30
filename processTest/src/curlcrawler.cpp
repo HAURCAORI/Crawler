@@ -169,7 +169,7 @@ void CrawlingObject::success(bool result) {
     mCrawlingNode["Info"]["PerformCount"].SetInt(count + 1);
 }
 
-void CrawlingObject::init() {
+void CrawlingObject::initialize() {
     Scheduler::ScheduleType schedule_type;
     switch(getScheduleType()) {
         case CrawlingScheduleType::Once: schedule_type = Scheduler::ScheduleType::SCHEDULE_ONCE;
@@ -193,7 +193,6 @@ void CrawlingObject::init() {
         Scheduler::Trigger trigger(schedule_type, start, expired, interval);
         
         mSchedule = std::make_unique<Scheduler::Schedule>(Scheduler::Schedule(getID(), "", trigger));
-        //mSchedule->setEvent([&](){ execute(); });
     } catch(const std::invalid_argument& ex) {
         mSchedule.reset();
         fprintf(stderr, "CrawlingObject has invalid argument.\r\n");
@@ -201,8 +200,10 @@ void CrawlingObject::init() {
     }
 }
 
-
-CrawlingObject::CrawlingObject(rapidjson::Value& value, rapidjson::Allocation& allocation) : mCrawlingNode(value), alloc(allocation) { init(); }
+CrawlingObject::CrawlingObject(rapidjson::Value& value, rapidjson::Allocation& allocation) : mCrawlingNode(value), alloc(allocation) {
+    initialize();
+    //fprintf(stderr, "Constructor of CrawlingObject.\r\n");
+}
 
 CrawlingObject::~CrawlingObject() noexcept {
     using namespace std::chrono_literals;
@@ -210,10 +211,13 @@ CrawlingObject::~CrawlingObject() noexcept {
         mFuture.wait_for(10s);
         // 왜 있지?
     }
+    mSchedule.reset();
+    //fprintf(stderr, "Destructor of CrawlingObject.\r\n");
 }
 
 // Process
 void CrawlingObject::execute() {
+    std::cout << "execute" << std::endl;
     if(!isValid()) { throw std::runtime_error("Try to execute invalid CrawlingObject"); }
     std::string url = getURL();
     std::string parameters = getParameters();
@@ -230,7 +234,11 @@ void CrawlingObject::execute() {
     }
 }
 
-Scheduler::Schedule* CrawlingObject::getSchedule() {
+void CrawlingObject::init() {
+    mSchedule->setEvent([&](){ execute(); });
+}
+
+Scheduler::Schedule* CrawlingObject::getSchedule() const{
     return mSchedule.get();
 }
 
@@ -677,11 +685,12 @@ CURLCrawler::CURLCrawler() : mDoc(std::make_unique<rapidjson::Document>()), mSch
 }
 
 CURLCrawler::~CURLCrawler() noexcept {
+    //fprintf(stderr,"Destructor of CURLCrawler entry\r\n");
     saveListFile();
     mScheduler.reset();
     mDoc.reset();
 
-    fprintf(stderr,"Destructor of CrawlingObject\r\n");
+    //fprintf(stderr,"Destructor of CURLCrawler\r\n");
 }
 
 bool CURLCrawler::loadList(const std::string& path) {
@@ -702,15 +711,15 @@ bool CURLCrawler::createListFile(const std::string& path, bool trunc) {
 }
 
 void CURLCrawler::add(CrawlingObject&& obj) {
-    Scheduler::Schedule* sch = obj.getSchedule();
+    if(std::find(mObj.begin(), mObj.end(), obj) == mObj.end()) {
+        mObj.push_back(std::move(obj));
+    }
+    mObj.back().init();
+    Scheduler::Schedule* sch = mObj.back().getSchedule();
     if(sch != nullptr) {
         mScheduler->add(*sch);
     }
-    if(std::find(mObj.begin(), mObj.end(), obj) == mObj.end()) {
-        mObj.emplace_back(std::move(obj));
-    }
 
-    
 }
 
 bool CURLCrawler::addList(const std::string& id, const URI& uri, Output output, Schedule schedule) {
@@ -922,6 +931,7 @@ void CURLCrawler::initObject() {
     for(auto it = list.begin(); it != list.end(); ++it) {
         add(std::move(CrawlingObject(*it, mDoc->GetAllocator())));
     }
+    
 }
 
 void CURLCrawler::initSchedule() {

@@ -15,6 +15,12 @@
 #define BEGIN_CHRONO std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 #define END_CHRONO std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - begin).count() << "[ms]" << std::endl;
 
+class test{
+public:
+    test() { std::cout << "constructor" << std::endl; }
+    virtual ~test() { std::cout << "destructor" << std::endl; }
+};
+
 int main() {
     curl_global_init(CURL_GLOBAL_DEFAULT);
     using namespace Crawler;
@@ -26,7 +32,15 @@ int main() {
 
     //Scheduler::TimePoint tp("03:30:0");
     //std::cout << tp << std::endl;
-
+/*
+    std::vector<test> vec;
+    {   test te;
+        vec.push_back(std::move(te));
+    }
+    std::this_thread::sleep_for(5s);
+    std::cout << "main end" << std::endl;
+    return 0;
+    */
 
     Crawler::CURLCrawler object;
     object.setSaveChange(false);
@@ -35,7 +49,6 @@ int main() {
     //std::cout << object.addList("K","https://www.naver.com/,","/div/div") << std::endl;
     //auto& o = object.at("C");
     //std::cout << o.getID() << std::endl;
-
     std::this_thread::sleep_for(60s);
     std::cout << "main end" << std::endl;
 
